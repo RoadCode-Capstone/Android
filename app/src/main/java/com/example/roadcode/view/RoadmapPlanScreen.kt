@@ -335,3 +335,183 @@ fun RoadmapPlanTypeScreen() {
         }
     }
 }
+
+/* 학습 계획 설정 화면 (알고리즘) */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun RoadmapPlanAlgorithmScreen() {
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = "학습 계획 설정",
+                        fontSize = 18.sp,
+                        color = Color(0xFF2B3440),
+                        fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
+                    )
+                },
+                navigationIcon = {
+                    IconButton(
+                        onClick = { /* 뒤로 가기 동작 */ }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "뒤로 가기 버튼",
+                            tint = Color(0xFF2B3440)
+                        )
+                    }
+                }
+            )
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Spacer(modifier = Modifier.height(36.dp))
+
+            Text(
+                text = "학습할 알고리즘을 선택하세요",
+                fontSize = 16.sp,
+                fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
+            )
+
+            Spacer(modifier = Modifier.height(50.dp))
+
+            Button( // 스택/큐 버튼
+                onClick = { /* 스택/큐 선택 */ },
+                modifier = Modifier
+                    .width(300.dp)
+                    .height(50.dp),
+                shape = RoundedCornerShape(5.dp),
+                border = BorderStroke(0.5.dp, Color.Black),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFF9F9F9),
+                    contentColor = Color(0xFF2B3440)
+                )
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "스택/큐",
+                        fontSize = 16.sp,
+                        fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Button( // DFS/BFS 버튼
+                onClick = { /* DFS/BFS 선택 */ },
+                modifier = Modifier
+                    .width(300.dp)
+                    .height(50.dp),
+                shape = RoundedCornerShape(5.dp),
+                border = BorderStroke(0.5.dp, Color.Black),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFF9F9F9),
+                    contentColor = Color(0xFF2B3440)
+                )
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "DFS/BFS",
+                        fontSize = 16.sp,
+                        fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Button( // 탐욕법 버튼
+                onClick = { /* 탐욕법 선택 */ },
+                modifier = Modifier
+                    .width(300.dp)
+                    .height(50.dp),
+                shape = RoundedCornerShape(5.dp),
+                border = BorderStroke(0.5.dp, Color.Black),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFF9F9F9),
+                    contentColor = Color(0xFF2B3440)
+                )
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "탐욕법",
+                        fontSize = 16.sp,
+                        fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Button( // 트리 버튼
+                onClick = { /* 트리 선택 */ },
+                modifier = Modifier
+                    .width(300.dp)
+                    .height(50.dp),
+                shape = RoundedCornerShape(5.dp),
+                border = BorderStroke(0.5.dp, Color.Black),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFF9F9F9),
+                    contentColor = Color(0xFF2B3440)
+                )
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "트리",
+                        fontSize = 16.sp,
+                        fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(290.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Spacer(modifier = Modifier.weight(1f))
+
+                Button( // 다음 버튼
+                    onClick = { /* 다음 버튼 */ },
+                    modifier = Modifier
+                        .width(90.dp)
+                        .height(50.dp),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFF2C53D),
+                        contentColor = Color.White
+                    )
+                ) {
+                    Text(
+                        text = "다음",
+                        fontSize = 16.sp,
+                        color = Color.White,
+                        fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(30.dp))
+            }
+        }
+    }
+}
