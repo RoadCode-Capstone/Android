@@ -37,6 +37,9 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.roadcode.R
+import com.example.roadcode.ui.theme.BackGrayColor
+import com.example.roadcode.ui.theme.PointColor
+import com.example.roadcode.ui.theme.PrimaryColor
 
 /* 학습 계획 설정 화면 (언어) */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,7 +52,7 @@ fun RoadmapPlanLanguageScreen() {
                     Text(
                         text = "학습 계획 설정",
                         fontSize = 18.sp,
-                        color = Color(0xFF2B3440),
+                        color = PrimaryColor,
                         fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
                     )
                 },
@@ -60,7 +63,7 @@ fun RoadmapPlanLanguageScreen() {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "뒤로 가기 버튼",
-                            tint = Color(0xFF2B3440)
+                            tint = PrimaryColor
                         )
                     }
                 }
@@ -89,9 +92,9 @@ fun RoadmapPlanLanguageScreen() {
                     .width(300.dp)
                     .height(50.dp),
                 shape = RoundedCornerShape(5.dp),
-                border = BorderStroke(0.5.dp, Color(0xFF2B3440)),
+                border = BorderStroke(0.5.dp, PrimaryColor),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFF9F9F9)
+                    containerColor = BackGrayColor
                 )
             ) {
                 Row(
@@ -122,9 +125,9 @@ fun RoadmapPlanLanguageScreen() {
                     .width(300.dp)
                     .height(50.dp),
                 shape = RoundedCornerShape(5.dp),
-                border = BorderStroke(0.5.dp, Color(0xFF2B3440)),
+                border = BorderStroke(0.5.dp, PrimaryColor),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFF9F9F9)
+                    containerColor = BackGrayColor
                 )
             ) {
                 Row(
@@ -155,9 +158,9 @@ fun RoadmapPlanLanguageScreen() {
                     .width(300.dp)
                     .height(50.dp),
                 shape = RoundedCornerShape(5.dp),
-                border = BorderStroke(0.5.dp, Color(0xFF2B3440)),
+                border = BorderStroke(0.5.dp, PrimaryColor),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFF9F9F9)
+                    containerColor = BackGrayColor
                 )
             ) {
                 Row(
@@ -195,7 +198,7 @@ fun RoadmapPlanLanguageScreen() {
                         .height(50.dp),
                     shape = RoundedCornerShape(20.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFF2C53D),
+                        containerColor = PointColor,
                         contentColor = Color.White
                     )
                 ) {
@@ -224,7 +227,7 @@ fun RoadmapPlanTypeScreen() {
                     Text(
                         text = "학습 계획 설정",
                         fontSize = 18.sp,
-                        color = Color(0xFF2B3440),
+                        color = PrimaryColor,
                         fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
                     )
                 },
@@ -235,7 +238,7 @@ fun RoadmapPlanTypeScreen() {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "뒤로 가기 버튼",
-                            tint = Color(0xFF2B3440)
+                            tint = PrimaryColor
                         )
                     }
                 }
@@ -264,9 +267,9 @@ fun RoadmapPlanTypeScreen() {
                     .width(300.dp)
                     .height(50.dp),
                 shape = RoundedCornerShape(5.dp),
-                border = BorderStroke(0.5.dp, Color(0xFF2B3440)),
+                border = BorderStroke(0.5.dp, PrimaryColor),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFF9F9F9)
+                    containerColor = BackGrayColor
                 )
             ) {
                 Row(
@@ -290,9 +293,9 @@ fun RoadmapPlanTypeScreen() {
                     .width(300.dp)
                     .height(50.dp),
                 shape = RoundedCornerShape(5.dp),
-                border = BorderStroke(0.5.dp, Color(0xFF2B3440)),
+                border = BorderStroke(0.5.dp, PrimaryColor),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFF9F9F9)
+                    containerColor = BackGrayColor
                 )
             ) {
                 Row(
@@ -323,7 +326,7 @@ fun RoadmapPlanTypeScreen() {
                         .height(50.dp),
                     shape = RoundedCornerShape(20.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFF2C53D),
+                        containerColor = PointColor,
                         contentColor = Color.White
                     )
                 ) {
@@ -352,7 +355,7 @@ fun RoadmapPlanAlgorithmScreen() {
                     Text(
                         text = "학습 계획 설정",
                         fontSize = 18.sp,
-                        color = Color(0xFF2B3440),
+                        color = PrimaryColor,
                         fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
                     )
                 },
@@ -363,7 +366,7 @@ fun RoadmapPlanAlgorithmScreen() {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "뒤로 가기 버튼",
-                            tint = Color(0xFF2B3440)
+                            tint = PrimaryColor
                         )
                     }
                 }
@@ -392,9 +395,9 @@ fun RoadmapPlanAlgorithmScreen() {
                     .width(300.dp)
                     .height(50.dp),
                 shape = RoundedCornerShape(5.dp),
-                border = BorderStroke(0.5.dp, Color(0xFF2B3440)),
+                border = BorderStroke(0.5.dp, PrimaryColor),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFF9F9F9)
+                    containerColor = BackGrayColor
                 )
             ) {
                 Row(
@@ -418,9 +421,9 @@ fun RoadmapPlanAlgorithmScreen() {
                     .width(300.dp)
                     .height(50.dp),
                 shape = RoundedCornerShape(5.dp),
-                border = BorderStroke(0.5.dp, Color(0xFF2B3440)),
+                border = BorderStroke(0.5.dp, PrimaryColor),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFF9F9F9)
+                    containerColor = BackGrayColor
                 )
             ) {
                 Row(
@@ -444,9 +447,9 @@ fun RoadmapPlanAlgorithmScreen() {
                     .width(300.dp)
                     .height(50.dp),
                 shape = RoundedCornerShape(5.dp),
-                border = BorderStroke(0.5.dp, Color(0xFF2B3440)),
+                border = BorderStroke(0.5.dp, PrimaryColor),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFF9F9F9)
+                    containerColor = BackGrayColor
                 )
             ) {
                 Row(
@@ -470,9 +473,9 @@ fun RoadmapPlanAlgorithmScreen() {
                     .width(300.dp)
                     .height(50.dp),
                 shape = RoundedCornerShape(5.dp),
-                border = BorderStroke(0.5.dp, Color(0xFF2B3440)),
+                border = BorderStroke(0.5.dp, PrimaryColor),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFF9F9F9)
+                    containerColor = BackGrayColor
                 )
             ) {
                 Row(
@@ -503,7 +506,7 @@ fun RoadmapPlanAlgorithmScreen() {
                         .height(50.dp),
                     shape = RoundedCornerShape(20.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFF2C53D),
+                        containerColor = PointColor,
                         contentColor = Color.White
                     )
                 ) {
@@ -532,7 +535,7 @@ fun RoadmapPlanGoalScreen() {
                     Text(
                         text = "학습 계획 설정",
                         fontSize = 18.sp,
-                        color = Color(0xFF2B3440),
+                        color = PrimaryColor,
                         fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
                     )
                 },
@@ -543,7 +546,7 @@ fun RoadmapPlanGoalScreen() {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "뒤로 가기 버튼",
-                            tint = Color(0xFF2B3440)
+                            tint = PrimaryColor
                         )
                     }
                 }
@@ -575,10 +578,10 @@ fun RoadmapPlanGoalScreen() {
                     onClick = { /* 1 선택 */ },
                     modifier = Modifier.size(50.dp),
                     shape = CircleShape,
-                    border = BorderStroke(0.5.dp, Color(0xFF2B3440)),
+                    border = BorderStroke(0.5.dp, PrimaryColor),
                     contentPadding = PaddingValues(0.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFF9F9F9)
+                        containerColor = BackGrayColor
                     )
                 ) {
                     Box(
@@ -600,10 +603,10 @@ fun RoadmapPlanGoalScreen() {
                     onClick = { /* 2 선택 */ },
                     modifier = Modifier.size(50.dp),
                     shape = CircleShape,
-                    border = BorderStroke(0.5.dp, Color(0xFF2B3440)),
+                    border = BorderStroke(0.5.dp, PrimaryColor),
                     contentPadding = PaddingValues(0.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFF9F9F9)
+                        containerColor = BackGrayColor
                     )
                 ) {
                     Box(
@@ -625,10 +628,10 @@ fun RoadmapPlanGoalScreen() {
                     onClick = { /* 3 선택 */ },
                     modifier = Modifier.size(50.dp),
                     shape = CircleShape,
-                    border = BorderStroke(0.5.dp, Color(0xFF2B3440)),
+                    border = BorderStroke(0.5.dp, PrimaryColor),
                     contentPadding = PaddingValues(0.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFF9F9F9)
+                        containerColor = BackGrayColor
                     )
                 ) {
                     Box(
@@ -650,10 +653,10 @@ fun RoadmapPlanGoalScreen() {
                     onClick = { /* 4 선택 */ },
                     modifier = Modifier.size(50.dp),
                     shape = CircleShape,
-                    border = BorderStroke(0.5.dp, Color(0xFF2B3440)),
+                    border = BorderStroke(0.5.dp, PrimaryColor),
                     contentPadding = PaddingValues(0.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFF9F9F9)
+                        containerColor = BackGrayColor
                     )
                 ) {
                     Box(
@@ -675,10 +678,10 @@ fun RoadmapPlanGoalScreen() {
                     onClick = { /* 5 선택 */ },
                     modifier = Modifier.size(50.dp),
                     shape = CircleShape,
-                    border = BorderStroke(0.5.dp, Color(0xFF2B3440)),
+                    border = BorderStroke(0.5.dp, PrimaryColor),
                     contentPadding = PaddingValues(0.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFF9F9F9)
+                        containerColor = BackGrayColor
                     )
                 ) {
                     Box(
@@ -710,7 +713,7 @@ fun RoadmapPlanGoalScreen() {
                         .height(50.dp),
                     shape = RoundedCornerShape(20.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFF2C53D),
+                        containerColor = PointColor,
                         contentColor = Color.White
                     )
                 ) {
