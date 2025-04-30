@@ -89,10 +89,9 @@ fun RoadmapPlanLanguageScreen() {
                     .width(300.dp)
                     .height(50.dp),
                 shape = RoundedCornerShape(5.dp),
-                border = BorderStroke(0.5.dp, Color.Black),
+                border = BorderStroke(0.5.dp, Color(0xFF2B3440)),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFF9F9F9),
-                    contentColor = Color(0xFF2B3440)
+                    containerColor = Color(0xFFF9F9F9)
                 )
             ) {
                 Row(
@@ -109,6 +108,7 @@ fun RoadmapPlanLanguageScreen() {
                     Text(
                         text = "JAVA",
                         fontSize = 16.sp,
+                        color = Color.Black,
                         fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
                     )
                 }
@@ -122,10 +122,9 @@ fun RoadmapPlanLanguageScreen() {
                     .width(300.dp)
                     .height(50.dp),
                 shape = RoundedCornerShape(5.dp),
-                border = BorderStroke(0.5.dp, Color.Black),
+                border = BorderStroke(0.5.dp, Color(0xFF2B3440)),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFF9F9F9),
-                    contentColor = Color(0xFF2B3440)
+                    containerColor = Color(0xFFF9F9F9)
                 )
             ) {
                 Row(
@@ -142,6 +141,7 @@ fun RoadmapPlanLanguageScreen() {
                     Text(
                         text = "Python",
                         fontSize = 16.sp,
+                        color = Color.Black,
                         fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
                     )
                 }
@@ -155,10 +155,9 @@ fun RoadmapPlanLanguageScreen() {
                     .width(300.dp)
                     .height(50.dp),
                 shape = RoundedCornerShape(5.dp),
-                border = BorderStroke(0.5.dp, Color.Black),
+                border = BorderStroke(0.5.dp, Color(0xFF2B3440)),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFF9F9F9),
-                    contentColor = Color(0xFF2B3440)
+                    containerColor = Color(0xFFF9F9F9)
                 )
             ) {
                 Row(
@@ -175,6 +174,7 @@ fun RoadmapPlanLanguageScreen() {
                     Text(
                         text = "C",
                         fontSize = 16.sp,
+                        color = Color.Black,
                         fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
                     )
                 }
@@ -264,10 +264,9 @@ fun RoadmapPlanTypeScreen() {
                     .width(300.dp)
                     .height(50.dp),
                 shape = RoundedCornerShape(5.dp),
-                border = BorderStroke(0.5.dp, Color.Black),
+                border = BorderStroke(0.5.dp, Color(0xFF2B3440)),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFF9F9F9),
-                    contentColor = Color(0xFF2B3440)
+                    containerColor = Color(0xFFF9F9F9)
                 )
             ) {
                 Row(
@@ -277,6 +276,7 @@ fun RoadmapPlanTypeScreen() {
                     Text(
                         text = "언어",
                         fontSize = 16.sp,
+                        color = Color.Black,
                         fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
                     )
                 }
@@ -290,10 +290,9 @@ fun RoadmapPlanTypeScreen() {
                     .width(300.dp)
                     .height(50.dp),
                 shape = RoundedCornerShape(5.dp),
-                border = BorderStroke(0.5.dp, Color.Black),
+                border = BorderStroke(0.5.dp, Color(0xFF2B3440)),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFF9F9F9),
-                    contentColor = Color(0xFF2B3440)
+                    containerColor = Color(0xFFF9F9F9)
                 )
             ) {
                 Row(
@@ -303,6 +302,7 @@ fun RoadmapPlanTypeScreen() {
                     Text(
                         text = "알고리즘",
                         fontSize = 16.sp,
+                        color = Color.Black,
                         fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
                     )
                 }
@@ -392,10 +392,9 @@ fun RoadmapPlanAlgorithmScreen() {
                     .width(300.dp)
                     .height(50.dp),
                 shape = RoundedCornerShape(5.dp),
-                border = BorderStroke(0.5.dp, Color.Black),
+                border = BorderStroke(0.5.dp, Color(0xFF2B3440)),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFF9F9F9),
-                    contentColor = Color(0xFF2B3440)
+                    containerColor = Color(0xFFF9F9F9)
                 )
             ) {
                 Row(
@@ -405,6 +404,7 @@ fun RoadmapPlanAlgorithmScreen() {
                     Text(
                         text = "스택/큐",
                         fontSize = 16.sp,
+                        color = Color.Black,
                         fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
                     )
                 }
@@ -418,10 +418,9 @@ fun RoadmapPlanAlgorithmScreen() {
                     .width(300.dp)
                     .height(50.dp),
                 shape = RoundedCornerShape(5.dp),
-                border = BorderStroke(0.5.dp, Color.Black),
+                border = BorderStroke(0.5.dp, Color(0xFF2B3440)),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFF9F9F9),
-                    contentColor = Color(0xFF2B3440)
+                    containerColor = Color(0xFFF9F9F9)
                 )
             ) {
                 Row(
@@ -431,6 +430,7 @@ fun RoadmapPlanAlgorithmScreen() {
                     Text(
                         text = "DFS/BFS",
                         fontSize = 16.sp,
+                        color = Color.Black,
                         fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
                     )
                 }
@@ -444,10 +444,9 @@ fun RoadmapPlanAlgorithmScreen() {
                     .width(300.dp)
                     .height(50.dp),
                 shape = RoundedCornerShape(5.dp),
-                border = BorderStroke(0.5.dp, Color.Black),
+                border = BorderStroke(0.5.dp, Color(0xFF2B3440)),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFF9F9F9),
-                    contentColor = Color(0xFF2B3440)
+                    containerColor = Color(0xFFF9F9F9)
                 )
             ) {
                 Row(
@@ -457,6 +456,7 @@ fun RoadmapPlanAlgorithmScreen() {
                     Text(
                         text = "탐욕법",
                         fontSize = 16.sp,
+                        color = Color.Black,
                         fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
                     )
                 }
@@ -470,10 +470,9 @@ fun RoadmapPlanAlgorithmScreen() {
                     .width(300.dp)
                     .height(50.dp),
                 shape = RoundedCornerShape(5.dp),
-                border = BorderStroke(0.5.dp, Color.Black),
+                border = BorderStroke(0.5.dp, Color(0xFF2B3440)),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFF9F9F9),
-                    contentColor = Color(0xFF2B3440)
+                    containerColor = Color(0xFFF9F9F9)
                 )
             ) {
                 Row(
@@ -483,6 +482,7 @@ fun RoadmapPlanAlgorithmScreen() {
                     Text(
                         text = "트리",
                         fontSize = 16.sp,
+                        color = Color.Black,
                         fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
                     )
                 }
