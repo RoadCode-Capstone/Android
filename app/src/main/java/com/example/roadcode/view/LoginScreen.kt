@@ -1,28 +1,20 @@
-package com.example.myapplication
+package com.example.roadcode
 
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.roadcode.R
-
-
-val PrimaryColor = Color(0xFF2B3440)   // 주 색상
-val PointColor = Color(0xFFFF2C53D)    // 포인트 색
-val BackGrayColor = Color(0xFFFFF9F9F9) // 요소 배경색
 
 @Composable
 fun LoginScreen(modifier: Modifier = Modifier) {
@@ -32,169 +24,112 @@ fun LoginScreen(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(PrimaryColor)
-            .padding(32.dp),
+            .background(Color(0xFF2E3540))
+            .padding(horizontal = 24.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = "로그인",
-            fontSize = 28.sp,
             color = Color.White,
+            fontSize = 26.sp,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 24.dp)
+            modifier = Modifier.padding(bottom = 32.dp)
         )
 
-        TextField(
+        OutlinedTextField(
             value = email,
             onValueChange = { email = it },
-            placeholder = { Text("이메일을 입력하세요", color = Color.Gray) },
-            leadingIcon = {
-                Icon(
-                    painter = painterResource(id = android.R.drawable.ic_menu_myplaces),
-                    contentDescription = "Email Icon",
-                    tint = PointColor
-                )
-            },
+            label = { Text("이메일을 입력하세요") },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             modifier = Modifier
                 .fillMaxWidth()
-                .height(56.dp),
-            shape = RoundedCornerShape(12.dp),
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = BackGrayColor,
-                unfocusedContainerColor = BackGrayColor,
-                disabledContainerColor = BackGrayColor,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                focusedTextColor = PrimaryColor,
-                unfocusedTextColor = PrimaryColor
-            ),
-            singleLine = true,
-            textStyle = TextStyle(color = PrimaryColor)
+                .padding(vertical = 8.dp)
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        TextField(
+        OutlinedTextField(
             value = password,
             onValueChange = { password = it },
-            placeholder = { Text("비밀번호를 입력하세요", color = Color.Gray) },
-            leadingIcon = {
-                Icon(
-                    painter = painterResource(id = android.R.drawable.ic_lock_lock),
-                    contentDescription = "Password Icon",
-                    tint = PointColor
-                )
-            },
+            label = { Text("비밀번호를 입력하세요") },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             modifier = Modifier
                 .fillMaxWidth()
-                .height(56.dp),
-            shape = RoundedCornerShape(12.dp),
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = BackGrayColor,
-                unfocusedContainerColor = BackGrayColor,
-                disabledContainerColor = BackGrayColor,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                focusedTextColor = PrimaryColor,
-                unfocusedTextColor = PrimaryColor
-            ),
-            visualTransformation = PasswordVisualTransformation(),
-            singleLine = true,
-            textStyle = TextStyle(color = PrimaryColor)
+                .padding(vertical = 8.dp)
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
-
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(end = 8.dp),
             horizontalArrangement = Arrangement.End
         ) {
             Text(
                 text = "비밀번호 찾기",
                 fontSize = 12.sp,
                 color = Color.White,
-                modifier = Modifier.clickable { /* TODO */ }
+                modifier = Modifier.clickable {
+                    // 비밀번호 찾기 클릭 처리
+                }
             )
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
         ) {
             Button(
                 onClick = { /* 회원가입 */ },
-                modifier = Modifier.weight(1f),
-                colors = ButtonDefaults.buttonColors(containerColor = PointColor),
-                shape = RoundedCornerShape(12.dp)
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFCC49)),
+                modifier = Modifier
+                    .weight(1f)
+                    .height(48.dp)
             ) {
-                Text(text = "회원가입", color = Color.White)
+                Text("회원가입", color = Color.Black, fontSize = 14.sp)
             }
+
+            Spacer(modifier = Modifier.width(16.dp))
 
             Button(
-                onClick = { println("로그인 시도: 이메일=$email, 비밀번호=$password") },
-                modifier = Modifier.weight(1f),
-                colors = ButtonDefaults.buttonColors(containerColor = PointColor),
-                shape = RoundedCornerShape(12.dp)
+                onClick = { /* 로그인 */ },
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFCC49)),
+                modifier = Modifier
+                    .weight(1f)
+                    .height(48.dp)
             ) {
-                Text(text = "로그인", color = Color.White)
+                Text("로그인", color = Color.Black, fontSize = 14.sp)
             }
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(32.dp))
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(24.dp),
-            verticalAlignment = Alignment.CenterVertically
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .height(40.dp)
-                    .background(PointColor, shape = RoundedCornerShape(8.dp))
-                    .clickable { /* TODO */ },
-                contentAlignment = Alignment.Center
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        painter = painterResource(id = android.R.drawable.ic_dialog_email),
-                        contentDescription = "Kakao Icon",
-                        tint = PrimaryColor,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "로그인", color = PrimaryColor, fontWeight = FontWeight.Bold)
-                }
-            }
-
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .height(40.dp)
-                    .background(BackGrayColor, shape = RoundedCornerShape(8.dp))
-                    .clickable { /* TODO */ },
-                contentAlignment = Alignment.Center
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.google_login_image), // 구글 로고 필요
-                    contentDescription = "Google Icon",
-                    modifier = Modifier.size(24.dp)
-                )
-            }
-
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .height(40.dp)
-                    .background(Color(0xFF03C75A), shape = RoundedCornerShape(8.dp))
-                    .clickable { /* TODO */ },
-                contentAlignment = Alignment.Center
-            ) {
-                Text(text = "N", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 20.sp)
-            }
+            LoginIconButton(R.drawable.kakao, "카카오 로그인")
+            LoginIconButton(R.drawable.google, "구글 로그인")
+            LoginIconButton(R.drawable.naver, "네이버 로그인")
         }
+    }
+}
+
+@Composable
+fun LoginIconButton(iconRes: Int, contentDescription: String) {
+    Surface(
+        shape = MaterialTheme.shapes.medium,
+        tonalElevation = 4.dp,
+        modifier = Modifier
+            .size(48.dp)
+            .clickable { /* 소셜 로그인 */ }
+    ) {
+        Image(
+            painter = painterResource(id = iconRes),
+            contentDescription = contentDescription,
+            modifier = Modifier.padding(8.dp)
+        )
     }
 }
