@@ -26,9 +26,8 @@ fun SignUpScreen() {
     val nickname = remember { mutableStateOf("") }
 
     Surface(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(PrimaryColor)
+        modifier = Modifier.fillMaxSize(),
+        color = PrimaryColor
     ) {
         Column(
             modifier = Modifier
@@ -57,7 +56,7 @@ fun SignUpScreen() {
                     ) {
                         Text(
                             "발송",
-                            style = MaterialTheme.typography.labelLarge.copy(color = PrimaryColor)
+                            style = MaterialTheme.typography.labelLarge.copy(color = Color.White)
                         )
                     }
                 }
@@ -103,7 +102,7 @@ fun SignUpScreen() {
             ) {
                 Text(
                     "재설정",
-                    style = MaterialTheme.typography.labelLarge.copy(color = PrimaryColor)
+                    style = MaterialTheme.typography.labelLarge.copy(color = Color.White)
                 )
             }
         }

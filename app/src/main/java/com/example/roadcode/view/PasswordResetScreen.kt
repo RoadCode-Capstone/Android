@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun PasswordResetUI(modifier: Modifier = Modifier) {
+fun PasswordResetScreen(modifier: Modifier = Modifier) {
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
 
@@ -67,7 +67,7 @@ fun PasswordResetUI(modifier: Modifier = Modifier) {
                 .fillMaxWidth()
                 .height(48.dp)
         ) {
-            Text("재설정", color = Color.Black, fontSize = 16.sp)
+            Text("재설정", color = Color.White, fontSize = 16.sp)
         }
     }
 }
@@ -80,22 +80,30 @@ fun PasswordField(
     isValid: Boolean,
     helperText: String
 ) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Icon(
-            imageVector = if (isValid) Icons.Default.CheckCircle else Icons.Default.Close,
-            contentDescription = null,
-            tint = if (isValid) Color.White else Color.Gray
+    Column(modifier = Modifier.fillMaxWidth()) {
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            label = { Text(label) },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            modifier = Modifier
+                .fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                focusedBorderColor = if (isValid) Color.Green else Color.Red,
+                unfocusedBorderColor = if (isValid) Color.Green else Color.Gray
+            ),
+            trailingIcon = {
+                Icon(
+                    imageVector = if (isValid) Icons.Default.CheckCircle else Icons.Default.Close,
+                    contentDescription = null,
+                    tint = if (isValid) Color.Green else Color.Gray
+                )
+            }
         )
-        Spacer(modifier = Modifier.width(8.dp))
-        Column {
-            OutlinedTextField(
-                value = value,
-                onValueChange = onValueChange,
-                label = { Text(label) },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                modifier = Modifier.width(240.dp)
-            )
+        if (!isValid) {
             Text(
                 text = helperText,
                 fontSize = 10.sp,
@@ -105,3 +113,4 @@ fun PasswordField(
         }
     }
 }
+

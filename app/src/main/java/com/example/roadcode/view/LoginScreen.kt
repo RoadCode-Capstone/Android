@@ -88,7 +88,7 @@ fun LoginScreen(modifier: Modifier = Modifier) {
                     .weight(1f)
                     .height(48.dp)
             ) {
-                Text("회원가입", color = Color.Black, fontSize = 14.sp)
+                Text("회원가입", color = Color.White, fontSize = 14.sp)
             }
 
             Spacer(modifier = Modifier.width(16.dp))
@@ -100,7 +100,7 @@ fun LoginScreen(modifier: Modifier = Modifier) {
                     .weight(1f)
                     .height(48.dp)
             ) {
-                Text("로그인", color = Color.Black, fontSize = 14.sp)
+                Text("로그인", color = Color.White, fontSize = 14.sp)
             }
         }
 
