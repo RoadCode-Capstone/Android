@@ -2,31 +2,24 @@ package com.example.roadcode.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
-
+import com.example.roadcode.ui.theme.PrimaryColor
+import com.example.roadcode.ui.theme.PointColor
+import com.example.roadcode.ui.theme.BackGrayColor
 
 @Composable
 fun FindPasswordScreen(modifier: Modifier = Modifier) {
     var email by remember { mutableStateOf("") }
     var code by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("인증번호가 틀렸습니다") }
-
-    val PrimaryColor = Color(0xFF2B3440)
-    val PointColor = Color(0xFFF2C53D)
-    val BackGrayColor = Color(0xFFF9F9F9)
 
     Column(
         modifier = modifier
@@ -38,9 +31,7 @@ fun FindPasswordScreen(modifier: Modifier = Modifier) {
     ) {
         Text(
             text = "비밀번호 찾기",
-            fontSize = 24.sp,
-            color = Color.White,
-            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.headlineSmall.copy(color = Color.White),
             modifier = Modifier.padding(bottom = 32.dp)
         )
 
@@ -53,12 +44,10 @@ fun FindPasswordScreen(modifier: Modifier = Modifier) {
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
-                placeholder = { Text("이메일을 입력하세요") },
-                leadingIcon = {
-                    Icon(
-                        painter = painterResource(id = android.R.drawable.ic_menu_myplaces),
-                        contentDescription = "Email Icon",
-                        tint = Color.Black
+                placeholder = {
+                    Text(
+                        "이메일을 입력하세요",
+                        style = MaterialTheme.typography.bodyLarge.copy(color = Color.Gray)
                     )
                 },
                 modifier = Modifier
@@ -70,9 +59,7 @@ fun FindPasswordScreen(modifier: Modifier = Modifier) {
                     unfocusedContainerColor = BackGrayColor,
                     focusedBorderColor = Color.Transparent,
                     unfocusedBorderColor = Color.Transparent,
-                    cursorColor = Color.Black,
-                    focusedLeadingIconColor = Color.Black,
-                    unfocusedLeadingIconColor = Color.Black
+                    cursorColor = Color.Black
                 ),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email)
@@ -86,7 +73,10 @@ fun FindPasswordScreen(modifier: Modifier = Modifier) {
                 shape = RoundedCornerShape(20.dp),
                 modifier = Modifier.height(56.dp)
             ) {
-                Text("발송", color = Color.White)
+                Text(
+                    "발송",
+                    style = MaterialTheme.typography.labelLarge.copy(color = Color.White)
+                )
             }
         }
 
@@ -99,7 +89,12 @@ fun FindPasswordScreen(modifier: Modifier = Modifier) {
             OutlinedTextField(
                 value = code,
                 onValueChange = { code = it },
-                placeholder = { Text("인증번호를 입력하세요") },
+                placeholder = {
+                    Text(
+                        "인증번호를 입력하세요",
+                        style = MaterialTheme.typography.bodyLarge.copy(color = Color.Gray)
+                    )
+                },
                 modifier = Modifier
                     .weight(1f)
                     .height(56.dp),
@@ -122,15 +117,19 @@ fun FindPasswordScreen(modifier: Modifier = Modifier) {
                 shape = RoundedCornerShape(20.dp),
                 modifier = Modifier.height(56.dp)
             ) {
-                Text("확인", color = Color.White)
+                Text(
+                    "확인",
+                    style = MaterialTheme.typography.labelLarge.copy(color = Color.White)
+                )
             }
         }
 
         Text(
             text = errorMessage,
-            fontSize = 12.sp,
-            color = Color.White,
-            fontWeight = FontWeight.SemiBold,
+            style = MaterialTheme.typography.bodySmall.copy(
+                color = Color.White,
+                fontSize = 12.sp
+            ),
             modifier = Modifier.align(Alignment.Start)
         )
     }
