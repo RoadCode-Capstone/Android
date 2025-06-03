@@ -42,24 +42,71 @@ fun SignUpScreen() {
                 modifier = Modifier.padding(bottom = 24.dp)
             )
 
-            SignUpTextField(
-                value = email.value,
-                onValueChange = { email.value = it },
-                placeholder = "이메일을 입력하세요",
-                helperText = "사용할 수 있는 ID입니다 / 이미 가입된 이메일입니다",
-                trailing = {
-                    Button(
-                        onClick = { /* 이메일 발송 */ },
-                        colors = ButtonDefaults.buttonColors(containerColor = PointColor),
-                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
-                        modifier = Modifier.height(36.dp)
-                    ) {
+            // 이메일 입력창과 발송 버튼을 나란히 배치
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp), // 통일된 높이
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                OutlinedTextField(
+                    value = email.value,
+                    onValueChange = { email.value = it },
+                    placeholder = {
                         Text(
-                            "발송",
-                            style = MaterialTheme.typography.labelLarge.copy(color = Color.White)
+                            "이메일을 입력하세요",
+                            style = MaterialTheme.typography.bodyLarge.copy(color = Color.Gray)
                         )
-                    }
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.CheckCircle,
+                            contentDescription = null,
+                            tint = PrimaryColor
+                        )
+                    },
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .background(BackGrayColor, shape = RoundedCornerShape(12.dp)),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedContainerColor = BackGrayColor,
+                        focusedContainerColor = BackGrayColor,
+                        unfocusedBorderColor = Color.Transparent,
+                        focusedBorderColor = Color.Transparent,
+                        unfocusedTextColor = Color.Black,
+                        focusedTextColor = Color.Black,
+                        cursorColor = PrimaryColor
+                    )
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Button(
+                    onClick = { /* 이메일 발송 */ },
+                    colors = ButtonDefaults.buttonColors(containerColor = PointColor),
+                    contentPadding = PaddingValues(horizontal = 16.dp),
+                    modifier = Modifier
+                        .height(48.dp)
+                ) {
+                    Text(
+                        "발송",
+                        style = MaterialTheme.typography.labelLarge.copy(color = Color.White)
+                    )
                 }
+            }
+
+            Text(
+                text = "사용할 수 있는 ID입니다 / 이미 가입된 이메일입니다",
+                style = MaterialTheme.typography.bodySmall.copy(
+                    color = Color.White.copy(alpha = 0.7f),
+                    fontSize = 12.sp
+                ),
+                modifier = Modifier
+                    .padding(start = 8.dp, top = 4.dp)
+                    .fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -117,9 +164,9 @@ fun SignUpTextField(
     placeholder: String,
     helperText: String = "",
     isPassword: Boolean = false,
-    trailing: @Composable (() -> Unit)? = null
+    modifier: Modifier = Modifier
 ) {
-    Column {
+    Column(modifier = modifier) {
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
@@ -129,7 +176,6 @@ fun SignUpTextField(
                     style = MaterialTheme.typography.bodyLarge.copy(color = Color.Gray)
                 )
             },
-            trailingIcon = trailing,
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.CheckCircle,
