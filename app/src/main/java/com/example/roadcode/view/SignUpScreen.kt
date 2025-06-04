@@ -140,7 +140,7 @@ fun SignUpScreen() {
             Spacer(modifier = Modifier.height(32.dp))
 
             Button(
-                onClick = { /* 재설정 */ },
+                onClick = { /* 회원가입 하기 */ },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp),
@@ -148,7 +148,7 @@ fun SignUpScreen() {
                 shape = RoundedCornerShape(50)
             ) {
                 Text(
-                    "재설정",
+                    "회원가입 하기",
                     style = MaterialTheme.typography.labelLarge.copy(color = Color.White)
                 )
             }
