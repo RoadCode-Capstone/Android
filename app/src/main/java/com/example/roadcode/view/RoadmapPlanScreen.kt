@@ -209,7 +209,7 @@ fun RoadmapPlanLanguageScreen() {
                         fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
                     )
                 }
-                
+
                 Spacer(modifier = Modifier.width(30.dp))
             }
         }
