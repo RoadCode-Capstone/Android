@@ -37,23 +37,47 @@ fun LoginScreen(modifier: Modifier = Modifier) {
             modifier = Modifier.padding(bottom = 32.dp)
         )
 
+        // 이메일 입력창 (흰색 배경)
         OutlinedTextField(
             value = email,
             onValueChange = { email = it },
-            label = { Text("이메일을 입력하세요") },
+            label = { Text("이메일을 입력하세요", color = Color.Gray) },
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color.Transparent,
+                unfocusedBorderColor = Color.Transparent,
+                focusedLabelColor = Color.Gray,
+                unfocusedLabelColor = Color.Gray,
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black,
+                cursorColor = Color.Black,
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White
+            ),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp)
         )
 
+        // 비밀번호 입력창 (흰색 배경)
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("비밀번호를 입력하세요") },
+            label = { Text("비밀번호를 입력하세요", color = Color.Gray) },
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color.Transparent,
+                unfocusedBorderColor = Color.Transparent,
+                focusedLabelColor = Color.Gray,
+                unfocusedLabelColor = Color.Gray,
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black,
+                cursorColor = Color.Black,
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White
+            ),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp)
@@ -88,7 +112,7 @@ fun LoginScreen(modifier: Modifier = Modifier) {
                     .weight(1f)
                     .height(48.dp)
             ) {
-                Text("회원가입", color = Color.Black, fontSize = 14.sp)
+                Text("회원가입", color = Color.White, fontSize = 14.sp)
             }
 
             Spacer(modifier = Modifier.width(16.dp))
@@ -100,7 +124,7 @@ fun LoginScreen(modifier: Modifier = Modifier) {
                     .weight(1f)
                     .height(48.dp)
             ) {
-                Text("로그인", color = Color.Black, fontSize = 14.sp)
+                Text("로그인", color = Color.White, fontSize = 14.sp)
             }
         }
 
