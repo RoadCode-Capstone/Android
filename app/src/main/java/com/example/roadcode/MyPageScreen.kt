@@ -11,7 +11,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-// 색상 정의
+// 색상 정의//
 val MainYellow = Color(0xFFFEC13D)
 val PrimaryColor = Color(0xFF2B3440)
 
