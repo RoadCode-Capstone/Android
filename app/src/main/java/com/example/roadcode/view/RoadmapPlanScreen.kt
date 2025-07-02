@@ -28,6 +28,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,16 +40,21 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.roadcode.R
 import com.example.roadcode.ui.theme.BackGrayColor
 import com.example.roadcode.ui.theme.PointColor
 import com.example.roadcode.ui.theme.PrimaryColor
+import com.example.roadcode.viewmodel.RoadmapPlanViewModel
 
 /* 학습 계획 설정 화면 (언어) */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RoadmapPlanLanguageScreen(navController: NavController) {
+    val viewModel: RoadmapPlanViewModel = hiltViewModel()
+    var selectedLanguage by remember { mutableStateOf<String?>(null) }
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -88,7 +97,7 @@ fun RoadmapPlanLanguageScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(50.dp))
 
             Button( // JAVA 버튼
-                onClick = { /* JAVA 선택 */ },
+                onClick = { selectedLanguage = "JAVA" },
                 modifier = Modifier
                     .width(300.dp)
                     .height(50.dp),
@@ -121,7 +130,7 @@ fun RoadmapPlanLanguageScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(20.dp))
 
             Button( // Python 버튼
-                onClick = { /* Python 선택 */ },
+                onClick = { selectedLanguage = "python" },
                 modifier = Modifier
                     .width(300.dp)
                     .height(50.dp),
@@ -154,7 +163,7 @@ fun RoadmapPlanLanguageScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(20.dp))
 
             Button( // C 버튼
-                onClick = { /* C 선택 */ },
+                onClick = { selectedLanguage = "c" },
                 modifier = Modifier
                     .width(300.dp)
                     .height(50.dp),
@@ -193,7 +202,11 @@ fun RoadmapPlanLanguageScreen(navController: NavController) {
                 Spacer(modifier = Modifier.weight(1f))
 
                 Button( // 다음 버튼
-                    onClick = { navController.navigate("plan_type") },
+                    onClick = {
+                        viewModel.setSelectedLanguage(selectedLanguage)
+                        navController.navigate("plan_type")
+                    },
+                    enabled = selectedLanguage != null, // 언어 선택했을 때만 활성화
                     modifier = Modifier
                         .width(90.dp)
                         .height(50.dp),
@@ -210,7 +223,7 @@ fun RoadmapPlanLanguageScreen(navController: NavController) {
                         fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
                     )
                 }
-                
+
                 Spacer(modifier = Modifier.width(30.dp))
             }
         }
@@ -221,6 +234,9 @@ fun RoadmapPlanLanguageScreen(navController: NavController) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RoadmapPlanTypeScreen(navController: NavController) {
+    val viewModel: RoadmapPlanViewModel = hiltViewModel()
+    var selectedType by remember { mutableStateOf<String?>(null) }
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -263,7 +279,7 @@ fun RoadmapPlanTypeScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(50.dp))
 
             Button( // 언어 버튼
-                onClick = { /* 언어 선택 */ },
+                onClick = { selectedType = "Language" },
                 modifier = Modifier
                     .width(300.dp)
                     .height(50.dp),
@@ -289,7 +305,7 @@ fun RoadmapPlanTypeScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(20.dp))
 
             Button( // 알고리즘 버튼
-                onClick = { /* 알고리즘 선택 */ },
+                onClick = { selectedType = "Algorithm" },
                 modifier = Modifier
                     .width(300.dp)
                     .height(50.dp),
@@ -321,7 +337,12 @@ fun RoadmapPlanTypeScreen(navController: NavController) {
                 Spacer(modifier = Modifier.weight(1f))
 
                 Button( // 다음 버튼
-                    onClick = { navController.navigate("plan_algorithm") }, // 언어 선택 시 goal로 이동, 알고리즘 선택 시 algorithm으로 이동하게 변경 필요
+                    onClick = {
+                        viewModel.setSelectedType(selectedType)
+                        if (selectedType == "Language") navController.navigate("plan_goal")
+                        else navController.navigate("plan_algorithm")
+                    },
+                    enabled = selectedType != null,
                     modifier = Modifier
                         .width(90.dp)
                         .height(50.dp),
@@ -349,6 +370,9 @@ fun RoadmapPlanTypeScreen(navController: NavController) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RoadmapPlanAlgorithmScreen(navController: NavController) {
+    val viewModel: RoadmapPlanViewModel = hiltViewModel()
+    var selectedAlgorithm by remember { mutableStateOf<String?>(null) }
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -501,7 +525,11 @@ fun RoadmapPlanAlgorithmScreen(navController: NavController) {
                 Spacer(modifier = Modifier.weight(1f))
 
                 Button( // 다음 버튼
-                    onClick = { navController.navigate("plan_goal") },
+                    onClick = {
+                        viewModel.setSelectedAlgorithm(selectedAlgorithm)
+                        navController.navigate("plan_goal")
+                    },
+                    enabled = selectedAlgorithm != null,
                     modifier = Modifier
                         .width(90.dp)
                         .height(50.dp),
@@ -529,6 +557,9 @@ fun RoadmapPlanAlgorithmScreen(navController: NavController) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RoadmapPlanGoalScreen(navController: NavController) {
+    val viewModel: RoadmapPlanViewModel = hiltViewModel()
+    var selectedGoal by remember { mutableStateOf<Int?>(null) }
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -576,7 +607,7 @@ fun RoadmapPlanGoalScreen(navController: NavController) {
                 horizontalArrangement = Arrangement.Center
             ) {
                 Button( // 1 버튼
-                    onClick = { /* 1 선택 */ },
+                    onClick = { selectedGoal = 1 },
                     modifier = Modifier.size(50.dp),
                     shape = CircleShape,
                     border = BorderStroke(0.5.dp, PrimaryColor),
@@ -601,7 +632,7 @@ fun RoadmapPlanGoalScreen(navController: NavController) {
                 Spacer(modifier = Modifier.width(16.dp))
 
                 Button( // 2 버튼
-                    onClick = { /* 2 선택 */ },
+                    onClick = { selectedGoal = 2 },
                     modifier = Modifier.size(50.dp),
                     shape = CircleShape,
                     border = BorderStroke(0.5.dp, PrimaryColor),
@@ -626,7 +657,7 @@ fun RoadmapPlanGoalScreen(navController: NavController) {
                 Spacer(modifier = Modifier.width(16.dp))
 
                 Button( // 3 버튼
-                    onClick = { /* 3 선택 */ },
+                    onClick = { selectedGoal = 3 },
                     modifier = Modifier.size(50.dp),
                     shape = CircleShape,
                     border = BorderStroke(0.5.dp, PrimaryColor),
@@ -651,7 +682,7 @@ fun RoadmapPlanGoalScreen(navController: NavController) {
                 Spacer(modifier = Modifier.width(16.dp))
 
                 Button( // 4 버튼
-                    onClick = { /* 4 선택 */ },
+                    onClick = { selectedGoal = 4 },
                     modifier = Modifier.size(50.dp),
                     shape = CircleShape,
                     border = BorderStroke(0.5.dp, PrimaryColor),
@@ -676,7 +707,7 @@ fun RoadmapPlanGoalScreen(navController: NavController) {
                 Spacer(modifier = Modifier.width(16.dp))
 
                 Button( // 5 버튼
-                    onClick = { /* 5 선택 */ },
+                    onClick = { selectedGoal = 5 },
                     modifier = Modifier.size(50.dp),
                     shape = CircleShape,
                     border = BorderStroke(0.5.dp, PrimaryColor),
@@ -708,7 +739,11 @@ fun RoadmapPlanGoalScreen(navController: NavController) {
                 Spacer(modifier = Modifier.weight(1f))
 
                 Button( // 다음 버튼
-                    onClick = { /* 다음 버튼 */ },
+                    onClick = {
+                        viewModel.setSelectedGoal(selectedGoal)
+                        /* 다음 화면 이동 */
+                    },
+                    enabled = selectedGoal != null,
                     modifier = Modifier
                         .width(90.dp)
                         .height(50.dp),
