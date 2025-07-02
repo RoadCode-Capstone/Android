@@ -32,4 +32,4 @@ androidx-navigation-runtime-android = { group = "androidx.navigation", name = "n
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-
+daggerHiltAndroid = { id = "com.google.dagger.hilt.android", version = "2.48" }
