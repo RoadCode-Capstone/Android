@@ -36,6 +36,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.roadcode.R
 import com.example.roadcode.ui.theme.BackGrayColor
 import com.example.roadcode.ui.theme.PointColor
@@ -44,7 +45,7 @@ import com.example.roadcode.ui.theme.PrimaryColor
 /* 학습 계획 설정 화면 (언어) */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RoadmapPlanLanguageScreen() {
+fun RoadmapPlanLanguageScreen(navController: NavController) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -58,7 +59,7 @@ fun RoadmapPlanLanguageScreen() {
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { /* 뒤로 가기 동작 */ }
+                        onClick = { navController.popBackStack() }
                     ) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
@@ -192,7 +193,7 @@ fun RoadmapPlanLanguageScreen() {
                 Spacer(modifier = Modifier.weight(1f))
 
                 Button( // 다음 버튼
-                    onClick = { /* 다음 버튼 */ },
+                    onClick = { navController.navigate("plan_type") },
                     modifier = Modifier
                         .width(90.dp)
                         .height(50.dp),
@@ -219,7 +220,7 @@ fun RoadmapPlanLanguageScreen() {
 /* 학습 계획 설정 화면 (학습 유형) */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RoadmapPlanTypeScreen() {
+fun RoadmapPlanTypeScreen(navController: NavController) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -233,7 +234,7 @@ fun RoadmapPlanTypeScreen() {
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { /* 뒤로 가기 동작 */ }
+                        onClick = { navController.popBackStack() }
                     ) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
@@ -320,7 +321,7 @@ fun RoadmapPlanTypeScreen() {
                 Spacer(modifier = Modifier.weight(1f))
 
                 Button( // 다음 버튼
-                    onClick = { /* 다음 버튼 */ },
+                    onClick = { navController.navigate("plan_algorithm") }, // 언어 선택 시 goal로 이동, 알고리즘 선택 시 algorithm으로 이동하게 변경 필요
                     modifier = Modifier
                         .width(90.dp)
                         .height(50.dp),
@@ -347,7 +348,7 @@ fun RoadmapPlanTypeScreen() {
 /* 학습 계획 설정 화면 (알고리즘) */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RoadmapPlanAlgorithmScreen() {
+fun RoadmapPlanAlgorithmScreen(navController: NavController) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -361,7 +362,7 @@ fun RoadmapPlanAlgorithmScreen() {
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { /* 뒤로 가기 동작 */ }
+                        onClick = { navController.popBackStack() }
                     ) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
@@ -500,7 +501,7 @@ fun RoadmapPlanAlgorithmScreen() {
                 Spacer(modifier = Modifier.weight(1f))
 
                 Button( // 다음 버튼
-                    onClick = { /* 다음 버튼 */ },
+                    onClick = { navController.navigate("plan_goal") },
                     modifier = Modifier
                         .width(90.dp)
                         .height(50.dp),
@@ -527,7 +528,7 @@ fun RoadmapPlanAlgorithmScreen() {
 /* 학습 계획 설정 화면 (일일 학습 목표) */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RoadmapPlanGoalScreen() {
+fun RoadmapPlanGoalScreen(navController: NavController) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -541,7 +542,7 @@ fun RoadmapPlanGoalScreen() {
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { /* 뒤로 가기 동작 */ }
+                        onClick = { navController.popBackStack() }
                     ) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
