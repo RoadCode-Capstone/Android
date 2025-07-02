@@ -66,8 +66,16 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling:1.5.4")
     debugImplementation("androidx.compose.ui:ui-test-manifest:1.5.4")
 
-    implementation("androidx.navigation:navigation-compose:2.7.1")  // navigation 사용
-    implementation("com.google.dagger:hilt-android:2.48")   // hilt 사용
+    // navigation 사용
+    implementation("androidx.navigation:navigation-compose:2.7.1")
+
+    // hilt 사용
+    implementation("com.google.dagger:hilt-android:2.48")
     kapt("com.google.dagger:hilt-compiler:2.48")
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
+
+    // 통신 사용
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")             // http
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")       // Json 데이터를 Gson으로 변환
+    implementation("com.squareup.retrofit2:converter-scalars:2.9.0")    // 텍스트 데이터를 처리
 }
