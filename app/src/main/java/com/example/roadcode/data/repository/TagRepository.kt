@@ -18,7 +18,7 @@ class TagRepository @Inject constructor() {
         try {
             val response = jsonService.getTags("Bearer fixed-test-token")
             if (response.isSuccessful) {
-                val tags = response.body()?.data?.get("names") as? List<String>
+                val tags = response.body()?.data?.get("tagNames") as? List<String>
 
                 if (tags != null) {
                     emit(Result.success(tags))
