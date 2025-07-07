@@ -56,8 +56,7 @@ import com.example.roadcode.viewmodel.TagViewModel
 /* 학습 계획 설정 화면 (언어) */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RoadmapPlanLanguageScreen(navController: NavController) {
-    val roadmapViewModel: RoadmapPlanViewModel = hiltViewModel()
+fun RoadmapPlanLanguageScreen(navController: NavController, roadmapViewModel: RoadmapPlanViewModel) {
     var selectedLanguage by remember { mutableStateOf<String?>(null) }
 
     Scaffold(
@@ -235,8 +234,7 @@ fun RoadmapPlanLanguageScreen(navController: NavController) {
 /* 학습 계획 설정 화면 (학습 유형) */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RoadmapPlanTypeScreen(navController: NavController) {
-    val roadmapViewModel: RoadmapPlanViewModel = hiltViewModel()
+fun RoadmapPlanTypeScreen(navController: NavController, roadmapViewModel: RoadmapPlanViewModel) {
     var selectedType by remember { mutableStateOf<String?>(null) }
 
     Scaffold(
@@ -368,8 +366,7 @@ fun RoadmapPlanTypeScreen(navController: NavController) {
 /* 학습 계획 설정 화면 (알고리즘) */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RoadmapPlanAlgorithmScreen(navController: NavController) {
-    val roadmapViewModel: RoadmapPlanViewModel = hiltViewModel()
+fun RoadmapPlanAlgorithmScreen(navController: NavController, roadmapViewModel: RoadmapPlanViewModel) {
     val tagViewModel: TagViewModel = hiltViewModel()
     val tags by tagViewModel.tags.collectAsState()
 
@@ -469,8 +466,7 @@ fun RoadmapPlanAlgorithmScreen(navController: NavController) {
 /* 학습 계획 설정 화면 (일일 학습 목표) */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RoadmapPlanGoalScreen(navController: NavController) {
-    val roadmapViewModel: RoadmapPlanViewModel = hiltViewModel()
+fun RoadmapPlanGoalScreen(navController: NavController, roadmapViewModel: RoadmapPlanViewModel) {
     var selectedGoal by remember { mutableStateOf<Int?>(null) }
 
     Scaffold(
@@ -653,7 +649,7 @@ fun RoadmapPlanGoalScreen(navController: NavController) {
                 Button( // 다음 버튼
                     onClick = {
                         roadmapViewModel.setSelectedGoal(selectedGoal)
-                        /* 다음 화면 이동 */
+                        navController.navigate("level_ready")
                     },
                     enabled = selectedGoal != null,
                     modifier = Modifier
