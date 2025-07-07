@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -28,6 +30,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,13 +49,15 @@ import com.example.roadcode.R
 import com.example.roadcode.ui.theme.BackGrayColor
 import com.example.roadcode.ui.theme.PointColor
 import com.example.roadcode.ui.theme.PrimaryColor
+import com.example.roadcode.view.component.algorithmItem
 import com.example.roadcode.viewmodel.RoadmapPlanViewModel
+import com.example.roadcode.viewmodel.TagViewModel
 
 /* 학습 계획 설정 화면 (언어) */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RoadmapPlanLanguageScreen(navController: NavController) {
-    val viewModel: RoadmapPlanViewModel = hiltViewModel()
+    val roadmapViewModel: RoadmapPlanViewModel = hiltViewModel()
     var selectedLanguage by remember { mutableStateOf<String?>(null) }
 
     Scaffold(
@@ -80,130 +85,129 @@ fun RoadmapPlanLanguageScreen(navController: NavController) {
             )
         }
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(paddingValues)
         ) {
-            Spacer(modifier = Modifier.height(36.dp))
-
-            Text(
-                text = "학습할 언어를 선택하세요",
-                fontSize = 16.sp,
-                fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
-            )
-
-            Spacer(modifier = Modifier.height(50.dp))
-
-            Button( // JAVA 버튼
-                onClick = { selectedLanguage = "JAVA" },
-                modifier = Modifier
-                    .width(300.dp)
-                    .height(50.dp),
-                shape = RoundedCornerShape(5.dp),
-                border = BorderStroke(0.5.dp, PrimaryColor),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = BackGrayColor
-                )
+            Column(
+                modifier = Modifier.fillMaxSize().padding(bottom = 160.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Row(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalAlignment = Alignment.CenterVertically
+                Spacer(modifier = Modifier.height(36.dp))
+
+                Text(
+                    text = "학습할 언어를 선택하세요",
+                    fontSize = 16.sp,
+                    fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
+                )
+
+                Spacer(modifier = Modifier.height(50.dp))
+
+                Button( // JAVA 버튼
+                    onClick = { selectedLanguage = "JAVA" },
+                    modifier = Modifier
+                        .width(300.dp)
+                        .height(50.dp),
+                    shape = RoundedCornerShape(5.dp),
+                    border = BorderStroke(0.5.dp, PrimaryColor),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = BackGrayColor
+                    )
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.logos_java),
-                        contentDescription = "Java 로고"
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.logos_java),
+                            contentDescription = "Java 로고"
+                        )
 
-                    Spacer(modifier = Modifier.width(20.dp))
+                        Spacer(modifier = Modifier.width(20.dp))
 
-                    Text(
-                        text = "JAVA",
-                        fontSize = 16.sp,
-                        color = Color.Black,
-                        fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
+                        Text(
+                            text = "JAVA",
+                            fontSize = 16.sp,
+                            color = Color.Black,
+                            fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Button( // Python 버튼
+                    onClick = { selectedLanguage = "python" },
+                    modifier = Modifier
+                        .width(300.dp)
+                        .height(50.dp),
+                    shape = RoundedCornerShape(5.dp),
+                    border = BorderStroke(0.5.dp, PrimaryColor),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = BackGrayColor
                     )
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.logos_python),
+                            contentDescription = "Python 로고"
+                        )
+
+                        Spacer(modifier = Modifier.width(20.dp))
+
+                        Text(
+                            text = "Python",
+                            fontSize = 16.sp,
+                            color = Color.Black,
+                            fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Button( // C 버튼
+                    onClick = { selectedLanguage = "c" },
+                    modifier = Modifier
+                        .width(300.dp)
+                        .height(50.dp),
+                    shape = RoundedCornerShape(5.dp),
+                    border = BorderStroke(0.5.dp, PrimaryColor),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = BackGrayColor
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.logos_c),
+                            contentDescription = "C 로고"
+                        )
+
+                        Spacer(modifier = Modifier.width(20.dp))
+
+                        Text(
+                            text = "C",
+                            fontSize = 16.sp,
+                            color = Color.Black,
+                            fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
+                        )
+                    }
                 }
             }
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            Button( // Python 버튼
-                onClick = { selectedLanguage = "python" },
-                modifier = Modifier
-                    .width(300.dp)
-                    .height(50.dp),
-                shape = RoundedCornerShape(5.dp),
-                border = BorderStroke(0.5.dp, PrimaryColor),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = BackGrayColor
-                )
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.logos_python),
-                        contentDescription = "Python 로고"
-                    )
-
-                    Spacer(modifier = Modifier.width(20.dp))
-
-                    Text(
-                        text = "Python",
-                        fontSize = 16.sp,
-                        color = Color.Black,
-                        fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            Button( // C 버튼
-                onClick = { selectedLanguage = "c" },
-                modifier = Modifier
-                    .width(300.dp)
-                    .height(50.dp),
-                shape = RoundedCornerShape(5.dp),
-                border = BorderStroke(0.5.dp, PrimaryColor),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = BackGrayColor
-                )
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.logos_c),
-                        contentDescription = "C 로고"
-                    )
-
-                    Spacer(modifier = Modifier.width(20.dp))
-
-                    Text(
-                        text = "C",
-                        fontSize = 16.sp,
-                        color = Color.Black,
-                        fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(360.dp))
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.align(Alignment.BottomEnd).padding(end = 30.dp, bottom = 40.dp)
             ) {
-                Spacer(modifier = Modifier.weight(1f))
-
                 Button( // 다음 버튼
                     onClick = {
-                        viewModel.setSelectedLanguage(selectedLanguage)
+                        roadmapViewModel.setSelectedLanguage(selectedLanguage)
                         navController.navigate("plan_type")
                     },
                     enabled = selectedLanguage != null, // 언어 선택했을 때만 활성화
@@ -223,8 +227,6 @@ fun RoadmapPlanLanguageScreen(navController: NavController) {
                         fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
                     )
                 }
-
-                Spacer(modifier = Modifier.width(30.dp))
             }
         }
     }
@@ -234,7 +236,7 @@ fun RoadmapPlanLanguageScreen(navController: NavController) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RoadmapPlanTypeScreen(navController: NavController) {
-    val viewModel: RoadmapPlanViewModel = hiltViewModel()
+    val roadmapViewModel: RoadmapPlanViewModel = hiltViewModel()
     var selectedType by remember { mutableStateOf<String?>(null) }
 
     Scaffold(
@@ -262,83 +264,82 @@ fun RoadmapPlanTypeScreen(navController: NavController) {
             )
         }
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(paddingValues)
         ) {
-            Spacer(modifier = Modifier.height(36.dp))
-
-            Text(
-                text = "학습 유형을 선택하세요",
-                fontSize = 16.sp,
-                fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
-            )
-
-            Spacer(modifier = Modifier.height(50.dp))
-
-            Button( // 언어 버튼
-                onClick = { selectedType = "Language" },
-                modifier = Modifier
-                    .width(300.dp)
-                    .height(50.dp),
-                shape = RoundedCornerShape(5.dp),
-                border = BorderStroke(0.5.dp, PrimaryColor),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = BackGrayColor
-                )
+            Column(
+                modifier = Modifier.fillMaxSize().padding(bottom = 160.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Row(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "언어",
-                        fontSize = 16.sp,
-                        color = Color.Black,
-                        fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
+                Spacer(modifier = Modifier.height(36.dp))
+
+                Text(
+                    text = "학습 유형을 선택하세요",
+                    fontSize = 16.sp,
+                    fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
+                )
+
+                Spacer(modifier = Modifier.height(50.dp))
+
+                Button( // 언어 버튼
+                    onClick = { selectedType = "Language" },
+                    modifier = Modifier
+                        .width(300.dp)
+                        .height(50.dp),
+                    shape = RoundedCornerShape(5.dp),
+                    border = BorderStroke(0.5.dp, PrimaryColor),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = BackGrayColor
                     )
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "언어",
+                            fontSize = 16.sp,
+                            color = Color.Black,
+                            fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Button( // 알고리즘 버튼
+                    onClick = { selectedType = "Algorithm" },
+                    modifier = Modifier
+                        .width(300.dp)
+                        .height(50.dp),
+                    shape = RoundedCornerShape(5.dp),
+                    border = BorderStroke(0.5.dp, PrimaryColor),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = BackGrayColor
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "알고리즘",
+                            fontSize = 16.sp,
+                            color = Color.Black,
+                            fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
+                        )
+                    }
                 }
             }
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            Button( // 알고리즘 버튼
-                onClick = { selectedType = "Algorithm" },
-                modifier = Modifier
-                    .width(300.dp)
-                    .height(50.dp),
-                shape = RoundedCornerShape(5.dp),
-                border = BorderStroke(0.5.dp, PrimaryColor),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = BackGrayColor
-                )
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "알고리즘",
-                        fontSize = 16.sp,
-                        color = Color.Black,
-                        fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(430.dp))
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.align(Alignment.BottomEnd).padding(end = 30.dp, bottom = 40.dp)
             ) {
-                Spacer(modifier = Modifier.weight(1f))
-
                 Button( // 다음 버튼
                     onClick = {
-                        viewModel.setSelectedType(selectedType)
+                        roadmapViewModel.setSelectedType(selectedType)
                         if (selectedType == "Language") navController.navigate("plan_goal")
                         else navController.navigate("plan_algorithm")
                     },
@@ -359,8 +360,6 @@ fun RoadmapPlanTypeScreen(navController: NavController) {
                         fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
                     )
                 }
-
-                Spacer(modifier = Modifier.width(30.dp))
             }
         }
     }
@@ -370,7 +369,10 @@ fun RoadmapPlanTypeScreen(navController: NavController) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RoadmapPlanAlgorithmScreen(navController: NavController) {
-    val viewModel: RoadmapPlanViewModel = hiltViewModel()
+    val roadmapViewModel: RoadmapPlanViewModel = hiltViewModel()
+    val tagViewModel: TagViewModel = hiltViewModel()
+    val tags by tagViewModel.tags.collectAsState()
+
     var selectedAlgorithm by remember { mutableStateOf<String?>(null) }
 
     Scaffold(
@@ -398,135 +400,48 @@ fun RoadmapPlanAlgorithmScreen(navController: NavController) {
             )
         }
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(paddingValues)
         ) {
-            Spacer(modifier = Modifier.height(36.dp))
-
-            Text(
-                text = "학습할 알고리즘을 선택하세요",
-                fontSize = 16.sp,
-                fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
-            )
-
-            Spacer(modifier = Modifier.height(50.dp))
-
-            Button( // 스택/큐 버튼
-                onClick = { /* 스택/큐 선택 */ },
-                modifier = Modifier
-                    .width(300.dp)
-                    .height(50.dp),
-                shape = RoundedCornerShape(5.dp),
-                border = BorderStroke(0.5.dp, PrimaryColor),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = BackGrayColor
-                )
+            Column(
+                modifier = Modifier.fillMaxSize().padding(bottom = 160.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Row(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalAlignment = Alignment.CenterVertically
+                Spacer(modifier = Modifier.height(36.dp))
+
+                Text(
+                    text = "학습할 알고리즘을 선택하세요",
+                    fontSize = 16.sp,
+                    fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
+                )
+
+                Spacer(modifier = Modifier.height(50.dp))
+
+                // 알고리즘 버튼 출력
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(
-                        text = "스택/큐",
-                        fontSize = 16.sp,
-                        color = Color.Black,
-                        fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
-                    )
+                    items(tags) { tag ->
+                        algorithmItem(name = tag) {
+                            selectedAlgorithm = tag
+                        }
+
+                        Spacer(modifier = Modifier.height(20.dp))
+                    }
                 }
             }
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            Button( // DFS/BFS 버튼
-                onClick = { /* DFS/BFS 선택 */ },
-                modifier = Modifier
-                    .width(300.dp)
-                    .height(50.dp),
-                shape = RoundedCornerShape(5.dp),
-                border = BorderStroke(0.5.dp, PrimaryColor),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = BackGrayColor
-                )
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "DFS/BFS",
-                        fontSize = 16.sp,
-                        color = Color.Black,
-                        fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            Button( // 탐욕법 버튼
-                onClick = { /* 탐욕법 선택 */ },
-                modifier = Modifier
-                    .width(300.dp)
-                    .height(50.dp),
-                shape = RoundedCornerShape(5.dp),
-                border = BorderStroke(0.5.dp, PrimaryColor),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = BackGrayColor
-                )
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "탐욕법",
-                        fontSize = 16.sp,
-                        color = Color.Black,
-                        fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            Button( // 트리 버튼
-                onClick = { /* 트리 선택 */ },
-                modifier = Modifier
-                    .width(300.dp)
-                    .height(50.dp),
-                shape = RoundedCornerShape(5.dp),
-                border = BorderStroke(0.5.dp, PrimaryColor),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = BackGrayColor
-                )
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "트리",
-                        fontSize = 16.sp,
-                        color = Color.Black,
-                        fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(290.dp))
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.align(Alignment.BottomEnd).padding(end = 30.dp, bottom = 40.dp)
             ) {
-                Spacer(modifier = Modifier.weight(1f))
-
                 Button( // 다음 버튼
                     onClick = {
-                        viewModel.setSelectedAlgorithm(selectedAlgorithm)
+                        roadmapViewModel.setSelectedAlgorithm(selectedAlgorithm)
                         navController.navigate("plan_goal")
                     },
                     enabled = selectedAlgorithm != null,
@@ -546,8 +461,6 @@ fun RoadmapPlanAlgorithmScreen(navController: NavController) {
                         fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
                     )
                 }
-
-                Spacer(modifier = Modifier.width(30.dp))
             }
         }
     }
@@ -557,7 +470,7 @@ fun RoadmapPlanAlgorithmScreen(navController: NavController) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RoadmapPlanGoalScreen(navController: NavController) {
-    val viewModel: RoadmapPlanViewModel = hiltViewModel()
+    val roadmapViewModel: RoadmapPlanViewModel = hiltViewModel()
     var selectedGoal by remember { mutableStateOf<Int?>(null) }
 
     Scaffold(
@@ -585,162 +498,161 @@ fun RoadmapPlanGoalScreen(navController: NavController) {
             )
         }
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(paddingValues)
         ) {
-            Spacer(modifier = Modifier.height(36.dp))
-
-            Text(
-                text = "일일 학습 목표를 선택하세요",
-                fontSize = 16.sp,
-                fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
-            )
-
-            Spacer(modifier = Modifier.height(50.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
+            Column(
+                modifier = Modifier.fillMaxSize().padding(bottom = 160.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Button( // 1 버튼
-                    onClick = { selectedGoal = 1 },
-                    modifier = Modifier.size(50.dp),
-                    shape = CircleShape,
-                    border = BorderStroke(0.5.dp, PrimaryColor),
-                    contentPadding = PaddingValues(0.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = BackGrayColor
-                    )
+                Spacer(modifier = Modifier.height(36.dp))
+
+                Text(
+                    text = "일일 학습 목표를 선택하세요",
+                    fontSize = 16.sp,
+                    fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
+                )
+
+                Spacer(modifier = Modifier.height(50.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
                 ) {
-                    Box(
+                    Button( // 1 버튼
+                        onClick = { selectedGoal = 1 },
                         modifier = Modifier.size(50.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "1",
-                            fontSize = 20.sp,
-                            color = Color.Black,
-                            fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
+                        shape = CircleShape,
+                        border = BorderStroke(0.5.dp, PrimaryColor),
+                        contentPadding = PaddingValues(0.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = BackGrayColor
                         )
+                    ) {
+                        Box(
+                            modifier = Modifier.size(50.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "1",
+                                fontSize = 20.sp,
+                                color = Color.Black,
+                                fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
+                            )
+                        }
                     }
-                }
 
-                Spacer(modifier = Modifier.width(16.dp))
+                    Spacer(modifier = Modifier.width(16.dp))
 
-                Button( // 2 버튼
-                    onClick = { selectedGoal = 2 },
-                    modifier = Modifier.size(50.dp),
-                    shape = CircleShape,
-                    border = BorderStroke(0.5.dp, PrimaryColor),
-                    contentPadding = PaddingValues(0.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = BackGrayColor
-                    )
-                ) {
-                    Box(
+                    Button( // 2 버튼
+                        onClick = { selectedGoal = 2 },
                         modifier = Modifier.size(50.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "2",
-                            fontSize = 20.sp,
-                            color = Color.Black,
-                            fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
+                        shape = CircleShape,
+                        border = BorderStroke(0.5.dp, PrimaryColor),
+                        contentPadding = PaddingValues(0.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = BackGrayColor
                         )
+                    ) {
+                        Box(
+                            modifier = Modifier.size(50.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "2",
+                                fontSize = 20.sp,
+                                color = Color.Black,
+                                fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
+                            )
+                        }
                     }
-                }
 
-                Spacer(modifier = Modifier.width(16.dp))
+                    Spacer(modifier = Modifier.width(16.dp))
 
-                Button( // 3 버튼
-                    onClick = { selectedGoal = 3 },
-                    modifier = Modifier.size(50.dp),
-                    shape = CircleShape,
-                    border = BorderStroke(0.5.dp, PrimaryColor),
-                    contentPadding = PaddingValues(0.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = BackGrayColor
-                    )
-                ) {
-                    Box(
+                    Button( // 3 버튼
+                        onClick = { selectedGoal = 3 },
                         modifier = Modifier.size(50.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "3",
-                            fontSize = 20.sp,
-                            color = Color.Black,
-                            fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
+                        shape = CircleShape,
+                        border = BorderStroke(0.5.dp, PrimaryColor),
+                        contentPadding = PaddingValues(0.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = BackGrayColor
                         )
+                    ) {
+                        Box(
+                            modifier = Modifier.size(50.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "3",
+                                fontSize = 20.sp,
+                                color = Color.Black,
+                                fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
+                            )
+                        }
                     }
-                }
 
-                Spacer(modifier = Modifier.width(16.dp))
+                    Spacer(modifier = Modifier.width(16.dp))
 
-                Button( // 4 버튼
-                    onClick = { selectedGoal = 4 },
-                    modifier = Modifier.size(50.dp),
-                    shape = CircleShape,
-                    border = BorderStroke(0.5.dp, PrimaryColor),
-                    contentPadding = PaddingValues(0.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = BackGrayColor
-                    )
-                ) {
-                    Box(
+                    Button( // 4 버튼
+                        onClick = { selectedGoal = 4 },
                         modifier = Modifier.size(50.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "4",
-                            fontSize = 20.sp,
-                            color = Color.Black,
-                            fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
+                        shape = CircleShape,
+                        border = BorderStroke(0.5.dp, PrimaryColor),
+                        contentPadding = PaddingValues(0.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = BackGrayColor
                         )
+                    ) {
+                        Box(
+                            modifier = Modifier.size(50.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "4",
+                                fontSize = 20.sp,
+                                color = Color.Black,
+                                fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
+                            )
+                        }
                     }
-                }
 
-                Spacer(modifier = Modifier.width(16.dp))
+                    Spacer(modifier = Modifier.width(16.dp))
 
-                Button( // 5 버튼
-                    onClick = { selectedGoal = 5 },
-                    modifier = Modifier.size(50.dp),
-                    shape = CircleShape,
-                    border = BorderStroke(0.5.dp, PrimaryColor),
-                    contentPadding = PaddingValues(0.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = BackGrayColor
-                    )
-                ) {
-                    Box(
+                    Button( // 5 버튼
+                        onClick = { selectedGoal = 5 },
                         modifier = Modifier.size(50.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "5",
-                            fontSize = 20.sp,
-                            color = Color.Black,
-                            fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
+                        shape = CircleShape,
+                        border = BorderStroke(0.5.dp, PrimaryColor),
+                        contentPadding = PaddingValues(0.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = BackGrayColor
                         )
+                    ) {
+                        Box(
+                            modifier = Modifier.size(50.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "5",
+                                fontSize = 20.sp,
+                                color = Color.Black,
+                                fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
+                            )
+                        }
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(500.dp))
-
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.align(Alignment.BottomEnd).padding(end = 30.dp, bottom = 40.dp)
             ) {
-                Spacer(modifier = Modifier.weight(1f))
-
                 Button( // 다음 버튼
                     onClick = {
-                        viewModel.setSelectedGoal(selectedGoal)
+                        roadmapViewModel.setSelectedGoal(selectedGoal)
                         /* 다음 화면 이동 */
                     },
                     enabled = selectedGoal != null,
@@ -760,8 +672,6 @@ fun RoadmapPlanGoalScreen(navController: NavController) {
                         fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
                     )
                 }
-
-                Spacer(modifier = Modifier.width(30.dp))
             }
         }
     }
