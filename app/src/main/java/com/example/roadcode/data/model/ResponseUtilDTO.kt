@@ -5,6 +5,6 @@ object ResponseUtilDTO {
     data class Response(
         val code: String,
         val message: String? = null,
-        val data: List<String>? = null
+        val data: Map<String, Any>? = null
     )
 }
