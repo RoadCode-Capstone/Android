@@ -18,10 +18,15 @@ class TagRepository @Inject constructor() {
         try {
             val response = jsonService.getTags("Bearer fixed-test-token")
             if (response.isSuccessful) {
-                val tags = response.body()?.data?.get("tagNames") as List<String>
+                val body = response.body()
+                if (body?.code != "SUCCESS") {
+                    emit(Result.failure(Exception("${body?.code.toString()}: ${body?.message.toString()}")))
+                }
+
+                val tags = body!!.data!!.tags
                 emit(Result.success(tags))
             } else {
-                throw HttpException(response)
+                emit(Result.failure(HttpException(response)))
             }
         } catch (e: Exception) {
             emit(Result.failure(e))
