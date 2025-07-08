@@ -12,6 +12,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TagViewModel @Inject constructor(private val repository: TagRepository) : ViewModel() {
+    companion object {
+        private const val TAG = "TagViewModel"
+    }
+
     private val _tags = MutableStateFlow<List<String>>(emptyList())
     val tags = _tags.asStateFlow()
 
@@ -26,7 +30,7 @@ class TagViewModel @Inject constructor(private val repository: TagRepository) : 
                 result
                     .onSuccess { tagsMap ->
                         _tags.value = tagsMap
-                        Log.d("태그 목록", "태그 목록: ${_tags.value.toString()}")
+                        Log.d(TAG, "태그 목록: ${_tags.value}")
                     }.onFailure { e ->
                         e.printStackTrace()
                     }
