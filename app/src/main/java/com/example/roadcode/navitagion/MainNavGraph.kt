@@ -13,19 +13,21 @@ import com.example.roadcode.view.RoadmapPlanAlgorithmScreen
 import com.example.roadcode.view.RoadmapPlanGoalScreen
 import com.example.roadcode.view.RoadmapPlanLanguageScreen
 import com.example.roadcode.view.RoadmapPlanTypeScreen
+import com.example.roadcode.viewmodel.LevelTestViewModel
 import com.example.roadcode.viewmodel.RoadmapPlanViewModel
 
 @Composable
 fun MainNavGraph(navController: NavHostController = rememberNavController()) {
     val roadmapPlanViewModel: RoadmapPlanViewModel = hiltViewModel()
+    val levelTestViewModel: LevelTestViewModel = hiltViewModel()
 
     NavHost(navController = navController, startDestination = "plan_language") {
         composable("plan_language") { RoadmapPlanLanguageScreen(navController, roadmapPlanViewModel) }
         composable("plan_type") { RoadmapPlanTypeScreen(navController, roadmapPlanViewModel) }
         composable("plan_algorithm") { RoadmapPlanAlgorithmScreen(navController, roadmapPlanViewModel) }
         composable("plan_goal") { RoadmapPlanGoalScreen(navController, roadmapPlanViewModel) }
-        composable("level_ready") { LevelTestReadyScreen(navController, roadmapPlanViewModel) }
-        composable("level_test") { LevelTestScreen(navController) }
+        composable("level_ready") { LevelTestReadyScreen(navController, roadmapPlanViewModel, levelTestViewModel) }
+        composable("level_test") { LevelTestScreen(navController, levelTestViewModel) }
         composable("level_result") { LevelTestResultScreen(navController) }
     }
 }
