@@ -137,7 +137,7 @@ fun RoadmapPlanLanguageScreen(navController: NavController, roadmapViewModel: Ro
                 Spacer(modifier = Modifier.height(20.dp))
 
                 Button( // Python 버튼
-                    onClick = { selectedLanguage = "python" },
+                    onClick = { selectedLanguage = "Python" },
                     modifier = Modifier
                         .width(300.dp)
                         .height(50.dp),
@@ -170,7 +170,7 @@ fun RoadmapPlanLanguageScreen(navController: NavController, roadmapViewModel: Ro
                 Spacer(modifier = Modifier.height(20.dp))
 
                 Button( // C 버튼
-                    onClick = { selectedLanguage = "c" },
+                    onClick = { selectedLanguage = "C" },
                     modifier = Modifier
                         .width(300.dp)
                         .height(50.dp),
