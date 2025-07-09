@@ -78,4 +78,8 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")             // http
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")       // Json 데이터를 Gson으로 변환
     implementation("com.squareup.retrofit2:converter-scalars:2.9.0")    // 텍스트 데이터를 처리
+
+    // horizontalPager 사용
+    implementation("androidx.compose.foundation:foundation:1.4.3")
+
 }
