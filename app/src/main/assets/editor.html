@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+    <style>
+        html, body {
+            height: 100vh;
+            margin: 0;
+        }
+        .CodeMirror {
+            height: 100%;
+            min-height: 1000px;
+        }
+    </style>
+</head>
+<body>
+<textarea id="code"></textarea>
+<script>
+    var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+      lineNumbers: true,
+      mode: "text/x-java",
+      theme: "default",
+      viewportMargin: Infinity
+    });
+
+    function setMode(lang) {
+      if (lang === "JAVA") {
+        editor.setOption("mode", "text/x-java");
+      } else if (lang === "C") {
+        editor.setOption("mode", "text/x-csrc");
+      } else if (lang === "Python") {
+        editor.setOption("mode", "python");
+      }
+      console.log("Language mode set to:", lang);
+    }
+
+</script>
+</body>
+</html>
