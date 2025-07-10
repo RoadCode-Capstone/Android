@@ -38,6 +38,11 @@
       }
     }
 
+    /* 작성한 코드 출력 */
+    function setCode(value) {
+      editor.setValue(value);
+    }
+
     /* 작성한 코드 앱으로 1초마다 전송 함수 */
     function startAutoUpdate() {
       var lastCode = "";

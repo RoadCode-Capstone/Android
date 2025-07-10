@@ -80,6 +80,7 @@ import com.example.roadcode.ui.theme.PrimaryColor
 import com.example.roadcode.viewmodel.LevelTestViewModel
 import com.example.roadcode.viewmodel.RoadmapPlanViewModel
 import kotlinx.coroutines.delay
+import org.json.JSONObject
 
 /* 레벨 테스트 준비 화면 */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -233,6 +234,7 @@ fun LevelTestScreen(navController: NavController, roadmapViewModel: RoadmapPlanV
     val plan by roadmapViewModel.plan.collectAsState()
     val levelTestIds by levelTestViewModel.levelTestIds.collectAsState()
     val levelTestProblems by levelTestViewModel.levelTestProblems.collectAsState()
+    val codes by levelTestViewModel.codes.collectAsState()
     val formattedTime = String.format("%d:%02d", remainingSeconds / 60, remainingSeconds % 60)
     var problemIdx = 0;
 
@@ -313,9 +315,11 @@ fun LevelTestScreen(navController: NavController, roadmapViewModel: RoadmapPlanV
                     "각 테스트 케이스에 대해, 최종 배열의 최대 <b>MEX</b>를 나타내는 단일 정수를 출력하라.",
                     "1s", "256MB", "", listOf(""))
                 val problemInfoList = listOf(problemInfos.name, problemInfos.description, problemInfos.inputDescription, problemInfos.outputDescription, problemInfos.timeLimit, problemInfos.memoryLimit)
-                ProblemPager(problemInfoList, plan.selectedLanguage!!, onCodeChanged = { code ->
-                    levelTestViewModel.updateCode(problemIdx, code)
-                })
+                ProblemPager(problemInfoList, plan.selectedLanguage!!, codes[problemIdx]!!,
+                    onCodeChanged = { code ->
+                        levelTestViewModel.updateCode(problemIdx, code)
+                    }
+                )
             }
 
             Row(
@@ -357,9 +361,10 @@ fun LevelTestScreen(navController: NavController, roadmapViewModel: RoadmapPlanV
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ProblemPager(problemInfos: List<String>, language: String, onCodeChanged: (String) -> Unit) { // 제목, 설명, 입력 설명, 출력 설명, 시간제한, 메모리제한
+fun ProblemPager(problemInfos: List<String>, language: String, initCode: String, onCodeChanged: (String) -> Unit) { // 제목, 설명, 입력 설명, 출력 설명, 시간제한, 메모리제한
     val pagerState = rememberPagerState(pageCount = { 2 })
     val keys = listOf("제목", "문제 설명", "입력 설명", "출력 설명", "시간 제한", "메모리 제한")
+    var currentCode by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -456,11 +461,16 @@ fun ProblemPager(problemInfos: List<String>, language: String, onCodeChanged: (S
                                     isFocusableInTouchMode = true
                                     requestFocus()
 
-                                    // 페이지 로드 완료 후 언어 모드 설정
                                     webViewClient = object : WebViewClient() {
                                         override fun onPageFinished(view: WebView?, url: String?) {
                                             super.onPageFinished(view, url)
+
+                                            // 페이지 로드 완료 후 언어 모드 설정
                                             evaluateJavascript("setMode('$language');", null)
+
+                                            // 저장된 코드 초기값 넣기
+                                            val safeCode = JSONObject.quote(currentCode)
+                                            evaluateJavascript("setCode($safeCode);", null)
                                         }
                                     }
 
@@ -469,6 +479,7 @@ fun ProblemPager(problemInfos: List<String>, language: String, onCodeChanged: (S
                                         @JavascriptInterface
                                         fun onCodeSubmit(code: String) {
                                             Log.d("CODE_SUBMIT", "받은 코드: $code")
+                                            currentCode = code
                                             onCodeChanged(code)
                                         }
                                     }, "Android")

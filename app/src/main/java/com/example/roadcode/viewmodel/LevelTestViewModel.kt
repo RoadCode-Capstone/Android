@@ -21,7 +21,7 @@ class LevelTestViewModel @Inject constructor(private val repository: LevelTestRe
     val levelTestIds = _levelTestIds.asStateFlow()
     private val _levelTestProblems = MutableStateFlow<List<LevelTestDTO.getResponse>>(emptyList())  // 레벨 테스트 문제 정보 리스트
     val levelTestProblems = _levelTestProblems.asStateFlow()
-    private val _codes = MutableStateFlow<Map<Int, String>>(emptyMap())    // 작성한 코드 맵
+    private val _codes = MutableStateFlow<Map<Int, String>>((0..4).associateWith { "" })    // 작성한 코드 맵
     val codes = _codes.asStateFlow()
     private val _levelTestResults = MutableStateFlow<LevelTestDTO.submitResponse?>(null)    // 레벨 테스트 결과
     val levelTestResults = _levelTestResults.asStateFlow()
