@@ -27,6 +27,7 @@
       viewportMargin: Infinity
     });
 
+    /* 코드 에디터 언어 설정 함수 */
     function setMode(lang) {
       if (lang === "JAVA") {
         editor.setOption("mode", "text/x-java");
@@ -35,9 +36,23 @@
       } else if (lang === "Python") {
         editor.setOption("mode", "python");
       }
-      console.log("Language mode set to:", lang);
     }
 
+    /* 작성한 코드 앱으로 1초마다 전송 함수 */
+    function startAutoUpdate() {
+      var lastCode = "";
+      setInterval(function() {
+        var currentCode = editor.getValue();
+        if (currentCode !== lastCode) {
+          lastCode = currentCode;
+          if (window.Android && Android.onCodeSubmit) {
+            Android.onCodeSubmit(currentCode);
+          }
+        }
+      }, 1000);
+    }
+
+    startAutoUpdate();
 </script>
 </body>
 </html>

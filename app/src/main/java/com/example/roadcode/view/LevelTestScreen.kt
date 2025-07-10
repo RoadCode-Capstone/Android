@@ -313,7 +313,9 @@ fun LevelTestScreen(navController: NavController, roadmapViewModel: RoadmapPlanV
                     "각 테스트 케이스에 대해, 최종 배열의 최대 <b>MEX</b>를 나타내는 단일 정수를 출력하라.",
                     "1s", "256MB", "", listOf(""))
                 val problemInfoList = listOf(problemInfos.name, problemInfos.description, problemInfos.inputDescription, problemInfos.outputDescription, problemInfos.timeLimit, problemInfos.memoryLimit)
-                ProblemPager(problemInfoList, plan.selectedLanguage!!)
+                ProblemPager(problemInfoList, plan.selectedLanguage!!, onCodeChanged = { code ->
+                    levelTestViewModel.updateCode(problemIdx, code)
+                })
             }
 
             Row(
@@ -355,7 +357,7 @@ fun LevelTestScreen(navController: NavController, roadmapViewModel: RoadmapPlanV
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ProblemPager(problemInfos: List<String>, language: String) { // 제목, 설명, 입력 설명, 출력 설명, 시간제한, 메모리제한
+fun ProblemPager(problemInfos: List<String>, language: String, onCodeChanged: (String) -> Unit) { // 제목, 설명, 입력 설명, 출력 설명, 시간제한, 메모리제한
     val pagerState = rememberPagerState(pageCount = { 2 })
     val keys = listOf("제목", "문제 설명", "입력 설명", "출력 설명", "시간 제한", "메모리 제한")
 
@@ -441,34 +443,41 @@ fun ProblemPager(problemInfos: List<String>, language: String) { // 제목, 설�
 
                 1 -> { // 풀이 화면 (코드 에디터)
                     Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .fillMaxHeight()
+                        modifier = Modifier.fillMaxSize()
                     ) {
                         AndroidView(
-                            modifier = Modifier.fillMaxSize(), // fillMaxHeight + fillMaxWidth 대신
+                            modifier = Modifier.fillMaxSize(),
                             factory = { context ->
                                 WebView(context).apply {
                                     settings.javaScriptEnabled = true
                                     settings.allowFileAccess = true
                                     settings.domStorageEnabled = true
-                                    webViewClient = WebViewClient()
 
-                                    isFocusable = true
                                     isFocusableInTouchMode = true
                                     requestFocus()
 
-                                    loadUrl("file:///android_asset/editor.html")
-
-                                    // 코드 에디터 언어 설정
+                                    // 페이지 로드 완료 후 언어 모드 설정
                                     webViewClient = object : WebViewClient() {
                                         override fun onPageFinished(view: WebView?, url: String?) {
-                                            evaluateJavascript("setMode('${language}');", null)
+                                            super.onPageFinished(view, url)
+                                            evaluateJavascript("setMode('$language');", null)
                                         }
                                     }
+
+                                    // 안드로이드로 코드 자동 전송 (editor.html에서 setInterval 돌리고 있음)
+                                    addJavascriptInterface(object {
+                                        @JavascriptInterface
+                                        fun onCodeSubmit(code: String) {
+                                            Log.d("CODE_SUBMIT", "받은 코드: $code")
+                                            onCodeChanged(code)
+                                        }
+                                    }, "Android")
+
+                                    loadUrl("file:///android_asset/editor.html")
                                 }
                             }
                         )
+
                     }
                 }
             }
