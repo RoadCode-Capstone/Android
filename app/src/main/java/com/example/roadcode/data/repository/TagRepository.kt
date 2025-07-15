@@ -16,7 +16,7 @@ class TagRepository @Inject constructor() {
     /* 태그 목록 조회 */
     suspend fun fetchTags(): Flow<Result<List<String>>> = flow {
         try {
-            val response = jsonService.getTags("Bearer fixed-test-token")
+            val response = jsonService.getTags()
             if (response.isSuccessful) {
                 val body = response.body()
                 if (body?.code != "SUCCESS") {
