@@ -223,21 +223,23 @@ fun LevelTestReadyScreen(navController: NavController, roadmapViewModel: Roadmap
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LevelTestScreen(navController: NavController, roadmapViewModel: RoadmapPlanViewModel, levelTestViewModel: LevelTestViewModel) {
+    val plan by roadmapViewModel.plan.collectAsState()                              // 로드맵 학습 계획
+    val problemInfos by levelTestViewModel.problemInfos.collectAsState()            // 문제 정보 리스트
+    val codes by levelTestViewModel.codes.collectAsState()                          // 작성한 코드 맵
+    var problemIdx by remember { mutableStateOf(0) }
     var remainingSeconds by remember { mutableStateOf(120 * 60) }   // 남은 시간 (120분부터 시작)
+    val formattedTime = String.format("%d:%02d", remainingSeconds / 60, remainingSeconds % 60)
 
     LaunchedEffect(Unit) {
-        // 남은 시간 감소 (0 되면 풀이 제출)
+        // 남은 시간 감소
         while (remainingSeconds > 0) {
             delay(1000)
             remainingSeconds -= 1
         }
-    }
 
-    val plan by roadmapViewModel.plan.collectAsState()                              // 로드맵 학습 계획
-    val problemInfos by levelTestViewModel.problemInfos.collectAsState()            // 문제 정보 리스트
-    val codes by levelTestViewModel.codes.collectAsState()                          // 작성한 코드 맵
-    val formattedTime = String.format("%d:%02d", remainingSeconds / 60, remainingSeconds % 60)
-    var problemIdx by remember { mutableStateOf(0) }
+        // 남은 시간 0이면 풀이 제출
+        levelTestViewModel.submitLevelTest(plan.selectedLanguage!!)
+    }
 
     Scaffold(
         topBar = {
@@ -315,7 +317,7 @@ fun LevelTestScreen(navController: NavController, roadmapViewModel: RoadmapPlanV
                 Button( // 다음 버튼
                     onClick = {
                         if (problemIdx == 4) {
-                            /* 문제 제출 */
+                            // 문제 제출
                             levelTestViewModel.submitLevelTest(plan.selectedLanguage!!)
                             navController.navigate("level_result")
                         } else {
