@@ -73,6 +73,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.roadcode.R
 import com.example.roadcode.data.model.LevelTestDTO
+import com.example.roadcode.data.model.ProblemDTO
 import com.example.roadcode.ui.theme.BackGrayColor
 import com.example.roadcode.ui.theme.LineColor
 import com.example.roadcode.ui.theme.PointColor
@@ -192,7 +193,8 @@ fun LevelTestReadyScreen(navController: NavController, roadmapViewModel: Roadmap
                     onClick = {
                         // 레벨 테스트 생성
                         val request = LevelTestDTO.createRequest(plan.selectedType!!, plan.selectedLanguage!!, if (plan.selectedType == "언어") null else plan.selectedAlgorithm)
-//                        levelTestViewModel.createLevelTest(request)
+                        levelTestViewModel.createLevelTest(request)
+//                        levelTestViewModel.getLevelTestProblems(listOf(584, 2000, 237, 62, 70))
                         navController.navigate("level_test")
                     },
                     modifier = Modifier
@@ -231,12 +233,11 @@ fun LevelTestScreen(navController: NavController, roadmapViewModel: RoadmapPlanV
         }
     }
 
-    val plan by roadmapViewModel.plan.collectAsState()
-    val levelTestIds by levelTestViewModel.levelTestIds.collectAsState()
-    val levelTestProblems by levelTestViewModel.levelTestProblems.collectAsState()
-    val codes by levelTestViewModel.codes.collectAsState()
+    val plan by roadmapViewModel.plan.collectAsState()                              // 로드맵 학습 계획
+    val problemInfos by levelTestViewModel.problemInfos.collectAsState()            // 문제 정보 리스트
+    val codes by levelTestViewModel.codes.collectAsState()                          // 작성한 코드 맵
     val formattedTime = String.format("%d:%02d", remainingSeconds / 60, remainingSeconds % 60)
-    var problemIdx = 0;
+    var problemIdx by remember { mutableStateOf(0) }
 
     Scaffold(
         topBar = {
@@ -295,31 +296,15 @@ fun LevelTestScreen(navController: NavController, roadmapViewModel: RoadmapPlanV
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 // 문제 출력
-                val problemInfos = LevelTestDTO.getResponse(1, 1, "A", "두 수의 합", 1,
-                    "Pizano는 각 <b>a</b>의 <b>n</b> 개의 타워로 구성된 배열을 만들었다. 각 타워는 <b>a<sub>i</sub> >= 0</b> 블록으로 이루어져 있다.\n" +
-                            "\n" +
-                            "Pizano는 타워를 무너뜨려서 다음 <b>a<sub>i</sub></b> 개의 타워가 <b>1</b> 만큼 자라게 할 수 있다. 즉, 그는 <b>a<sub>i</sub></b> 요소를 가져와서 다음 <b>a<sub>i</sub></b> 요소를 하나씩 증가시키고, 그 후 <b>a<sub>i</sub></b>를 <b>0</b>으로 설정할 수 있다. 타워에서 떨어진 블록은 사라진다. Pizano가 <b>0</b> 블록이 있는 타워를 무너뜨리면 아무 일도 일어나지 않는다.\n" +
-                            "\n" +
-                            "Pizano는 모든 <b>n</b> 개의 타워를 어떤 순서로든 한 번씩 정확히 무너뜨리고 싶어 한다. 즉, <b>1</b>부터 <b>n</b>까지의 각 <b>i</b>에 대해, 그는 위치 <b>i</b>에 있 는 타워를 정확히 한 번 무너뜨릴 것이다.\n" +
-                            "\n" +
-                            "게다가, 결과적으로 얻어진 타워 높이 배열은 오름차순이어야 한다. 이는 그가 모든 <b>n</b> 개의 타워를 무너뜨린 후, 어떤 <b>i < j</b>에 대해 위치 <b>i</b>의 타워가  위치 <b>j</b>의 타워보다 더 높지 않아야 함을 의미한다.\n" +
-                            "당신은 결과적으로 얻어진 타워 높이 배열의 최대 <b>MEX</b>를 출력해야 한다.\n" +
-                            "배열의 <b>MEX</b>는 배열에 존재하지 않는 가장 작은 양수 정수이다.",
-                    "각 테스트는 여러 개의 테스트 케이스를 포함한다. 첫 번째 줄에는 테스트 케이스의 수 <b>t</b> (<b>1 <= t <= 10<sup>4</sup></b>)가 있다. 테스트 케이스의 설명은 다음과 같다.\n" +
-                            "\n" +
-                            "각 테스트 케이스의 첫 번째 줄에는 정수 <b>n</b> (<b>1 <= n <= 10<sup>5</sup></b>) — 타워의 수가 있다.\n" +
-                            "\n" +
-                            "각 테스트 케이스의 두 번째 줄에는 <b>n</b> 개의 정수 — 타워의 초기 높이 <b>a<sub>1</sub>, ..., a<sub>n</sub></b> (<b>0 <= a<sub>i</sub> <= 10<sup>9</sup></b>)가  있다.\n" +
-                            "\n" +
-                            "모든 테스트 케이스에 대한 <b>n</b>의 합은 <b>10<sup>5</sup></b>를 초과하지 않는다고 보장된다.",
-                    "각 테스트 케이스에 대해, 최종 배열의 최대 <b>MEX</b>를 나타내는 단일 정수를 출력하라.",
-                    "1s", "256MB", "", listOf(""))
-                val problemInfoList = listOf(problemInfos.name, problemInfos.description, problemInfos.inputDescription, problemInfos.outputDescription, problemInfos.timeLimit, problemInfos.memoryLimit)
-                ProblemPager(problemInfoList, plan.selectedLanguage!!, codes[problemIdx]!!,
-                    onCodeChanged = { code ->
-                        levelTestViewModel.updateCode(problemIdx, code)
-                    }
-                )
+                if (problemInfos.isNotEmpty()) {
+                    ProblemPager(problemInfos[problemIdx],
+                        plan.selectedLanguage!!,
+                        codes[problemIdx]!!,
+                        onCodeChanged = { code ->
+                            levelTestViewModel.updateCode(problemIdx, code)
+                        }
+                    )
+                }
             }
 
             Row(
@@ -327,10 +312,12 @@ fun LevelTestScreen(navController: NavController, roadmapViewModel: RoadmapPlanV
                     .align(Alignment.BottomEnd)
                     .padding(end = 30.dp, bottom = 40.dp)
             ) {
-                Button( // 다음 버튼 (마지막 문제일 때는 제출로 변경) 안바뀐다 왜지??
+                Button( // 다음 버튼
                     onClick = {
                         if (problemIdx == 4) {
                             /* 문제 제출 */
+                            levelTestViewModel.submitLevelTest(plan.selectedLanguage!!)
+                            navController.navigate("level_result")
                         } else {
                             problemIdx++
                         }
@@ -361,10 +348,10 @@ fun LevelTestScreen(navController: NavController, roadmapViewModel: RoadmapPlanV
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ProblemPager(problemInfos: List<String>, language: String, initCode: String, onCodeChanged: (String) -> Unit) { // 제목, 설명, 입력 설명, 출력 설명, 시간제한, 메모리제한
+fun ProblemPager(problemInfos: List<String>, language: String, initCode: String, onCodeChanged: (String) -> Unit) { // [제목, 설명, 입력 설명, 출력 설명, 시간제한, 메모리제한], 사용 언어, 초기 코드, 코드 변경 시 동작
     val pagerState = rememberPagerState(pageCount = { 2 })
     val keys = listOf("제목", "문제 설명", "입력 설명", "출력 설명", "시간 제한", "메모리 제한")
-    var currentCode by remember { mutableStateOf("") }
+    var currentCode by remember(initCode) { mutableStateOf(initCode) }
 
     Column(
         modifier = Modifier
@@ -406,8 +393,16 @@ fun ProblemPager(problemInfos: List<String>, language: String, initCode: String,
                                 Spacer(modifier = Modifier.height(15.dp))
 
                                 if (idx == 1 || idx == 2 || idx == 3) {
-                                    AndroidView(factory = { context ->
-                                        TextView(context).apply {
+                                    AndroidView(
+                                        factory = { context ->
+                                            TextView(context).apply {
+                                                textSize = 16f
+                                                setTextColor(PrimaryColor.toArgb())
+                                                typeface = resources.getFont(R.font.spoqahansansneo_light)
+                                                setLineSpacing(10f, 1.3f)   // 줄 간격
+                                            }
+                                        },
+                                        update = { textView ->
                                             val spanned = Html.fromHtml(info, Html.FROM_HTML_MODE_COMPACT)
                                             val spannable = SpannableStringBuilder(spanned)
 
@@ -418,14 +413,8 @@ fun ProblemPager(problemInfos: List<String>, language: String, initCode: String,
                                                 spannable.setSpan(RelativeSizeSpan(0.7f), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
                                             }
 
-                                            text = spannable
-
-                                            textSize = 16f
-                                            setTextColor(PrimaryColor.toArgb())
-                                            typeface = resources.getFont(R.font.spoqahansansneo_light)
-                                            setLineSpacing(10f, 1.3f)    // 줄 간격
-                                        }
-                                    },
+                                            textView.text = spannable
+                                        },
                                         modifier = Modifier.fillMaxWidth()
                                     )
                                 } else {
@@ -478,7 +467,6 @@ fun ProblemPager(problemInfos: List<String>, language: String, initCode: String,
                                     addJavascriptInterface(object {
                                         @JavascriptInterface
                                         fun onCodeSubmit(code: String) {
-                                            Log.d("CODE_SUBMIT", "받은 코드: $code")
                                             currentCode = code
                                             onCodeChanged(code)
                                         }
@@ -497,7 +485,150 @@ fun ProblemPager(problemInfos: List<String>, language: String, initCode: String,
 }
 
 /* 레벨 테스트 결과 화면 */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LevelTestResultScreen(navController: NavController) {
+fun LevelTestResultScreen(navController: NavController, levelTestViewModel: LevelTestViewModel) {
+    val levelTestResults by levelTestViewModel.levelTestResults.collectAsState()
 
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = "레벨 테스트 결과",
+                        fontSize = 18.sp,
+                        color = PrimaryColor,
+                        fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
+                    )
+                }
+            )
+        }
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 160.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Spacer(modifier = Modifier.height(36.dp))
+
+                Text(
+                    text = "레벨 테스트 결과로\n맞춤 로드맵을 생성했어요",
+                    fontSize = 16.sp,
+                    fontFamily = FontFamily(Font(R.font.spoqahansansneo_light)),
+                    textAlign = TextAlign.Center,
+                    lineHeight = 24.sp  // 줄 간격
+                )
+
+                Spacer(modifier = Modifier.height(50.dp))
+
+                // 레벨 테스트 문제별 결과 출력
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 30.dp)
+                        .background(color = BackGrayColor)
+                        .border(width = 0.5.dp, color = Color.Black),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight()    // 높이를 내용만큼만
+                            .padding(horizontal = 30.dp),
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        levelTestResults?.result?.forEachIndexed { idx, result ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 15.dp, vertical = 15.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = "문제 ${idx + 1}",
+                                    fontSize = 16.sp,
+                                    fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
+                                )
+
+                                Text(
+                                    text = if (result) "정답" else "오답",
+                                    fontSize = 16.sp,
+                                    fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
+                                )
+                            }
+
+                            if (idx != 4) {
+                                Divider(modifier = Modifier, color = LineColor, thickness = 0.5.dp)
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(10.dp))
+                    }
+                }
+            }
+
+            Row(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(start = 30.dp, end = 30.dp, bottom = 40.dp)
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Button( // 바로 학습하러 가기 버튼
+                        onClick = {
+                                  /* 해당 로드맵의 로드맵 조회 화면으로 이동 */
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
+                        shape = RoundedCornerShape(20.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = PointColor,
+                            contentColor = Color.White
+                        )
+                    ) {
+                        Text(
+                            text = "바로 학습하러 가기",
+                            fontSize = 16.sp,
+                            color = Color.White,
+                            fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
+                        )
+                    }
+                    
+                    Spacer(modifier = Modifier.padding(vertical = 10.dp))
+
+                    Button( // 홈으로 돌아가기 버튼
+                        onClick = {
+                                  /* 홈 화면으로 이동 */
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
+                        shape = RoundedCornerShape(20.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = PrimaryColor,
+                            contentColor = Color.White
+                        )
+                    ) {
+                        Text(
+                            text = "홈으로 돌아가기",
+                            fontSize = 16.sp,
+                            color = Color.White,
+                            fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
+                        )
+                    }
+                }
+            }
+        }
+    }
 }
