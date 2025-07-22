@@ -56,7 +56,7 @@ import com.example.roadcode.viewmodel.TagViewModel
 /* 학습 계획 설정 화면 (언어) */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RoadmapPlanLanguageScreen(navController: NavController, roadmapViewModel: RoadmapPlanViewModel) {
+fun RoadmapPlanLanguageScreen(navController: NavController, roadmapPlanViewModel: RoadmapPlanViewModel) {
     var selectedLanguage by remember { mutableStateOf<String?>(null) }
 
     Scaffold(
@@ -206,7 +206,7 @@ fun RoadmapPlanLanguageScreen(navController: NavController, roadmapViewModel: Ro
             ) {
                 Button( // 다음 버튼
                     onClick = {
-                        roadmapViewModel.setSelectedLanguage(selectedLanguage)
+                        roadmapPlanViewModel.setSelectedLanguage(selectedLanguage)
                         navController.navigate("plan_type")
                     },
                     enabled = selectedLanguage != null, // 언어 선택했을 때만 활성화
@@ -234,7 +234,7 @@ fun RoadmapPlanLanguageScreen(navController: NavController, roadmapViewModel: Ro
 /* 학습 계획 설정 화면 (학습 유형) */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RoadmapPlanTypeScreen(navController: NavController, roadmapViewModel: RoadmapPlanViewModel) {
+fun RoadmapPlanTypeScreen(navController: NavController, roadmapPlanViewModel: RoadmapPlanViewModel) {
     var selectedType by remember { mutableStateOf<String?>(null) }
 
     Scaffold(
@@ -337,7 +337,7 @@ fun RoadmapPlanTypeScreen(navController: NavController, roadmapViewModel: Roadma
             ) {
                 Button( // 다음 버튼
                     onClick = {
-                        roadmapViewModel.setSelectedType(selectedType)
+                        roadmapPlanViewModel.setSelectedType(selectedType)
                         if (selectedType == "Language") navController.navigate("plan_goal")
                         else navController.navigate("plan_algorithm")
                     },
@@ -366,7 +366,7 @@ fun RoadmapPlanTypeScreen(navController: NavController, roadmapViewModel: Roadma
 /* 학습 계획 설정 화면 (알고리즘) */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RoadmapPlanAlgorithmScreen(navController: NavController, roadmapViewModel: RoadmapPlanViewModel) {
+fun RoadmapPlanAlgorithmScreen(navController: NavController, roadmapPlanViewModel: RoadmapPlanViewModel) {
     val tagViewModel: TagViewModel = hiltViewModel()
     val tags by tagViewModel.tags.collectAsState()
 
@@ -438,7 +438,7 @@ fun RoadmapPlanAlgorithmScreen(navController: NavController, roadmapViewModel: R
             ) {
                 Button( // 다음 버튼
                     onClick = {
-                        roadmapViewModel.setSelectedAlgorithm(selectedAlgorithm)
+                        roadmapPlanViewModel.setSelectedAlgorithm(selectedAlgorithm)
                         navController.navigate("plan_goal")
                     },
                     enabled = selectedAlgorithm != null,
@@ -466,7 +466,7 @@ fun RoadmapPlanAlgorithmScreen(navController: NavController, roadmapViewModel: R
 /* 학습 계획 설정 화면 (일일 학습 목표) */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RoadmapPlanGoalScreen(navController: NavController, roadmapViewModel: RoadmapPlanViewModel) {
+fun RoadmapPlanGoalScreen(navController: NavController, roadmapPlanViewModel: RoadmapPlanViewModel) {
     var selectedGoal by remember { mutableStateOf<Int?>(null) }
 
     Scaffold(
@@ -648,7 +648,7 @@ fun RoadmapPlanGoalScreen(navController: NavController, roadmapViewModel: Roadma
             ) {
                 Button( // 다음 버튼
                     onClick = {
-                        roadmapViewModel.setSelectedGoal(selectedGoal)
+                        roadmapPlanViewModel.setSelectedGoal(selectedGoal)
                         navController.navigate("level_ready")
                     },
                     enabled = selectedGoal != null,
