@@ -2,13 +2,18 @@ package com.example.roadcode.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.roadcode.data.model.RoadmapDTO
+import com.example.roadcode.data.repository.LevelTestRepository
+import com.example.roadcode.data.repository.RoadmapRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class RoadmapPlanViewModel @Inject constructor() : ViewModel() {
+class RoadmapPlanViewModel @Inject constructor(private val repository: RoadmapRepository) : ViewModel() {
     companion object {
         private const val TAG = "RoadmapPlanViewModel"
     }
@@ -46,5 +51,22 @@ class RoadmapPlanViewModel @Inject constructor() : ViewModel() {
     fun setSelectedGoal(goal: Int?) {
         _plan.value = _plan.value.copy(selectedGoal = goal)
         Log.d(TAG, "학습 계획 - 일일 학습 목표 변경: ${_plan.value.selectedGoal}")
+    }
+
+    /* 로드맵 생성 함수 */
+    fun createRoadmap(result: Int, completed: (Long) -> Unit) {
+        viewModelScope.launch {
+            val request = RoadmapDTO.createRequest(plan.value.selectedType!!, plan.value.selectedLanguage!!, plan.value.selectedAlgorithm, plan.value.selectedGoal!!, result)
+            repository.createRoadmap(request).collect() { result ->
+                result
+                    .onSuccess { roadmapId ->
+                        Log.d(TAG, "생성한 로드맵 아이디: ${roadmapId}")
+                        completed(roadmapId)
+                    }
+                    .onFailure { e ->
+                        e.printStackTrace()
+                    }
+            }
+        }
     }
 }

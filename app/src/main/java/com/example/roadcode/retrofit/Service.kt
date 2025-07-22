@@ -2,6 +2,7 @@ package com.example.roadcode.retrofit
 
 import com.example.roadcode.data.model.LevelTestDTO
 import com.example.roadcode.data.model.ResponseUtilDTO
+import com.example.roadcode.data.model.RoadmapDTO
 import com.example.roadcode.data.model.TagDTO
 import retrofit2.Call
 import retrofit2.Response
@@ -29,4 +30,8 @@ interface JsonService {
     // 레벨 테스트 제출
     @POST("/api/v1/level-test/submissions")
     suspend fun submitLevelTest(@Header("Authorization") token: String, @Body request: LevelTestDTO.submitRequest): Response<ResponseUtilDTO.Response<LevelTestDTO.submitResponse>>
+
+    // 로드맵 생성
+    @POST("/api/v1/roadmaps")
+    suspend fun createRoadmap(@Header("Authorization") token: String, @Body request: RoadmapDTO.createRequest): Response<ResponseUtilDTO.Response<RoadmapDTO.createResponse>>
 }

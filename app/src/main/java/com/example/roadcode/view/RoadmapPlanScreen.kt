@@ -93,7 +93,7 @@ fun RoadmapPlanLanguageScreen(navController: NavController, roadmapViewModel: Ro
                 modifier = Modifier.fillMaxSize().padding(bottom = 160.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(modifier = Modifier.height(36.dp))
+                Spacer(modifier = Modifier.height(30.dp))
 
                 Text(
                     text = "학습할 언어를 선택하세요",
@@ -271,7 +271,7 @@ fun RoadmapPlanTypeScreen(navController: NavController, roadmapViewModel: Roadma
                 modifier = Modifier.fillMaxSize().padding(bottom = 160.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(modifier = Modifier.height(36.dp))
+                Spacer(modifier = Modifier.height(30.dp))
 
                 Text(
                     text = "학습 유형을 선택하세요",
@@ -406,7 +406,7 @@ fun RoadmapPlanAlgorithmScreen(navController: NavController, roadmapViewModel: R
                 modifier = Modifier.fillMaxSize().padding(bottom = 160.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(modifier = Modifier.height(36.dp))
+                Spacer(modifier = Modifier.height(30.dp))
 
                 Text(
                     text = "학습할 알고리즘을 선택하세요",
@@ -503,7 +503,7 @@ fun RoadmapPlanGoalScreen(navController: NavController, roadmapViewModel: Roadma
                 modifier = Modifier.fillMaxSize().padding(bottom = 160.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(modifier = Modifier.height(36.dp))
+                Spacer(modifier = Modifier.height(30.dp))
 
                 Text(
                     text = "일일 학습 목표를 선택하세요",

@@ -55,6 +55,19 @@ class LevelTestViewModel @Inject constructor(private val repository: LevelTestRe
         _problemInfos.value = infos
     }
 
+    /* 레벨 테스트 측정 결과 리턴 함수 */
+    fun getResult(): Int {
+        var answer = 0
+
+        levelTestResults.value!!.result.forEachIndexed { idx, result ->
+            if (result) {
+                answer += levelTestProblems.value[idx].rating
+            }
+        }
+
+        return if (answer != 0) answer / levelTestResults.value!!.passedCount else 0
+    }
+
     /* 레벨 테스트 생성 함수 */
     fun createLevelTest(plans: LevelTestDTO.createRequest) {
         viewModelScope.launch {
