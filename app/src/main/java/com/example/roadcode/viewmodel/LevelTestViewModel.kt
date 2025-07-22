@@ -36,7 +36,7 @@ class LevelTestViewModel @Inject constructor(private val repository: LevelTestRe
         _codes.value = _codes.value.toMutableMap().apply {
             this[problemIdx] = code
         }
-        Log.d(TAG, "코드 저장 ${_codes.value[problemIdx]}")
+        Log.d(TAG, "코드 저장 ${codes.value[problemIdx]}")
     }
 
     /* 문제 정보 리스트 리턴 함수 */
@@ -75,10 +75,10 @@ class LevelTestViewModel @Inject constructor(private val repository: LevelTestRe
                 result
                     .onSuccess { levelTestIds ->
                         _levelTestIds.value = levelTestIds
-                        Log.d(TAG, "레벨 테스트 아이디 목록: ${_levelTestIds.value}")
+                        Log.d(TAG, "레벨 테스트 아이디 목록: ${levelTestIds}")
 
                         // 레벨 테스트 문제 조회
-                        getLevelTestProblems(_levelTestIds.value)
+                        getLevelTestProblems(levelTestIds)
                     }
                     .onFailure { e ->
                         e.printStackTrace()
@@ -121,7 +121,7 @@ class LevelTestViewModel @Inject constructor(private val repository: LevelTestRe
                 result
                     .onSuccess { levelTestResults ->
                         _levelTestResults.value = levelTestResults
-                        Log.d(TAG, "레벨 테스트 결과: ${_levelTestResults.value}")
+                        Log.d(TAG, "레벨 테스트 결과: ${levelTestResults}")
                     }
                     .onFailure { e ->
                         e.printStackTrace()
