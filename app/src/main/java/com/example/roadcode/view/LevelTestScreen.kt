@@ -80,6 +80,7 @@ import com.example.roadcode.ui.theme.PointColor
 import com.example.roadcode.ui.theme.PrimaryColor
 import com.example.roadcode.viewmodel.LevelTestViewModel
 import com.example.roadcode.viewmodel.RoadmapPlanViewModel
+import com.example.roadcode.viewmodel.RoadmapViewModel
 import kotlinx.coroutines.delay
 import org.json.JSONObject
 
@@ -132,7 +133,7 @@ fun LevelTestReadyScreen(navController: NavController, roadmapViewModel: Roadmap
                     .padding(bottom = 160.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(modifier = Modifier.height(36.dp))
+                Spacer(modifier = Modifier.height(30.dp))
 
                 Text(
                     text = "레벨 테스트를 시작할게요",
@@ -148,7 +149,7 @@ fun LevelTestReadyScreen(navController: NavController, roadmapViewModel: Roadmap
                         .fillMaxWidth()
                         .padding(horizontal = 30.dp)
                         .background(color = BackGrayColor)
-                        .border(width = 0.5.dp, color = Color.Black),
+                        .border(width = 0.5.dp, color = PrimaryColor),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -157,7 +158,8 @@ fun LevelTestReadyScreen(navController: NavController, roadmapViewModel: Roadmap
                     Text(
                         text = "주의사항",
                         fontSize = 17.sp,
-                        fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
+                        fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium)),
+                        color = PrimaryColor
                     )
 
                     Spacer(modifier = Modifier.height(25.dp))
@@ -174,7 +176,8 @@ fun LevelTestReadyScreen(navController: NavController, roadmapViewModel: Roadmap
                                 Text(
                                     text = info,
                                     fontSize = 16.sp,
-                                    fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
+                                    fontFamily = FontFamily(Font(R.font.spoqahansansneo_light)),
+                                    color = PrimaryColor
                                 )
                             }
                         }
@@ -192,7 +195,7 @@ fun LevelTestReadyScreen(navController: NavController, roadmapViewModel: Roadmap
                 Button( // 시작하기 버튼
                     onClick = {
                         // 레벨 테스트 생성
-                        val request = LevelTestDTO.createRequest(plan.selectedType!!, plan.selectedLanguage!!, if (plan.selectedType == "언어") null else plan.selectedAlgorithm)
+                        val request = LevelTestDTO.createRequest(plan.selectedType!!, plan.selectedLanguage!!, plan.selectedAlgorithm)
                         levelTestViewModel.createLevelTest(request)
 //                        levelTestViewModel.getLevelTestProblems(listOf(584, 2000, 237, 62, 70))
                         navController.navigate("level_test")
@@ -489,8 +492,14 @@ fun ProblemPager(problemInfos: List<String>, language: String, initCode: String,
 /* 레벨 테스트 결과 화면 */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LevelTestResultScreen(navController: NavController, levelTestViewModel: LevelTestViewModel) {
+fun LevelTestResultScreen(navController: NavController, roadmapPlanViewModel: RoadmapPlanViewModel, levelTestViewModel: LevelTestViewModel, roadmapViewModel: RoadmapViewModel) {
     val levelTestResults by levelTestViewModel.levelTestResults.collectAsState()
+
+    LaunchedEffect(levelTestResults) {
+        if (levelTestResults != null) { // 레벨 테스트 결과 조회되면 로드맵 생성
+            roadmapPlanViewModel.createRoadmap(levelTestViewModel.getResult(), completed = { roadmapId -> roadmapViewModel.setRoadmapId(roadmapId) })
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -517,7 +526,7 @@ fun LevelTestResultScreen(navController: NavController, levelTestViewModel: Leve
                     .padding(bottom = 160.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(modifier = Modifier.height(36.dp))
+                Spacer(modifier = Modifier.height(30.dp))
 
                 Text(
                     text = "레벨 테스트 결과로\n맞춤 로드맵을 생성했어요",
