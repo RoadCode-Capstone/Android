@@ -53,6 +53,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -90,221 +91,201 @@ fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewMod
     val scope = rememberCoroutineScope()
     var isDrawerOpen by remember { mutableStateOf(false) }  // 드로어 열림 여부 변수
 
-    // 로드맵 데이터 예시
-    val roadmapInfo = RoadmapDTO.roadmapData(
-        1,
-        "로드맵 제목",
-        "language",
-        "python",
-        "",
-        RoadmapDTO.roadmapProblem(
-            774,
-            62,
-            3,
-            "IN_PROGRESS"
-        )
-    )
+    val roadmapInfo by roadmapViewModel.roadmapInfo.collectAsState()    // 로드맵 정보
+    val problems by roadmapViewModel.problems.collectAsState()          // 로드맵 문제 목록
+    val problemInfo by roadmapViewModel.problemInfo.collectAsState()    // 문제 정보
+    val problemIdx by roadmapViewModel.problemIdx.collectAsState()      // 출력할 문제 인덱스 (초기값: 현재 풀어야 하는 문제 인덱스)
 
-    // 로드맵 문제 데이터 예시
-    val problemsInfo = listOf(
-        RoadmapDTO.roadmapProblem(771, 2195, 0, "COMPLETED"),
-        RoadmapDTO.roadmapProblem(772, 14, 1, "COMPLETED"),
-        RoadmapDTO.roadmapProblem(773, 20, 2, "COMPLETED"),
-        RoadmapDTO.roadmapProblem(774, 62, 3, "IN_PROGRESS"),
-        RoadmapDTO.roadmapProblem(775, 98, 4, "NOT_STARTED"),
-        RoadmapDTO.roadmapProblem(776, 10, 5, "NOT_STARTED"),
-        RoadmapDTO.roadmapProblem(777, 209, 6, "NOT_STARTED"),
-        RoadmapDTO.roadmapProblem(778, 289, 7, "NOT_STARTED"),
-        RoadmapDTO.roadmapProblem(779, 331, 8, "NOT_STARTED"),
-        RoadmapDTO.roadmapProblem(780, 15, 9, "NOT_STARTED"),
-        RoadmapDTO.roadmapProblem(781, 45, 10, "NOT_STARTED"),
-        RoadmapDTO.roadmapProblem(782, 122, 11, "NOT_STARTED"),
-        RoadmapDTO.roadmapProblem(783, 11, 12, "NOT_STARTED"),
-        RoadmapDTO.roadmapProblem(784, 23, 13, "NOT_STARTED")
-    )
+    if (roadmapInfo != null) {
+        val progress = if (roadmapInfo!!.currentProblem.order + 1 == problems.size) 100 else ((roadmapInfo!!.currentProblem.order).toFloat() / problems.size) * 100 // 진행도 (현재 문제 인덱스가 문제 수와 같으면 100%)
+        val formatted_progress = String.format("%.1f", progress)
 
-    val progress = ((roadmapInfo.currentProblem.order + 1).toFloat() / problemsInfo.size) * 100 // 진행도
-    val formatted_progress = String.format("%.1f", progress)
-
-    Box(modifier = Modifier.fillMaxSize()) {
-        Scaffold(
-            topBar = {
-                CenterAlignedTopAppBar(
-                    title = {
-                        Text(
-                            text = roadmapInfo.title,
-                            fontSize = 18.sp,
-                            color = PrimaryColor,
-                            fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
-                        )
-                    },
-                    navigationIcon = {
-                        IconButton(
-                            onClick = { navController.popBackStack() }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowBack,
-                                contentDescription = "뒤로 가기 버튼",
-                                tint = PrimaryColor
+        Box(modifier = Modifier.fillMaxSize()) {
+            Scaffold(
+                topBar = {
+                    CenterAlignedTopAppBar(
+                        title = {
+                            Text(
+                                text = roadmapInfo!!.title,
+                                fontSize = 18.sp,
+                                color = PrimaryColor,
+                                fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
                             )
+                        },
+                        navigationIcon = {
+                            IconButton(
+                                onClick = { navController.popBackStack() }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.ArrowBack,
+                                    contentDescription = "뒤로 가기 버튼",
+                                    tint = PrimaryColor
+                                )
+                            }
+                        },
+                        actions = {
+                            IconButton(
+                                onClick = { isDrawerOpen = true } // 로드맵 관련 메뉴 드로어 열기
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Menu,
+                                    contentDescription = "로드맵 관련 메뉴 버튼",
+                                    tint = PrimaryColor
+                                )
+                            }
                         }
-                    },
-                    actions = {
-                        IconButton(
-                            onClick = { isDrawerOpen = true } // 로드맵 관련 메뉴 드로어 열기
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Menu,
-                                contentDescription = "로드맵 관련 메뉴 버튼",
-                                tint = PrimaryColor
-                            )
-                        }
-                    }
-                )
-            }
-        ) { paddingValues ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-            ) {
-                Column(
+                    )
+                }
+            ) { paddingValues ->
+                Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = 40.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        .padding(paddingValues)
                 ) {
-                    Spacer(modifier = Modifier.height(30.dp))
-
-                    Text(
-                        text = buildAnnotatedString {
-                            append("일일 목표 달성까지 앞으로 ")
-
-                            withStyle(
-                                style = SpanStyle(
-                                    color = PointColor,
-                                    fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
-                                )
-                            ) {
-                                append("${3}") // 남은 수 계산 필요 (일일 학습 목표 어디서 조회하지?)
-                            }
-
-                            append("문제")
-                        },
-                        fontSize = 16.sp,
-                        fontFamily = FontFamily(Font(R.font.spoqahansansneo_light)),
-                        color = PrimaryColor
-                    )
-
-                    Spacer(modifier = Modifier.height(30.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 40.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text( // 달성률 출력
-                                text = "${formatted_progress}%",
-                                fontSize = 17.sp,
-                                fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium)),
-                                color = PrimaryColor
-                            )
+                        Spacer(modifier = Modifier.height(30.dp))
 
-                            Spacer(modifier = Modifier.padding(bottom = 12.dp))
+                        Text(
+                            text = buildAnnotatedString {
+                                append("일일 목표 달성까지 앞으로 ")
 
-                            StepBar(problemInfo = problemsInfo) // 단계 바 출력
-                        }
-
-                        Spacer(modifier = Modifier.width(30.dp))
-
-                        Column(modifier = Modifier.fillMaxHeight()) {
-                            problemPreview( // 문제 미리보기 출력
-                                modifier = Modifier.weight(1f),
-                                "A. 선거",
-                                "여러분이 아는 바와 같이, 여름 정보학교의 대부분의 학생들과 교사들은 대체로 베를란드에 거주하고 있다. 그곳의 부패가 상당히 만연해 있기 때문에, 다음과 같은 이야기는 드물지 않다. 선거가 다가오고 있다. 유권자의 수와 정당의 수는 각각 <b>n</b>과 <b>m</b>이다. 각 유권자가 어떤 정당에 투표할 것인지 알고 있다. 그러나 특정 금액의 돈을 주면 쉽게 투표를 변경할 수 있다. 특히, <b>i</b>-번째 유권자에게 <b>c<sub>i</sub></b> 바이트코인을 주면, 그가 원하는 다른 정당에 투표하도록 요청할 수 있다. 베를란드 통합당은 통계 조사를 수행하기로 결정하였다. 당의 승리를 보장하기 위해 필요한 최소한의 바이트코인 수를 계산해야 한다. 정당이 선거에서 승리하기 위해서는 다른 어떤 정당보다도 엄격히 더 많은 표를 받아야 한다."
-                            )
-
-                            Row(
-                                modifier = Modifier.padding(top = 20.dp, bottom = 40.dp)
-                            ) {
-                                Button( // 시작하기 버튼
-                                    onClick = {
-                                        /* 문제 풀이 화면으로 이동 */
-                                    },
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .height(50.dp),
-                                    shape = RoundedCornerShape(20.dp),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = PointColor,
-                                        contentColor = Color.White
-                                    )
-                                ) {
-                                    Text(
-                                        text = "학습 시작하기",
-                                        fontSize = 16.sp,
-                                        color = Color.White,
+                                withStyle(
+                                    style = SpanStyle(
+                                        color = PointColor,
                                         fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
                                     )
+                                ) {
+                                    append("${3}") // 남은 수 계산 필요 (일일 학습 목표 어디서 조회하지?)
+                                }
+
+                                append("문제")
+                            },
+                            fontSize = 16.sp,
+                            fontFamily = FontFamily(Font(R.font.spoqahansansneo_light)),
+                            color = PrimaryColor
+                        )
+
+                        Spacer(modifier = Modifier.height(30.dp))
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text( // 달성률 출력
+                                    text = "${formatted_progress}%",
+                                    fontSize = 17.sp,
+                                    fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium)),
+                                    color = PrimaryColor
+                                )
+
+                                Spacer(modifier = Modifier.padding(bottom = 12.dp))
+
+                                if (problems.isNotEmpty()) {
+                                    StepBar(
+                                        problems,
+                                        onClick = { idx -> roadmapViewModel.setProblemIdx(idx) }) // 단계 바 출력
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.width(30.dp))
+
+                            Column(modifier = Modifier.fillMaxHeight()) {
+                                if (problemInfo != null) {
+                                    problemPreview( // 문제 미리보기 출력
+                                        modifier = Modifier.weight(1f),
+                                        title = problemInfo!!.name,
+                                        description = problemInfo!!.description
+                                    )
+                                }
+
+                                Row(
+                                    modifier = Modifier.padding(top = 20.dp, bottom = 40.dp)
+                                ) {
+                                    Button( // 시작하기 버튼
+                                        onClick = {
+                                            /* 문제 풀이 화면으로 이동 */
+                                        },
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .height(50.dp),
+                                        shape = RoundedCornerShape(20.dp),
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = PointColor,
+                                            contentColor = Color.White
+                                        )
+                                    ) {
+                                        Text(
+                                            text = "학습 시작하기",
+                                            fontSize = 16.sp,
+                                            color = Color.White,
+                                            fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
+                                        )
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
-        }
 
-        if (isDrawerOpen) { // 드로어가 열렸을 때 배경 어둡게 처리
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.3f))
-                    .clickable( // 터치 효과 제거 (클릭 시 진해지는)
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() }
-                    ) { isDrawerOpen = false } // 드로어 밖 클릭 시 드로어 닫기
-            )
-        }
-
-        Box(
-            modifier = Modifier.align(Alignment.TopEnd)
-        ) {
-            AnimatedVisibility( // 로드맵 메뉴 관리 드로어
-                visible = isDrawerOpen,
-                enter = slideInHorizontally(initialOffsetX = { it }),
-                exit = slideOutHorizontally(targetOffsetX = { it })
-            ) {
-                Surface(
+            if (isDrawerOpen) { // 드로어가 열렸을 때 배경 어둡게 처리
+                Box(
                     modifier = Modifier
-                        .fillMaxHeight()
-                        .width(300.dp),
-                    shadowElevation = 8.dp,
-                    color = MaterialTheme.colorScheme.surface
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.3f))
+                        .clickable( // 터치 효과 제거 (클릭 시 진해지는)
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
+                        ) { isDrawerOpen = false } // 드로어 밖 클릭 시 드로어 닫기
+                )
+            }
+
+            Box(
+                modifier = Modifier.align(Alignment.TopEnd)
+            ) {
+                AnimatedVisibility( // 로드맵 메뉴 관리 드로어
+                    visible = isDrawerOpen,
+                    enter = slideInHorizontally(initialOffsetX = { it }),
+                    exit = slideOutHorizontally(targetOffsetX = { it })
                 ) {
-                    Column(
-                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 40.dp)
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .width(300.dp),
+                        shadowElevation = 8.dp,
+                        color = MaterialTheme.colorScheme.surface
                     ) {
-                        Text(
-                            text = "로드맵 관리",
-                            fontSize = 18.sp,
-                            color = PrimaryColor,
-                            fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium)),
-                            modifier = Modifier.padding(start = 10.dp)
-                        )
+                        Column(
+                            modifier = Modifier.padding(horizontal = 20.dp, vertical = 40.dp)
+                        ) {
+                            Text(
+                                text = "로드맵 관리",
+                                fontSize = 18.sp,
+                                color = PrimaryColor,
+                                fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium)),
+                                modifier = Modifier.padding(start = 10.dp)
+                            )
 
-                        Spacer(modifier = Modifier.height(50.dp))
+                            Spacer(modifier = Modifier.height(50.dp))
 
-                        drawerItem("문제 추가하기", onClick = {
-                            /* 문제 추가 기능*/
-                        })
+                            drawerItem("문제 추가하기", onClick = {
+                                /* 문제 추가 기능*/
+                            })
 
-                        Spacer(modifier = Modifier.height(10.dp))
+                            Spacer(modifier = Modifier.height(10.dp))
 
-                        drawerItem("로드맵 포기하기", onClick = {
-                            /* 로드맵 포기 기능*/
-                        })
+                            drawerItem("로드맵 포기하기", onClick = {
+                                /* 로드맵 포기 기능*/
+                            })
+                        }
                     }
                 }
             }
@@ -393,7 +374,7 @@ fun problemPreview(modifier: Modifier, title: String, description: String) {
 
 /* 단계 바 */
 @Composable
-fun StepBar(problemInfo: List<RoadmapDTO.roadmapProblem>) {
+fun StepBar(problems: List<RoadmapDTO.roadmapProblem>, onClick: (Int) -> Unit) {
     LazyColumn(
         modifier = Modifier
             .fillMaxHeight()
@@ -402,9 +383,9 @@ fun StepBar(problemInfo: List<RoadmapDTO.roadmapProblem>) {
         horizontalAlignment = Alignment.CenterHorizontally,
         contentPadding = PaddingValues(top = 10.dp)
     ) {
-        itemsIndexed(problemInfo) { idx, problem ->
-            StepCircle(idx, problem.status)
-            if (idx != problemInfo.size - 1) {
+        itemsIndexed(problems) { idx, problem ->
+            StepCircle(idx, problem.status, onClick = { idx -> onClick(idx) })
+            if (idx != problems.size - 1) {
                 Box(modifier = Modifier
                     .width(3.dp)
                     .height(50.dp)
@@ -416,7 +397,7 @@ fun StepBar(problemInfo: List<RoadmapDTO.roadmapProblem>) {
 
 /* 단계 원 출력 */
 @Composable
-fun StepCircle(idx: Int, status: String) {
+fun StepCircle(idx: Int, status: String, onClick: (Int) -> Unit) {
     val backgroundColor = when (status) {
         "COMPLETED" -> PrimaryColor
         "IN_PROGRESS" -> PointColor
@@ -433,7 +414,8 @@ fun StepCircle(idx: Int, status: String) {
             .size(50.dp)
             .clip(CircleShape)
             .background(backgroundColor)
-            .border(width = 3.dp, shape = CircleShape, color = PrimaryColor),
+            .border(width = 3.dp, shape = CircleShape, color = PrimaryColor)
+            .clickable { onClick(idx) },
         contentAlignment = Alignment.Center
     ) {
         Text(

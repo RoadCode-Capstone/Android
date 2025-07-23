@@ -1,5 +1,6 @@
 package com.example.roadcode.data.repository
 
+import com.example.roadcode.data.model.ProblemDTO
 import com.example.roadcode.data.model.RoadmapDTO
 import com.example.roadcode.retrofit.JsonService
 import com.example.roadcode.retrofit.RetrofitInstance
@@ -24,6 +25,66 @@ class RoadmapRepository @Inject constructor() {
 
                 val roadmapId = body!!.data!!.id
                 emit(Result.success(roadmapId))
+            } else {
+                emit(Result.failure(HttpException(response)))
+            }
+        } catch (e: Exception) {
+            emit(Result.failure(e))
+        }
+    }
+
+    /* 로드맵 정보 조회 */
+    suspend fun getRoadmap(request: Long): Flow<Result<RoadmapDTO.roadmapData>> = flow {
+        try {
+            val response = jsonService.getRoadmap(token, request)
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body?.code != "SUCCESS") {
+                    emit(Result.failure(Exception("${body?.code.toString()}: ${body?.message.toString()}")))
+                }
+
+                val roadmapInfo = body!!.data!!
+                emit(Result.success(roadmapInfo))
+            } else {
+                emit(Result.failure(HttpException(response)))
+            }
+        } catch (e: Exception) {
+            emit(Result.failure(e))
+        }
+    }
+
+    /* 로드맵 문제 목록 조회 */
+    suspend fun getRoadmapProblems(request: Long): Flow<Result<List<RoadmapDTO.roadmapProblem>>> = flow {
+        try {
+            val response = jsonService.getRoadmapProblems(token, request)
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body?.code != "SUCCESS") {
+                    emit(Result.failure(Exception("${body?.code.toString()}: ${body?.message.toString()}")))
+                }
+
+                val roadmapProblems = body!!.data!!.roadmapProblems
+                emit(Result.success(roadmapProblems))
+            } else {
+                emit(Result.failure(HttpException(response)))
+            }
+        } catch (e: Exception) {
+            emit(Result.failure(e))
+        }
+    }
+
+    /* 문제 정보 조회 */
+    suspend fun getProblem(request: Long): Flow<Result<ProblemDTO.ProblemData>> = flow {
+        try {
+            val response = jsonService.getProblem(token, request)
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body?.code != "SUCCESS") {
+                    emit(Result.failure(Exception("${body?.code.toString()}: ${body?.message.toString()}")))
+                }
+
+                val problemInfo = body!!.data!!
+                emit(Result.success(problemInfo))
             } else {
                 emit(Result.failure(HttpException(response)))
             }

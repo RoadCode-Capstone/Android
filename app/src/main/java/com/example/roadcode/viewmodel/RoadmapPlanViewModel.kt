@@ -32,25 +32,25 @@ class RoadmapPlanViewModel @Inject constructor(private val repository: RoadmapRe
     /* 사용 언어 설정 함수 */
     fun setSelectedLanguage(language: String?) {
         _plan.value = _plan.value.copy(selectedLanguage = language)
-        Log.d(TAG, "학습 계획 - 언어 변경: ${_plan.value.selectedLanguage}")
+        Log.d(TAG, "학습 계획 - 언어 변경: ${language}")
     }
 
     /* 로드맵 유형 설정 함수 */
     fun setSelectedType(type: String?) {
         _plan.value = _plan.value.copy(selectedType = type)
-        Log.d(TAG, "학습 계획 - 유형 변경: ${_plan.value.selectedType}")
+        Log.d(TAG, "학습 계획 - 유형 변경: ${type}")
     }
 
     /* 학습할 알고리즘 설정 함수 */
     fun setSelectedAlgorithm(algorithm: String?) {
         _plan.value = _plan.value.copy(selectedAlgorithm = algorithm)
-        Log.d(TAG, "학습 계획 - 알고리즘 변경: ${_plan.value.selectedAlgorithm}")
+        Log.d(TAG, "학습 계획 - 알고리즘 변경: ${algorithm}")
     }
 
     /* 일일 학습 목표 설정 함수 */
     fun setSelectedGoal(goal: Int?) {
         _plan.value = _plan.value.copy(selectedGoal = goal)
-        Log.d(TAG, "학습 계획 - 일일 학습 목표 변경: ${_plan.value.selectedGoal}")
+        Log.d(TAG, "학습 계획 - 일일 학습 목표 변경: ${goal}")
     }
 
     /* 로드맵 생성 함수 */

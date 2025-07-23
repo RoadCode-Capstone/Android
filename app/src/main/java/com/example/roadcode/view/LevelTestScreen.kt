@@ -196,8 +196,8 @@ fun LevelTestReadyScreen(navController: NavController, roadmapViewModel: Roadmap
                     onClick = {
                         // 레벨 테스트 생성
                         val request = LevelTestDTO.createRequest(plan.selectedType!!, plan.selectedLanguage!!, plan.selectedAlgorithm)
-                        levelTestViewModel.createLevelTest(request)
-//                        levelTestViewModel.getLevelTestProblems(listOf(584, 2000, 237, 62, 70))
+//                        levelTestViewModel.createLevelTest(request)
+                        levelTestViewModel.getLevelTestProblems(listOf(584, 2000, 237, 62, 70))
                         navController.navigate("level_test")
                     },
                     modifier = Modifier
@@ -258,7 +258,9 @@ fun LevelTestScreen(navController: NavController, roadmapViewModel: RoadmapPlanV
                 navigationIcon = {
                     Button( // 종료 버튼
                         onClick = {
-                                  /* 풀이 제출 */
+                            // 풀이 제출 및 결과 화면으로 이동
+                            levelTestViewModel.submitLevelTest(plan.selectedLanguage!!)
+                            navController.navigate("level_result")
                         },
                         modifier = Modifier
                             .height(40.dp)
@@ -597,7 +599,8 @@ fun LevelTestResultScreen(navController: NavController, roadmapPlanViewModel: Ro
                 ) {
                     Button( // 바로 학습하러 가기 버튼
                         onClick = {
-                                  /* 해당 로드맵의 로드맵 조회 화면으로 이동 */
+                                  // 해당 로드맵의 로드맵 조회 화면으로 이동
+                                  navController.navigate("roadmap")
                         },
                         modifier = Modifier
                             .fillMaxWidth()

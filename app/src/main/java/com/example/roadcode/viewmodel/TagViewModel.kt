@@ -30,7 +30,7 @@ class TagViewModel @Inject constructor(private val repository: TagRepository) : 
                 result
                     .onSuccess { tagsMap ->
                         _tags.value = tagsMap
-                        Log.d(TAG, "태그 목록: ${_tags.value}")
+                        Log.d(TAG, "태그 목록: ${tagsMap}")
                     }.onFailure { e ->
                         e.printStackTrace()
                     }

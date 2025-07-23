@@ -1,6 +1,6 @@
 package com.example.roadcode.data.model
 
-class ProblemDTO {
+object ProblemDTO {
     // 문제 데이터 구조
     data class ProblemData(
         val problemId: Long,            // 문제 ID
