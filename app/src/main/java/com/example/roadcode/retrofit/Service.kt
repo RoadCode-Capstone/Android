@@ -11,6 +11,7 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Headers
 import retrofit2.http.POST
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 /* JSON 데이터 처리 */
@@ -34,4 +35,12 @@ interface JsonService {
     // 로드맵 생성
     @POST("/api/v1/roadmaps")
     suspend fun createRoadmap(@Header("Authorization") token: String, @Body request: RoadmapDTO.createRequest): Response<ResponseUtilDTO.Response<RoadmapDTO.createResponse>>
+
+    // 로드맵 정보 조회
+    @GET("/api/v1/roadmaps/{roadmapId}")
+    suspend fun getRoadmap(@Header("Authorization") token: String, @Path("roadmapId") roadmapId: Long): Response<ResponseUtilDTO.Response<RoadmapDTO.roadmapData>>
+
+    // 로드맵 문제 목록 조회
+    @GET("api/v1/roadmaps/{roadmapId}/problems")
+    suspend fun getRoadmapProblems(@Header("Authorization") token: String, @Path("roadmapId") roadmapId: Long): Response<ResponseUtilDTO.Response<RoadmapDTO.getProblemsResponse>>
 }
