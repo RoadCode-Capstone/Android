@@ -1,6 +1,7 @@
 package com.example.roadcode.retrofit
 
 import com.example.roadcode.data.model.LevelTestDTO
+import com.example.roadcode.data.model.ProblemDTO
 import com.example.roadcode.data.model.ResponseUtilDTO
 import com.example.roadcode.data.model.RoadmapDTO
 import com.example.roadcode.data.model.TagDTO
@@ -43,4 +44,8 @@ interface JsonService {
     // 로드맵 문제 목록 조회
     @GET("api/v1/roadmaps/{roadmapId}/problems")
     suspend fun getRoadmapProblems(@Header("Authorization") token: String, @Path("roadmapId") roadmapId: Long): Response<ResponseUtilDTO.Response<RoadmapDTO.getProblemsResponse>>
+
+    // 문제 정보 조회
+    @GET("/api/v1/problems/{problemId}")
+    suspend fun getProblem(@Header("Authorization") token: String, @Path("problemId") problemId: Long): Response<ResponseUtilDTO.Response<ProblemDTO.ProblemData>>
 }
