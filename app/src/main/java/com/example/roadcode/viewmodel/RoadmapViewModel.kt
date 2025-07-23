@@ -3,6 +3,7 @@ package com.example.roadcode.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.roadcode.data.model.ProblemDTO
 import com.example.roadcode.data.model.RoadmapDTO
 import com.example.roadcode.data.repository.LevelTestRepository
 import com.example.roadcode.data.repository.RoadmapRepository
@@ -41,15 +42,24 @@ class RoadmapViewModel @Inject constructor(private val repository: RoadmapReposi
 //        RoadmapDTO.roadmapProblem(784, 23, 13, "NOT_STARTED"),
 //        RoadmapDTO.roadmapProblem(785, 7, 14, "NOT_STARTED")))    // (테스트)
     val problems = _problems.asStateFlow()
+    private val _problemInfo = MutableStateFlow<ProblemDTO.ProblemData?>(null)  // 문제 정보
+    val problemInfo = _problemInfo.asStateFlow()
 
     init {
         setRoadmapId(35)    // (테스트)
 
-        // roadmapId가 변경될 때마다 로드맵 정보 조회 및 문제 목록 조회 실행
         viewModelScope.launch {
-            roadmapId.collect {
-                getRoadmap()
-                getRoadmapProblems()
+            roadmapId.collect {  // roadmapId가 변경될 때마다 실행
+                getRoadmap()            // 로드맵 정보 조회
+                getRoadmapProblems()    // 로드맵 문제 목록 조회
+            }
+        }
+
+        viewModelScope.launch {
+            roadmapInfo.collect {                     // roadmapInfo가 변경될 때마다 실행
+                if (roadmapInfo.value?.currentProblem?.problemId != null) {
+                    getProblem(roadmapInfo.value!!.currentProblem.problemId)  // 현재 풀어야 하는 문제 정보 조회
+                }
             }
         }
     }
@@ -88,6 +98,24 @@ class RoadmapViewModel @Inject constructor(private val repository: RoadmapReposi
                     .onSuccess { problems ->
                         _problems.value = problems
                         Log.d(TAG, "로드맵 문제 목록: ${problems}")
+                    }
+                    .onFailure { e ->
+                        e.printStackTrace()
+                    }
+            }
+        }
+    }
+
+    /* 문제 정보 조회 함수 */
+    fun getProblem(problemId: Long) {
+        viewModelScope.launch {
+            val request = problemId
+
+            repository.getProblem(request).collect() { result ->
+                result
+                    .onSuccess { problemInfo ->
+                        _problemInfo.value = problemInfo
+                        Log.d(TAG, "문제 정보: ${problemInfo}")
                     }
                     .onFailure { e ->
                         e.printStackTrace()
