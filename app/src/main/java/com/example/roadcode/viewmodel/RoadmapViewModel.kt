@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlinx.coroutines.flow.combine
 
 @HiltViewModel
 class RoadmapViewModel @Inject constructor(private val repository: RoadmapRepository) : ViewModel() {
@@ -24,7 +25,7 @@ class RoadmapViewModel @Inject constructor(private val repository: RoadmapReposi
     val roadmapId = _roadmapId.asStateFlow()
     private val _roadmapInfo = MutableStateFlow<RoadmapDTO.roadmapData?>(null)   // 로드맵 정보
     val roadmapInfo = _roadmapInfo.asStateFlow()
-    private val _problems = MutableStateFlow<List<RoadmapDTO.roadmapProblem>>(emptyList())  // 문제 정보
+    private val _problems = MutableStateFlow<List<RoadmapDTO.roadmapProblem>>(emptyList())  // 문제 목록
 //    private val _problems = MutableStateFlow<List<RoadmapDTO.roadmapProblem>>(listOf(
 //        RoadmapDTO.roadmapProblem(771, 2195, 0, "IN_PROGRESS"),
 //        RoadmapDTO.roadmapProblem(772, 14, 1, "NOT_STARTED"),
@@ -44,22 +45,19 @@ class RoadmapViewModel @Inject constructor(private val repository: RoadmapReposi
     val problems = _problems.asStateFlow()
     private val _problemInfo = MutableStateFlow<ProblemDTO.ProblemData?>(null)  // 문제 정보
     val problemInfo = _problemInfo.asStateFlow()
+    private val _problemIdx = MutableStateFlow<Int>(0) // 문제 인덱스
+    val problemIdx = _problemIdx.asStateFlow()
 
     init {
         setRoadmapId(35)    // (테스트)
 
-        viewModelScope.launch {
-            roadmapId.collect {  // roadmapId가 변경될 때마다 실행
-                getRoadmap()            // 로드맵 정보 조회
-                getRoadmapProblems()    // 로드맵 문제 목록 조회
-            }
-        }
-
-        viewModelScope.launch {
-            roadmapInfo.collect {                     // roadmapInfo가 변경될 때마다 실행
-                if (roadmapInfo.value?.currentProblem?.problemId != null) {
-                    getProblem(roadmapInfo.value!!.currentProblem.problemId)  // 현재 풀어야 하는 문제 정보 조회
-                }
+        viewModelScope.launch { // 문제 인덱스, 문제 목록이 바뀔 때마다 실행
+            combine(problemIdx, problems) { idx, list -> idx to list }
+                .collect { (idx, list) ->
+                    if (idx in list.indices) {
+                        val problemId = list[idx].problemId
+                        getProblem(problemId)   // 문제 정보 조회
+                    }
             }
         }
     }
@@ -68,6 +66,15 @@ class RoadmapViewModel @Inject constructor(private val repository: RoadmapReposi
     fun setRoadmapId(newId: Long) {
         _roadmapId.value = newId
         Log.d(TAG, "로드맵 아이디 변경: ${roadmapId.value}")
+
+        getRoadmap()            // 로드맵 정보 조회
+        getRoadmapProblems()    // 로드맵 문제 목록 조회
+    }
+
+    /* 문제 인덱스 설정 함수 */
+    fun setProblemIdx(newIdx: Int) {
+        _problemIdx.value = newIdx
+        Log.d(TAG, "문제 인덱스 변경: ${problemIdx.value}")
     }
 
     /* 로드맵 정보 조회 함수 */
@@ -98,6 +105,8 @@ class RoadmapViewModel @Inject constructor(private val repository: RoadmapReposi
                     .onSuccess { problems ->
                         _problems.value = problems
                         Log.d(TAG, "로드맵 문제 목록: ${problems}")
+
+                        setProblemIdx(roadmapInfo.value!!.currentProblem.order) // 현재 풀어야 하는 문제 인덱스로 변경
                     }
                     .onFailure { e ->
                         e.printStackTrace()
