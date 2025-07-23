@@ -32,4 +32,9 @@ object RoadmapDTO {
     data class createResponse(
         val id: Long    // 생성된 로드맵 아이디
     )
+
+    // 로드맵 문제 목록 조회 응답
+    data class getProblemsResponse(
+        val roadmapProblems: List<roadmapProblem>
+    )
 }
