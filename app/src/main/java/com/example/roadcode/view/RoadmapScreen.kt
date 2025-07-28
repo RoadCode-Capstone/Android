@@ -197,7 +197,7 @@ fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewMod
 
                             Column(modifier = Modifier.fillMaxHeight()) {
                                 if (problemInfo != null) {
-                                    problemPreview( // 문제 미리보기 출력
+                                    ProblemPreview( // 문제 미리보기 출력
                                         modifier = Modifier.weight(1f),
                                         title = problemInfo!!.name,
                                         description = problemInfo!!.description
@@ -274,13 +274,13 @@ fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewMod
 
                             Spacer(modifier = Modifier.height(50.dp))
 
-                            drawerItem("문제 추가하기", onClick = {
+                            DrawerItem("문제 추가하기", onClick = {
                                 /* TODO: 문제 추가 기능 */
                             })
 
                             Spacer(modifier = Modifier.height(10.dp))
 
-                            drawerItem("로드맵 포기하기", onClick = {
+                            DrawerItem("로드맵 포기하기", onClick = {
                                 /* TODO: 로드맵 포기 기능 */
                             })
                         }
@@ -293,7 +293,7 @@ fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewMod
 
 /* 드로어 아이템 */
 @Composable
-fun drawerItem(text: String, onClick: () -> Unit) {
+fun DrawerItem(text: String, onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -318,7 +318,7 @@ fun drawerItem(text: String, onClick: () -> Unit) {
 /* 문제 미리보기 출력 */
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun problemPreview(modifier: Modifier, title: String, description: String) {
+fun ProblemPreview(modifier: Modifier, title: String, description: String) {
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(10.dp))
