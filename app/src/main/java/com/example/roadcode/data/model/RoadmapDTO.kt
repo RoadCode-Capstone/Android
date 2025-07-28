@@ -8,7 +8,9 @@ object RoadmapDTO {
         val type: String,                   // 유형
         val language: String,               // 언어
         val algorithm: String,              // 알고리즘
-        val currentProblem: roadmapProblem  // 해당 로드맵에서 현재 진행 중인 문제 정보
+        val currentProblem: roadmapProblem, // 해당 로드맵에서 현재 진행 중인 문제 정보
+        val levelTestResult: Int,           // 레벨 테스트 결과
+        val dailyGoal: Int                  // 일일 학습 목표
     )
 
     // 해당 로드맵에서 현재 진행 중인 문제 데이터 구조
