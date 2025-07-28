@@ -158,7 +158,7 @@ fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewMod
                                         fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
                                     )
                                 ) {
-                                    append("${3}") // 남은 수 계산 필요 (일일 학습 목표 어디서 조회하지?)
+                                    append("${3}") /* TODO: 일일 학습 목표까지 남은 문제 수 계산 필요 */
                                 }
 
                                 append("문제")
@@ -209,7 +209,7 @@ fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewMod
                                 ) {
                                     Button( // 시작하기 버튼
                                         onClick = {
-                                            /* 문제 풀이 화면으로 이동 */
+                                            /* TODO: 문제 풀이 화면으로 이동 */
                                         },
                                         modifier = Modifier
                                             .weight(1f)
@@ -275,13 +275,13 @@ fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewMod
                             Spacer(modifier = Modifier.height(50.dp))
 
                             drawerItem("문제 추가하기", onClick = {
-                                /* 문제 추가 기능*/
+                                /* TODO: 문제 추가 기능 */
                             })
 
                             Spacer(modifier = Modifier.height(10.dp))
 
                             drawerItem("로드맵 포기하기", onClick = {
-                                /* 로드맵 포기 기능*/
+                                /* TODO: 로드맵 포기 기능 */
                             })
                         }
                     }
