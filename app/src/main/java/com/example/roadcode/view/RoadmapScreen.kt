@@ -95,11 +95,9 @@ fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewMod
     val problems by roadmapViewModel.problems.collectAsState()          // 로드맵 문제 목록
     val problemInfo by roadmapViewModel.problemInfo.collectAsState()    // 문제 정보
     val problemIdx by roadmapViewModel.problemIdx.collectAsState()      // 출력할 문제 인덱스 (초기값: 현재 풀어야 하는 문제 인덱스)
+    val progress by roadmapViewModel.progress.collectAsState()          // 달성률
 
     if (roadmapInfo != null) {
-        val progress = if (roadmapInfo!!.currentProblem.order + 1 == problems.size) 100 else ((roadmapInfo!!.currentProblem.order).toFloat() / problems.size) * 100 // 진행도 (현재 문제 인덱스가 문제 수와 같으면 100%)
-        val formatted_progress = String.format("%.1f", progress)
-
         Box(modifier = Modifier.fillMaxSize()) {
             Scaffold(
                 topBar = {
@@ -180,7 +178,7 @@ fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewMod
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Text( // 달성률 출력
-                                    text = "${formatted_progress}%",
+                                    text = "${progress}%",
                                     fontSize = 17.sp,
                                     fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium)),
                                     color = PrimaryColor
