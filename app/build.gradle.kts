@@ -82,4 +82,6 @@ dependencies {
     // horizontalPager 사용
     implementation("androidx.compose.foundation:foundation:1.4.3")
 
+    // 아이콘 사용
+    implementation("androidx.compose.material:material-icons-extended:1.6.1")
 }
