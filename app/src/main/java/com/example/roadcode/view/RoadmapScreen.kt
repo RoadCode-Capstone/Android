@@ -95,11 +95,9 @@ fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewMod
     val problems by roadmapViewModel.problems.collectAsState()          // 로드맵 문제 목록
     val problemInfo by roadmapViewModel.problemInfo.collectAsState()    // 문제 정보
     val problemIdx by roadmapViewModel.problemIdx.collectAsState()      // 출력할 문제 인덱스 (초기값: 현재 풀어야 하는 문제 인덱스)
+    val progress by roadmapViewModel.progress.collectAsState()          // 달성률
 
     if (roadmapInfo != null) {
-        val progress = if (roadmapInfo!!.currentProblem.order + 1 == problems.size) 100 else ((roadmapInfo!!.currentProblem.order).toFloat() / problems.size) * 100 // 진행도 (현재 문제 인덱스가 문제 수와 같으면 100%)
-        val formatted_progress = String.format("%.1f", progress)
-
         Box(modifier = Modifier.fillMaxSize()) {
             Scaffold(
                 topBar = {
@@ -160,7 +158,7 @@ fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewMod
                                         fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
                                     )
                                 ) {
-                                    append("${3}") // 남은 수 계산 필요 (일일 학습 목표 어디서 조회하지?)
+                                    append("${3}") /* TODO: 일일 학습 목표까지 남은 문제 수 계산 필요 */
                                 }
 
                                 append("문제")
@@ -180,7 +178,7 @@ fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewMod
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Text( // 달성률 출력
-                                    text = "${formatted_progress}%",
+                                    text = "${progress}%",
                                     fontSize = 17.sp,
                                     fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium)),
                                     color = PrimaryColor
@@ -199,7 +197,7 @@ fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewMod
 
                             Column(modifier = Modifier.fillMaxHeight()) {
                                 if (problemInfo != null) {
-                                    problemPreview( // 문제 미리보기 출력
+                                    ProblemPreview( // 문제 미리보기 출력
                                         modifier = Modifier.weight(1f),
                                         title = problemInfo!!.name,
                                         description = problemInfo!!.description
@@ -211,7 +209,7 @@ fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewMod
                                 ) {
                                     Button( // 시작하기 버튼
                                         onClick = {
-                                            /* 문제 풀이 화면으로 이동 */
+                                            /* TODO: 문제 풀이 화면으로 이동 */
                                         },
                                         modifier = Modifier
                                             .weight(1f)
@@ -276,14 +274,14 @@ fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewMod
 
                             Spacer(modifier = Modifier.height(50.dp))
 
-                            drawerItem("문제 추가하기", onClick = {
-                                /* 문제 추가 기능*/
+                            DrawerItem("문제 추가하기", onClick = {
+                                /* TODO: 문제 추가 기능 */
                             })
 
                             Spacer(modifier = Modifier.height(10.dp))
 
-                            drawerItem("로드맵 포기하기", onClick = {
-                                /* 로드맵 포기 기능*/
+                            DrawerItem("로드맵 포기하기", onClick = {
+                                /* TODO: 로드맵 포기 기능 */
                             })
                         }
                     }
@@ -295,7 +293,7 @@ fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewMod
 
 /* 드로어 아이템 */
 @Composable
-fun drawerItem(text: String, onClick: () -> Unit) {
+fun DrawerItem(text: String, onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -320,7 +318,7 @@ fun drawerItem(text: String, onClick: () -> Unit) {
 /* 문제 미리보기 출력 */
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun problemPreview(modifier: Modifier, title: String, description: String) {
+fun ProblemPreview(modifier: Modifier, title: String, description: String) {
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(10.dp))

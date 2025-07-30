@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -11,6 +12,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.roadcode.view.LevelTestReadyScreen
 import com.example.roadcode.view.LevelTestResultScreen
 import com.example.roadcode.view.LevelTestScreen
+import com.example.roadcode.view.RoadmapListScreen
 import com.example.roadcode.view.RoadmapPlanAlgorithmScreen
 import com.example.roadcode.view.RoadmapPlanGoalScreen
 import com.example.roadcode.view.RoadmapPlanLanguageScreen
@@ -27,7 +29,7 @@ fun MainNavGraph(navController: NavHostController = rememberNavController()) {
     val levelTestViewModel: LevelTestViewModel = hiltViewModel()
     val roadmapViewModel: RoadmapViewModel = hiltViewModel()
 
-    NavHost(navController = navController, startDestination = "plan_language") {
+    NavHost(navController = navController, startDestination = "roadmap_list") {
         composable("plan_language") { RoadmapPlanLanguageScreen(navController, roadmapPlanViewModel) }                                  // 학습 계획 설정 화면 (언어)
         composable("plan_type") { RoadmapPlanTypeScreen(navController, roadmapPlanViewModel) }                                          // 학습 계획 설정 화면 (유형)
         composable("plan_algorithm") { RoadmapPlanAlgorithmScreen(navController, roadmapPlanViewModel) }                                // 학습 계획 설정 화면 (알고리즘)
@@ -36,5 +38,13 @@ fun MainNavGraph(navController: NavHostController = rememberNavController()) {
         composable("level_test") { LevelTestScreen(navController, roadmapPlanViewModel, levelTestViewModel) }                           // 레벨 테스트 화면
         composable("level_result") { LevelTestResultScreen(navController, roadmapPlanViewModel, levelTestViewModel, roadmapViewModel) } // 레벨 테스트 결과 화면
         composable("roadmap") { RoadmapScreen(navController, roadmapViewModel) }                                                        // 로드맵 조회 화면
+
+        bottomNavGraph(navController, roadmapViewModel) // 하단 내비게이션 바
     }
+}
+
+fun NavGraphBuilder.bottomNavGraph(navController: NavHostController, roadmapViewModel: RoadmapViewModel) {
+    composable("roadmap_list") { RoadmapListScreen(navController, roadmapViewModel) }
+    composable("home") { /* TODO: 홈 화면 추가 */ }
+    composable("ranking") { /* TODO: 순위 화면 추가 */ }
 }

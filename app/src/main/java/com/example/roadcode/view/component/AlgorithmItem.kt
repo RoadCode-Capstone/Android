@@ -23,7 +23,7 @@ import com.example.roadcode.ui.theme.PrimaryColor
 
 /* 알고리즘 아이템 버튼 */
 @Composable
-fun algorithmItem(name: String, onClick: () -> Unit) {
+fun AlgorithmItem(name: String, onClick: () -> Unit) {
     Button(
         onClick = { onClick() },
         modifier = Modifier
