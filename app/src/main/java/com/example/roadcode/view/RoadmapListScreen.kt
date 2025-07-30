@@ -3,6 +3,7 @@ package com.example.roadcode.view
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,6 +25,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
@@ -182,10 +184,18 @@ fun RoadmapItem(roadmapInfo: RoadmapDTO.roadmapsData, progress: String, onClick:
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(color = BackGrayColor, RoundedCornerShape(10.dp))
-            .border(width = 0.5.dp, color = PrimaryColor, RoundedCornerShape(10.dp))
-            .padding(20.dp)
-            .clickable { onClick() },
+            .clip(shape = RoundedCornerShape(10.dp))
+            .background(color = BackGrayColor, shape = RoundedCornerShape(10.dp))
+            .border(width = 0.5.dp, color = PrimaryColor, shape = RoundedCornerShape(10.dp))
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(
+                    bounded = true,      // 효과가 퍼지는 영역을 안으로 제한
+                    color = PrimaryColor
+                ),
+                onClick = onClick
+            )
+            .padding(20.dp),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         Row(
