@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -37,6 +38,13 @@ fun MainNavGraph(navController: NavHostController = rememberNavController()) {
         composable("level_test") { LevelTestScreen(navController, roadmapPlanViewModel, levelTestViewModel) }                           // 레벨 테스트 화면
         composable("level_result") { LevelTestResultScreen(navController, roadmapPlanViewModel, levelTestViewModel, roadmapViewModel) } // 레벨 테스트 결과 화면
         composable("roadmap") { RoadmapScreen(navController, roadmapViewModel) }                                                        // 로드맵 조회 화면
-        composable("roadmap_list") { RoadmapListScreen(navController, roadmapViewModel) }                                               // 로드맵 목록 화면
+
+        bottomNavGraph(navController, roadmapViewModel) // 하단 내비게이션 바
     }
+}
+
+fun NavGraphBuilder.bottomNavGraph(navController: NavHostController, roadmapViewModel: RoadmapViewModel) {
+    composable("roadmap_list") { RoadmapListScreen(navController, roadmapViewModel) }
+    composable("home") { /* TODO: 홈 화면 추가 */ }
+    composable("ranking") { /* TODO: 순위 화면 추가 */ }
 }
