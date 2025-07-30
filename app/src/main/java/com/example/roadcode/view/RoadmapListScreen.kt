@@ -53,6 +53,7 @@ import com.example.roadcode.data.model.RoadmapDTO
 import com.example.roadcode.ui.theme.BackGrayColor
 import com.example.roadcode.ui.theme.PointColor
 import com.example.roadcode.ui.theme.PrimaryColor
+import com.example.roadcode.view.component.BottomNavigationBar
 import com.example.roadcode.viewmodel.RoadmapViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -66,7 +67,6 @@ fun RoadmapListScreen(navController: NavController, roadmapViewModel: RoadmapVie
 
     Scaffold(
         topBar = {
-            /* TODO: 바텀 내비게이션 바 추가 */
             CenterAlignedTopAppBar(
                 title = {
                     Text(
@@ -101,6 +101,9 @@ fun RoadmapListScreen(navController: NavController, roadmapViewModel: RoadmapVie
                     tint = Color.White
                 )
             }
+        },
+        bottomBar = {
+            BottomNavigationBar(navController)
         }
     ) { paddingValues ->
         Box(
