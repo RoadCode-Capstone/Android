@@ -5,6 +5,7 @@ import com.example.roadcode.data.model.RoadmapDTO
 import com.example.roadcode.retrofit.JsonService
 import com.example.roadcode.retrofit.RetrofitInstance
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
 import javax.inject.Inject
@@ -15,101 +16,101 @@ class RoadmapRepository @Inject constructor() {
 
     /* 로드맵 생성 */
     suspend fun createRoadmap(request: RoadmapDTO.createRequest): Flow<Result<Long>> = flow {
-        try {
-            val response = jsonService.createRoadmap(token, request)
-            if (response.isSuccessful) {
-                val body = response.body()
-                if (body?.code != "SUCCESS") {
-                    emit(Result.failure(Exception("${body?.code.toString()}: ${body?.message.toString()}")))
-                }
+        val response = jsonService.createRoadmap(token, request)
 
-                val roadmapId = body!!.data!!.id
-                emit(Result.success(roadmapId))
-            } else {
-                emit(Result.failure(HttpException(response)))
+        if (response.isSuccessful) {
+            val body = response.body()
+
+            if (body?.code != "SUCCESS") {
+                throw Exception("${body?.code.toString()}: ${body?.message.toString()}")
             }
-        } catch (e: Exception) {
-            emit(Result.failure(e))
+
+            val roadmapId = body!!.data!!.id
+            emit(Result.success(roadmapId))
+        } else {
+            throw HttpException(response)
         }
+    }.catch { e ->
+        emit(Result.failure(e))
     }
 
     /* 로드맵 정보 조회 */
     suspend fun getRoadmap(request: Long): Flow<Result<RoadmapDTO.roadmapData>> = flow {
-        try {
-            val response = jsonService.getRoadmap(token, request)
-            if (response.isSuccessful) {
-                val body = response.body()
-                if (body?.code != "SUCCESS") {
-                    emit(Result.failure(Exception("${body?.code.toString()}: ${body?.message.toString()}")))
-                }
+        val response = jsonService.getRoadmap(token, request)
 
-                val roadmapInfo = body!!.data!!
-                emit(Result.success(roadmapInfo))
-            } else {
-                emit(Result.failure(HttpException(response)))
+        if (response.isSuccessful) {
+            val body = response.body()
+
+            if (body?.code != "SUCCESS") {
+                throw Exception("${body?.code.toString()}: ${body?.message.toString()}")
             }
-        } catch (e: Exception) {
-            emit(Result.failure(e))
+
+            val roadmapInfo = body!!.data!!
+            emit(Result.success(roadmapInfo))
+        } else {
+            throw HttpException(response)
         }
+    }.catch { e ->
+        emit(Result.failure(e))
     }
 
     /* 로드맵 문제 목록 조회 */
     suspend fun getRoadmapProblems(request: Long): Flow<Result<List<RoadmapDTO.roadmapProblem>>> = flow {
-        try {
-            val response = jsonService.getRoadmapProblems(token, request)
-            if (response.isSuccessful) {
-                val body = response.body()
-                if (body?.code != "SUCCESS") {
-                    emit(Result.failure(Exception("${body?.code.toString()}: ${body?.message.toString()}")))
-                }
+        val response = jsonService.getRoadmapProblems(token, request)
 
-                val roadmapProblems = body!!.data!!.roadmapProblems
-                emit(Result.success(roadmapProblems))
-            } else {
-                emit(Result.failure(HttpException(response)))
+        if (response.isSuccessful) {
+            val body = response.body()
+
+            if (body?.code != "SUCCESS") {
+                throw Exception("${body?.code.toString()}: ${body?.message.toString()}")
             }
-        } catch (e: Exception) {
-            emit(Result.failure(e))
+
+            val roadmapProblems = body!!.data!!.roadmapProblems
+            emit(Result.success(roadmapProblems))
+        } else {
+            throw HttpException(response)
         }
+    }.catch { e ->
+        emit(Result.failure(e))
     }
 
     /* 문제 정보 조회 */
     suspend fun getProblem(request: Long): Flow<Result<ProblemDTO.ProblemData>> = flow {
-        try {
-            val response = jsonService.getProblem(token, request)
-            if (response.isSuccessful) {
-                val body = response.body()
-                if (body?.code != "SUCCESS") {
-                    emit(Result.failure(Exception("${body?.code.toString()}: ${body?.message.toString()}")))
-                }
+        val response = jsonService.getProblem(token, request)
 
-                val problemInfo = body!!.data!!
-                emit(Result.success(problemInfo))
-            } else {
-                emit(Result.failure(HttpException(response)))
+        if (response.isSuccessful) {
+            val body = response.body()
+
+            if (body?.code != "SUCCESS") {
+                throw Exception("${body?.code.toString()}: ${body?.message.toString()}")
             }
-        } catch (e: Exception) {
-            emit(Result.failure(e))
+
+            val problemInfo = body!!.data!!
+            emit(Result.success(problemInfo))
+        } else {
+            throw HttpException(response)
         }
+    }.catch { e ->
+        emit(Result.failure(e))
     }
 
     /* 회원 로드맵 목록 조회 */
     suspend fun getRoadmaps(): Flow<Result<List<RoadmapDTO.roadmapsData>>> = flow {
-        try {
-            val response = jsonService.getRoadmaps(token)
-            if (response.isSuccessful) {
-                val body = response.body()
-                if (body?.code != "SUCCESS") {
-                    emit(Result.failure(Exception("${body?.code.toString()}: ${body?.message.toString()}")))
-                }
+        val response = jsonService.getRoadmaps(token)
 
-                val roadmaps = body!!.data!!.roadmaps
-                emit(Result.success(roadmaps))
-            } else {
-                emit(Result.failure(HttpException(response)))
+        if (response.isSuccessful) {
+            val body = response.body()
+
+            if (body?.code != "SUCCESS") {
+                throw Exception("${body?.code.toString()}: ${body?.message.toString()}")
             }
-        } catch (e: Exception) {
-            emit(Result.failure(e))
+
+            val roadmaps = body!!.data!!.roadmaps
+            emit(Result.success(roadmaps))
+        } else {
+            throw HttpException(response)
         }
+    }.catch { e ->
+        emit(Result.failure(e))
     }
 }
