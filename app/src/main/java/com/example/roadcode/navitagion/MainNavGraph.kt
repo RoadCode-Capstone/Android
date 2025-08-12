@@ -9,6 +9,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.roadcode.view.HomeScreen
 import com.example.roadcode.view.LevelTestReadyScreen
 import com.example.roadcode.view.LevelTestResultScreen
 import com.example.roadcode.view.LevelTestScreen
@@ -32,7 +33,7 @@ fun MainNavGraph(navController: NavHostController = rememberNavController()) {
     val roadmapViewModel: RoadmapViewModel = hiltViewModel()
     val rankingViewModel: RankingViewModel = hiltViewModel()
 
-    NavHost(navController = navController, startDestination = "ranking") {
+    NavHost(navController = navController, startDestination = "home") {
         composable("plan_language") { RoadmapPlanLanguageScreen(navController, roadmapPlanViewModel) }                                  // 학습 계획 설정 화면 (언어)
         composable("plan_type") { RoadmapPlanTypeScreen(navController, roadmapPlanViewModel) }                                          // 학습 계획 설정 화면 (유형)
         composable("plan_algorithm") { RoadmapPlanAlgorithmScreen(navController, roadmapPlanViewModel) }                                // 학습 계획 설정 화면 (알고리즘)
@@ -46,8 +47,9 @@ fun MainNavGraph(navController: NavHostController = rememberNavController()) {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 fun NavGraphBuilder.bottomNavGraph(navController: NavHostController, roadmapViewModel: RoadmapViewModel, rankingViewModel: RankingViewModel) {
     composable("roadmap_list") { RoadmapListScreen(navController, roadmapViewModel) }   // 로드맵 목록 화면
-    composable("home") { /* TODO: 홈 화면 추가 */ }
+    composable("home") { HomeScreen(navController) }                                    // 홈 화면
     composable("ranking") { RankingScreen(navController, rankingViewModel) }            // 순위 화면
 }
