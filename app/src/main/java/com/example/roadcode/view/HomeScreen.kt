@@ -28,6 +28,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -40,13 +42,21 @@ import com.example.roadcode.R
 import com.example.roadcode.ui.theme.PointColor
 import com.example.roadcode.ui.theme.PrimaryColor
 import com.example.roadcode.view.component.BottomNavigationBar
+import com.example.roadcode.viewmodel.CalendarViewModel
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 import java.time.YearMonth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(navController: NavController, calendarViewModel: CalendarViewModel) {
+    val yearMonth by calendarViewModel.yearMonth.collectAsState()
+    val year = yearMonth.year
+    val month = yearMonth.monthValue
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -83,7 +93,7 @@ fun HomeScreen(navController: NavController) {
         ) {
             /* TODO: 한 달 출석 횟수 출력 */
 
-            Calendar()
+            Calendar(calendarViewModel, year, month)
 
             /* TODO: 한 달 풀이 성공한 문제 출력 */
         }
@@ -92,19 +102,19 @@ fun HomeScreen(navController: NavController) {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun Calendar() {
-    val month = 8
-
+fun Calendar(calendarViewModel: CalendarViewModel, year: Int, month: Int) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 15.dp)
     ) {
-        MonthBar(month = month)
+        MonthBar(month = month, onClickPrevMonth = { calendarViewModel.prevMonth() }, onClickNextMonth = { calendarViewModel.nextMonth() })
         WeekDayBar()
-        DateGrid(2025, 8)
+        DateGrid(year, month)
         Divider(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 10.dp),
             color = PrimaryColor,
             thickness = 0.5.dp
         )
@@ -113,13 +123,13 @@ fun Calendar() {
 
 /* 현재 월 출력 및 이동 바 */
 @Composable
-fun MonthBar(month: Int) {
+fun MonthBar(month: Int, onClickPrevMonth: () -> Unit, onClickNextMonth: () -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        MonthMoveButton(icon = Icons.Default.ChevronLeft, onClick = { /* TODO: 이전 월로 이동 기능 추가 */ })
+        MonthMoveButton(icon = Icons.Default.ChevronLeft, onClick = { onClickPrevMonth() })
 
         Text(
             text = "${month}월",
@@ -128,7 +138,7 @@ fun MonthBar(month: Int) {
             fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
         )
 
-        MonthMoveButton(icon = Icons.Default.ChevronRight, onClick = { /* TODO: 다음 월로 이동 기능 추가 */ })
+        MonthMoveButton(icon = Icons.Default.ChevronRight, onClick = { onClickNextMonth() })
     }
 }
 
