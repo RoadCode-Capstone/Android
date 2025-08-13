@@ -6,6 +6,7 @@ import com.example.roadcode.data.model.SubmissionDTO
 import com.example.roadcode.retrofit.JsonService
 import com.example.roadcode.retrofit.RetrofitInstance
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
 import javax.inject.Inject
@@ -16,61 +17,62 @@ class LevelTestRepository @Inject constructor() {
 
     /* 레벨 테스트 생성 */
     suspend fun createLevelTest(request: LevelTestDTO.createRequest): Flow<Result<List<Long>>> = flow {
-        try {
-            val response = jsonService.createLevelTest(token, request)
-            if (response.isSuccessful) {
-                val body = response.body()
-                if (body?.code != "SUCCESS") {
-                    emit(Result.failure(Exception("${body?.code.toString()}: ${body?.message.toString()}")))
-                }
+        val response = jsonService.createLevelTest(token, request)
 
-                val levelTestIds = body!!.data!!.problemIds
-                emit(Result.success(levelTestIds))
-            } else {
-                emit(Result.failure(HttpException(response)))
+        if (response.isSuccessful) {
+            val body = response.body()
+
+            if (body?.code != "SUCCESS") {
+                throw Exception("${body?.code.toString()}: ${body?.message.toString()}")
             }
-        } catch (e: Exception) {
-            emit(Result.failure(e))
+
+            val levelTestIds = body!!.data!!.problemIds
+            emit(Result.success(levelTestIds))
+        } else {
+            throw HttpException(response)
         }
+    }.catch { e ->
+        emit(Result.failure(e))
     }
 
     /* 레벨 테스트 문제 조회 */
     suspend fun getLevelTestProblems(request: List<Long>): Flow<Result<List<ProblemDTO.ProblemData>>> = flow {
-        try {
-            val response = jsonService.getLevelTestProblems(token, request)
-            if (response.isSuccessful) {
-                val body = response.body()
-                if (body?.code != "SUCCESS") {
-                    emit(Result.failure(Exception("${body?.code.toString()}: ${body?.message.toString()}")))
-                }
+        val response = jsonService.getLevelTestProblems(token, request)
 
-                val levelTestProblems = body!!.data!!.problems
-                emit(Result.success(levelTestProblems))
-            } else {
-                emit(Result.failure(HttpException(response)))
+        if (response.isSuccessful) {
+            val body = response.body()
+
+            if (body?.code != "SUCCESS") {
+                throw Exception("${body?.code.toString()}: ${body?.message.toString()}")
             }
-        } catch (e: Exception) {
-            emit(Result.failure(e))
+
+            val levelTestProblems = body!!.data!!.problems
+            emit(Result.success(levelTestProblems))
+        } else {
+            throw HttpException(response)
         }
+    }.catch { e ->
+        emit(Result.failure(e))
     }
+
 
     /* 레벨 테스트 제출 */
     suspend fun submitLevelTest(request: LevelTestDTO.submitRequest): Flow<Result<LevelTestDTO.submitResponse>> = flow {
-        try {
-            val response = jsonService.submitLevelTest(token, request)
-            if (response.isSuccessful) {
-                val body = response.body()
-                if (body?.code != "SUCCESS") {
-                    emit(Result.failure(Exception("${body?.code.toString()}: ${body?.message.toString()}")))
-                }
+        val response = jsonService.submitLevelTest(token, request)
 
-                val levelTestIds = body!!.data!!
-                emit(Result.success(levelTestIds))
-            } else {
-                emit(Result.failure(HttpException(response)))
+        if (response.isSuccessful) {
+            val body = response.body()
+
+            if (body?.code != "SUCCESS") {
+                throw Exception("${body?.code.toString()}: ${body?.message.toString()}")
             }
-        } catch (e: Exception) {
-            emit(Result.failure(e))
+
+            val levelTestIds = body!!.data!!
+            emit(Result.success(levelTestIds))
+        } else {
+            throw HttpException(response)
         }
+    }.catch { e ->
+        emit(Result.failure(e))
     }
 }

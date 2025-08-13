@@ -281,7 +281,7 @@ fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewMod
                             Spacer(modifier = Modifier.height(10.dp))
 
                             DrawerItem("로드맵 포기하기", onClick = {
-                                /* TODO: 로드맵 포기 기능 */
+                                roadmapViewModel.giveUpRoadmap()
                             })
                         }
                     }
