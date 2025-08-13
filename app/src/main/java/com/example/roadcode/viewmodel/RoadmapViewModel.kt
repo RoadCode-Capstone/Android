@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.update
 
 @HiltViewModel
 class RoadmapViewModel @Inject constructor(private val repository: RoadmapRepository) : ViewModel() {
@@ -52,9 +53,11 @@ class RoadmapViewModel @Inject constructor(private val repository: RoadmapReposi
     val problemIdx = _problemIdx.asStateFlow()
     private val _progress = MutableStateFlow<String>("")   // 달성률 (소수점 첫째 자리까지 출력)
     val progress = _progress.asStateFlow()
+    private val _status = MutableStateFlow<List<String>>(emptyList())  // 선택한 로드맵 상태
+    val status = _status.asStateFlow()
 
     init {
-        getRoadmaps()   // (테스트)
+        getRoadmaps(status.value)   // (테스트)
 
         setRoadmapId(35)    // (테스트)
 
@@ -165,10 +168,26 @@ class RoadmapViewModel @Inject constructor(private val repository: RoadmapReposi
         }
     }
 
+    /* 선택한 로드맵 상태 설정 함수 */
+    fun setStatus(name: String, checked: Boolean) {
+        _status.update { cur ->
+            if (checked) {
+                cur + name
+            }
+            else {
+                cur.filterNot { it == name }
+            }
+        }
+
+        Log.d(TAG, "선택한 로드맵 상태 변경: ${status.value}")
+
+        getRoadmaps(status.value)
+    }
+
     /* 로드맵 목록 조회 함수 */
-    fun getRoadmaps() {
+    fun getRoadmaps(status: List<String>) {
         viewModelScope.launch {
-            repository.getRoadmaps().collect() { result ->
+            repository.getRoadmaps(status).collect() { result ->
                 result
                     .onSuccess { roadmaps ->
                         _roadmaps.value = roadmaps
