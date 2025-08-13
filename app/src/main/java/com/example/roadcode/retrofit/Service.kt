@@ -50,6 +50,10 @@ interface JsonService {
     @GET("/api/v1/problems/{problemId}")
     suspend fun getProblem(@Header("Authorization") token: String, @Path("problemId") problemId: Long): Response<ResponseUtilDTO.Response<ProblemDTO.ProblemData>>
 
+    // 로드맵 포기
+    @POST("/api/v1/roadmaps/{roadmapId}/give-up")
+    suspend fun giveUpRoadmap(@Header("Authorization") token: String, @Path("roadmapId") roadmapId: Long): Response<ResponseUtilDTO.Response<Nothing>>
+
     // 회원 로드맵 목록 조회
     @GET("/api/v1/roadmaps/my")
     suspend fun getRoadmaps(@Header("Authorization") token: String): Response<ResponseUtilDTO.Response<RoadmapDTO.getRoadmapsResponse>>

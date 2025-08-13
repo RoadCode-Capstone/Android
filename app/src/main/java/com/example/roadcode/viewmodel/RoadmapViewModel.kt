@@ -164,6 +164,16 @@ class RoadmapViewModel @Inject constructor(private val repository: RoadmapReposi
             }
         }
     }
+    
+    /* 로드맵 포기 함수 */
+    fun giveUpRoadmap() {
+        viewModelScope.launch {
+            val request = roadmapId.value
+
+            repository.giveUpRoadmap(request).collect() { result ->
+                result
+                    .onSuccess { message ->
+                        Log.d(TAG, message)
 
     /* 로드맵 목록 조회 함수 */
     fun getRoadmaps() {
