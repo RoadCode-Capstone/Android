@@ -63,9 +63,7 @@ import com.example.roadcode.viewmodel.RoadmapViewModel
 fun RoadmapListScreen(navController: NavController, roadmapViewModel: RoadmapViewModel) {
     val roadmaps by roadmapViewModel.roadmaps.collectAsState()  // 로드맵 목록
     val progress by roadmapViewModel.progress.collectAsState()  // 달성률
-
-    var inProgressChecked by remember { mutableStateOf(false) }
-    var completedChecked by remember { mutableStateOf(false) }
+    val status by roadmapViewModel.status.collectAsState()      // 선택한 로드맵 상태
 
     Scaffold(
         topBar = {
@@ -125,39 +123,11 @@ fun RoadmapListScreen(navController: NavController, roadmapViewModel: RoadmapVie
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
+                    horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    Checkbox(
-                        checked = inProgressChecked,
-                        onCheckedChange = { inProgressChecked = it },
-                        colors = CheckboxDefaults.colors(
-                            checkedColor = PrimaryColor,
-                            checkmarkColor = Color.White
-                        )
-                    )
-                    Text(
-                        text = "진행 중",
-                        fontSize = 16.sp,
-                        color = PrimaryColor,
-                        fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
-                    )
-
-                    Spacer(modifier = Modifier.width(80.dp))
-
-                    Checkbox(
-                        checked = completedChecked,
-                        onCheckedChange = { completedChecked = it },
-                        colors = CheckboxDefaults.colors(
-                            checkedColor = PrimaryColor,
-                            checkmarkColor = Color.White
-                        )
-                    )
-                    Text(
-                        text = "완료",
-                        fontSize = 16.sp,
-                        color = PrimaryColor,
-                        fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
-                    )
+                    StateCheckbox(name = "진행 중", state = "IN_PROGRESS" in status, onChecked = { roadmapViewModel.setStatus("IN_PROGRESS", it) })
+                    StateCheckbox(name = "완료", state = "COMPLETED" in status, onChecked = { roadmapViewModel.setStatus("COMPLETED", it) })
+                    StateCheckbox(name = "포기", state = "GAVE_UP" in status, onChecked = { roadmapViewModel.setStatus("GAVE_UP", it) })
                 }
 
                 Spacer(modifier = Modifier.height(15.dp))
@@ -175,6 +145,36 @@ fun RoadmapListScreen(navController: NavController, roadmapViewModel: RoadmapVie
                 }
             }
         }
+    }
+}
+
+/* 로드맵 상태 체크 박스 */
+@Composable
+fun StateCheckbox(name: String, state: Boolean, onChecked: (Boolean) -> Unit) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = { onChecked(!state) }
+            )
+    ) {
+        Checkbox(
+            checked = state,
+            onCheckedChange = null,
+            colors = CheckboxDefaults.colors(
+                checkedColor = PrimaryColor,
+                checkmarkColor = Color.White
+            ),
+            modifier = Modifier.padding(end = 5.dp)
+        )
+        Text(
+            text = name,
+            fontSize = 16.sp,
+            color = PrimaryColor,
+            fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
+        )
     }
 }
 
