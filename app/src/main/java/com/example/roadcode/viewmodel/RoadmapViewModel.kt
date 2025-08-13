@@ -21,6 +21,8 @@ class RoadmapViewModel @Inject constructor(private val repository: RoadmapReposi
         private const val TAG = "RoadmapViewModel"
     }
 
+    private val _roadmaps = MutableStateFlow<List<RoadmapDTO.roadmapsData>>(emptyList())    // 로드맵 목록
+    val roadmaps = _roadmaps.asStateFlow()
     private val _roadmapId = MutableStateFlow<Long>(0)   // 로드맵 아이디
 //    private val _roadmapId = MutableStateFlow<Long>(35)      // (테스트)
     val roadmapId = _roadmapId.asStateFlow()
@@ -48,8 +50,12 @@ class RoadmapViewModel @Inject constructor(private val repository: RoadmapReposi
     val problemInfo = _problemInfo.asStateFlow()
     private val _problemIdx = MutableStateFlow<Int>(0) // 문제 인덱스
     val problemIdx = _problemIdx.asStateFlow()
+    private val _progress = MutableStateFlow<String>("")   // 달성률 (소수점 첫째 자리까지 출력)
+    val progress = _progress.asStateFlow()
 
     init {
+        getRoadmaps()   // (테스트)
+
         setRoadmapId(35)    // (테스트)
 
         viewModelScope.launch { // 문제 인덱스, 문제 목록이 바뀔 때마다 실행
@@ -60,6 +66,15 @@ class RoadmapViewModel @Inject constructor(private val repository: RoadmapReposi
                         getProblem(problemId)   // 문제 정보 조회
                     }
             }
+        }
+
+        viewModelScope.launch { // 로드맵 정보, 문제 목록이 바뀔 때마다 실행
+            combine(roadmapInfo, problems) { info, problems -> info to problems }
+                .collect { (info, problems) ->
+                    if (info != null && problems.isNotEmpty()) {
+                        setProgress()   // 달성률 계산
+                    }
+                }
         }
     }
 
@@ -92,6 +107,22 @@ class RoadmapViewModel @Inject constructor(private val repository: RoadmapReposi
                     .onFailure { e ->
                         e.printStackTrace()
                     }
+            }
+        }
+    }
+
+    /* 달성률 계산 함수 */
+    fun setProgress() {
+        if (roadmapInfo.value!!.currentProblem.order + 1 == problems.value.size) {
+            _progress.value = "100"
+        }
+        else {
+            val percentage = ((roadmapInfo.value!!.currentProblem.order).toFloat() / problems.value.size) * 100
+            _progress.value = if (percentage == 0f) {
+                "0"
+            }
+            else {
+                String.format("%.1f", percentage)
             }
         }
     }
@@ -133,7 +164,7 @@ class RoadmapViewModel @Inject constructor(private val repository: RoadmapReposi
             }
         }
     }
-
+    
     /* 로드맵 포기 함수 */
     fun giveUpRoadmap() {
         viewModelScope.launch {
@@ -143,6 +174,15 @@ class RoadmapViewModel @Inject constructor(private val repository: RoadmapReposi
                 result
                     .onSuccess { message ->
                         Log.d(TAG, message)
+
+    /* 로드맵 목록 조회 함수 */
+    fun getRoadmaps() {
+        viewModelScope.launch {
+            repository.getRoadmaps().collect() { result ->
+                result
+                    .onSuccess { roadmaps ->
+                        _roadmaps.value = roadmaps
+                        Log.d(TAG, "로드맵 목록: ${roadmaps}")
                     }
                     .onFailure { e ->
                         e.printStackTrace()

@@ -8,7 +8,9 @@ object RoadmapDTO {
         val type: String,                   // 유형
         val language: String,               // 언어
         val algorithm: String,              // 알고리즘
-        val currentProblem: roadmapProblem  // 해당 로드맵에서 현재 진행 중인 문제 정보
+        val currentProblem: roadmapProblem, // 해당 로드맵에서 현재 진행 중인 문제 정보
+        val levelTestResult: Int,           // 레벨 테스트 결과
+        val dailyGoal: Int                  // 일일 학습 목표
     )
 
     // 해당 로드맵에서 현재 진행 중인 문제 데이터 구조
@@ -30,11 +32,26 @@ object RoadmapDTO {
 
     // 로드맵 생성 응답
     data class createResponse(
-        val id: Long    // 생성된 로드맵 아이디
+        val id: Long    // 생성된 로드맵 ID
     )
 
     // 로드맵 문제 목록 조회 응답
     data class getProblemsResponse(
         val roadmapProblems: List<roadmapProblem>
+    )
+
+    // 회원 로드맵 목록 조회 응답
+    data class getRoadmapsResponse(
+        val roadmaps: List<roadmapsData> // 로드맵 목록 리스트
+    )
+
+    // 로드맵 목록 데이터 구조
+    data class roadmapsData(
+        val roadmapId: Long,    // 로드맵 ID
+        val title: String,      // 제목
+        val type: String,       // 유형
+        val language: String,   // 언어
+        val algorithm: String,  // 알고리즘
+        val status: String      // 로드맵 상태 (진행 중: IN_PROGRESS, 완료: COMPLETED, 포기: GAVE_UP)
     )
 }

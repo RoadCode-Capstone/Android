@@ -599,8 +599,10 @@ fun LevelTestResultScreen(navController: NavController, roadmapPlanViewModel: Ro
                 ) {
                     Button( // 바로 학습하러 가기 버튼
                         onClick = {
-                                  // 해당 로드맵의 로드맵 조회 화면으로 이동
-                                  navController.navigate("roadmap")
+                            navController.navigate("roadmap_list") {    // 로드맵 목록 조회 화면 추가
+                                popUpTo(0) { inclusive = true}  // 모든 백스택 제거
+                            }
+                            navController.navigate("roadmap")   // 해당 로드맵의 로드맵 조회 화면으로 이동
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -623,7 +625,7 @@ fun LevelTestResultScreen(navController: NavController, roadmapPlanViewModel: Ro
 
                     Button( // 홈으로 돌아가기 버튼
                         onClick = {
-                                  /* 홈 화면으로 이동 */
+                                  /* TODO: 홈 화면으로 이동 */
                         },
                         modifier = Modifier
                             .fillMaxWidth()

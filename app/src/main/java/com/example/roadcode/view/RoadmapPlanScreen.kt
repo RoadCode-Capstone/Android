@@ -49,7 +49,7 @@ import com.example.roadcode.R
 import com.example.roadcode.ui.theme.BackGrayColor
 import com.example.roadcode.ui.theme.PointColor
 import com.example.roadcode.ui.theme.PrimaryColor
-import com.example.roadcode.view.component.algorithmItem
+import com.example.roadcode.view.component.AlgorithmItem
 import com.example.roadcode.viewmodel.RoadmapPlanViewModel
 import com.example.roadcode.viewmodel.TagViewModel
 
@@ -424,7 +424,7 @@ fun RoadmapPlanAlgorithmScreen(navController: NavController, roadmapPlanViewMode
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     items(tags) { tag ->
-                        algorithmItem(name = tag) {
+                        AlgorithmItem(name = tag) {
                             selectedAlgorithm = tag
                         }
 
