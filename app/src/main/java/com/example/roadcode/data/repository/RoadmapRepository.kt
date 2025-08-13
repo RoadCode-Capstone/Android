@@ -92,4 +92,24 @@ class RoadmapRepository @Inject constructor() {
             emit(Result.failure(e))
         }
     }
+
+    /* 로드맵 포기 */
+    suspend fun giveUpRoadmap(request: Long): Flow<Result<String>> = flow {
+        try {
+            val response = jsonService.giveUpRoadmap(token, request)
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body?.code != "SUCCESS") {
+                    emit(Result.failure(Exception("${body?.code.toString()}: ${body?.message.toString()}")))
+                }
+
+                val message = body!!.message!!
+                emit(Result.success(message))
+            } else {
+                emit(Result.failure(HttpException(response)))
+            }
+        } catch (e: Exception) {
+            emit(Result.failure(e))
+        }
+    }
 }
