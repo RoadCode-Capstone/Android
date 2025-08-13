@@ -221,6 +221,9 @@ fun DateGrid(year: Int, month: Int) {
                     if (date <= endDayOfMonth) {
                         DayItem(date = date++)
                     }
+                    else {
+                        Spacer(modifier = Modifier.size(30.dp))
+                    }
                 }
             }
         }
