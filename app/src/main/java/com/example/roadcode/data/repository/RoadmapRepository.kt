@@ -94,9 +94,9 @@ class RoadmapRepository @Inject constructor() {
     }
 
     /* 회원 로드맵 목록 조회 */
-    suspend fun getRoadmaps(): Flow<Result<List<RoadmapDTO.roadmapsData>>> = flow {
+    suspend fun getRoadmaps(request: List<String>): Flow<Result<List<RoadmapDTO.roadmapsData>>> = flow {
         try {
-            val response = jsonService.getRoadmaps(token)
+            val response = jsonService.getRoadmaps(token, request)
             if (response.isSuccessful) {
                 val body = response.body()
                 if (body?.code != "SUCCESS") {

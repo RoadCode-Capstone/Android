@@ -51,5 +51,5 @@ interface JsonService {
 
     // 회원 로드맵 목록 조회
     @GET("/api/v1/roadmaps/my")
-    suspend fun getRoadmaps(@Header("Authorization") token: String): Response<ResponseUtilDTO.Response<RoadmapDTO.getRoadmapsResponse>>
+    suspend fun getRoadmaps(@Header("Authorization") token: String, @Query("statusList") statusList: List<String>): Response<ResponseUtilDTO.Response<RoadmapDTO.getRoadmapsResponse>>
 }
