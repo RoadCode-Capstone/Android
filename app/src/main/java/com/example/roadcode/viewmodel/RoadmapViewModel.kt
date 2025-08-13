@@ -10,6 +10,7 @@ import com.example.roadcode.data.repository.RoadmapRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlinx.coroutines.flow.combine
@@ -125,6 +126,23 @@ class RoadmapViewModel @Inject constructor(private val repository: RoadmapReposi
                     .onSuccess { problemInfo ->
                         _problemInfo.value = problemInfo
                         Log.d(TAG, "문제 정보: ${problemInfo}")
+                    }
+                    .onFailure { e ->
+                        e.printStackTrace()
+                    }
+            }
+        }
+    }
+
+    /* 로드맵 포기 함수 */
+    fun giveUpRoadmap() {
+        viewModelScope.launch {
+            val request = roadmapId.value
+
+            repository.giveUpRoadmap(request).collect() { result ->
+                result
+                    .onSuccess { message ->
+                        Log.d(TAG, message)
                     }
                     .onFailure { e ->
                         e.printStackTrace()
