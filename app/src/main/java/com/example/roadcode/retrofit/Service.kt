@@ -48,4 +48,8 @@ interface JsonService {
     // 문제 정보 조회
     @GET("/api/v1/problems/{problemId}")
     suspend fun getProblem(@Header("Authorization") token: String, @Path("problemId") problemId: Long): Response<ResponseUtilDTO.Response<ProblemDTO.ProblemData>>
+
+    // 로드맵 포기
+    @POST("/api/v1/roadmaps/{roadmapId}/give-up")
+    suspend fun giveUpRoadmap(@Header("Authorization") token: String, @Path("roadmapId") roadmapId: Long): Response<ResponseUtilDTO.Response<Nothing>>
 }
