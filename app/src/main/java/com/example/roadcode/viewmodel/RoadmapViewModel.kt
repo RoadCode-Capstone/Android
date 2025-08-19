@@ -27,6 +27,8 @@ class RoadmapViewModel @Inject constructor(private val repository: RoadmapReposi
     private val _roadmapId = MutableStateFlow<Long>(0)   // 로드맵 아이디
 //    private val _roadmapId = MutableStateFlow<Long>(35)      // (테스트)
     val roadmapId = _roadmapId.asStateFlow()
+    private val _roadmapStatus = MutableStateFlow<String>("")   // 로드맵 상태
+    val roadmapStatus = _roadmapStatus.asStateFlow()
     private val _roadmapInfo = MutableStateFlow<RoadmapDTO.roadmapData?>(null)   // 로드맵 정보
     val roadmapInfo = _roadmapInfo.asStateFlow()
     private val _problems = MutableStateFlow<List<RoadmapDTO.roadmapProblem>>(emptyList())  // 문제 목록
@@ -88,6 +90,12 @@ class RoadmapViewModel @Inject constructor(private val repository: RoadmapReposi
 
         getRoadmap()            // 로드맵 정보 조회
         getRoadmapProblems()    // 로드맵 문제 목록 조회
+    }
+
+    /* 로드맵 상태 설정 함수 */
+    fun setRoadmapStatus(newStatus: String) {
+        _roadmapStatus.value = newStatus
+        Log.d(TAG, "로드맵 상태 변경: ${roadmapStatus.value}")
     }
 
     /* 문제 인덱스 설정 함수 */
@@ -167,7 +175,7 @@ class RoadmapViewModel @Inject constructor(private val repository: RoadmapReposi
             }
         }
     }
-    
+
     /* 로드맵 포기 함수 */
     fun giveUpRoadmap() {
         viewModelScope.launch {
@@ -177,6 +185,13 @@ class RoadmapViewModel @Inject constructor(private val repository: RoadmapReposi
                 result
                     .onSuccess { message ->
                         Log.d(TAG, message)
+                    }
+                    .onFailure { e ->
+                        e.printStackTrace()
+                    }
+            }
+        }
+    }
 
     /* 선택한 로드맵 상태 설정 함수 */
     fun setStatus(name: String, checked: Boolean) {

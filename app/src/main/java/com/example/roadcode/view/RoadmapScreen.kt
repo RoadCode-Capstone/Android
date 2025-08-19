@@ -79,6 +79,7 @@ import com.example.roadcode.data.model.RoadmapDTO
 import com.example.roadcode.ui.theme.BackGrayColor
 import com.example.roadcode.ui.theme.PointColor
 import com.example.roadcode.ui.theme.PrimaryColor
+import com.example.roadcode.view.component.CustomAlertDialog
 import com.example.roadcode.viewmodel.RoadmapViewModel
 import kotlinx.coroutines.launch
 import kotlin.math.round
@@ -89,13 +90,24 @@ import kotlin.math.round
 @Composable
 fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewModel) {
     val scope = rememberCoroutineScope()
-    var isDrawerOpen by remember { mutableStateOf(false) }  // 드로어 열림 여부 변수
+    var isDrawerOpen by remember { mutableStateOf(false) }      // 드로어 열림 여부 변수
+    var showGiveUpDialog by remember { mutableStateOf(false) }  // 팝업창 열림 여부 변수
 
-    val roadmapInfo by roadmapViewModel.roadmapInfo.collectAsState()    // 로드맵 정보
-    val problems by roadmapViewModel.problems.collectAsState()          // 로드맵 문제 목록
-    val problemInfo by roadmapViewModel.problemInfo.collectAsState()    // 문제 정보
-    val problemIdx by roadmapViewModel.problemIdx.collectAsState()      // 출력할 문제 인덱스 (초기값: 현재 풀어야 하는 문제 인덱스)
-    val progress by roadmapViewModel.progress.collectAsState()          // 달성률
+    val roadmapInfo by roadmapViewModel.roadmapInfo.collectAsState()        // 로드맵 정보
+    val problems by roadmapViewModel.problems.collectAsState()              // 로드맵 문제 목록
+    val problemInfo by roadmapViewModel.problemInfo.collectAsState()        // 문제 정보
+    val problemIdx by roadmapViewModel.problemIdx.collectAsState()          // 출력할 문제 인덱스 (초기값: 현재 풀어야 하는 문제 인덱스)
+    val progress by roadmapViewModel.progress.collectAsState()              // 달성률
+    val roadmapStatus by roadmapViewModel.roadmapStatus.collectAsState()    // 로드맵 상태
+
+    if (showGiveUpDialog) {
+        CustomAlertDialog(
+            showDialog = showGiveUpDialog,
+            text = "학습 로드맵을 포기하겠습니까?",
+            onConfirm = { roadmapViewModel.giveUpRoadmap() },
+            onDismiss = { showGiveUpDialog = false }
+        )
+    }
 
     if (roadmapInfo != null) {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -122,14 +134,16 @@ fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewMod
                             }
                         },
                         actions = {
-                            IconButton(
-                                onClick = { isDrawerOpen = true } // 로드맵 관련 메뉴 드로어 열기
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Menu,
-                                    contentDescription = "로드맵 관련 메뉴 버튼",
-                                    tint = PrimaryColor
-                                )
+                            if (roadmapStatus != "GAVE_UP") {
+                                IconButton(
+                                    onClick = { isDrawerOpen = true } // 로드맵 관련 메뉴 드로어 열기
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Menu,
+                                        contentDescription = "로드맵 관련 메뉴 버튼",
+                                        tint = PrimaryColor
+                                    )
+                                }
                             }
                         }
                     )
@@ -211,12 +225,13 @@ fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewMod
                                         onClick = {
                                             /* TODO: 문제 풀이 화면으로 이동 */
                                         },
+                                        enabled = if (roadmapStatus != "GAVE_UP") true else false,
                                         modifier = Modifier
                                             .weight(1f)
                                             .height(50.dp),
                                         shape = RoundedCornerShape(20.dp),
                                         colors = ButtonDefaults.buttonColors(
-                                            containerColor = PointColor,
+                                            containerColor = if (roadmapStatus != "GAVE_UP") PointColor else Color.Gray,
                                             contentColor = Color.White
                                         )
                                     ) {
@@ -280,9 +295,7 @@ fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewMod
 
                             Spacer(modifier = Modifier.height(10.dp))
 
-                            DrawerItem("로드맵 포기하기", onClick = {
-                                roadmapViewModel.giveUpRoadmap()
-                            })
+                            DrawerItem("로드맵 포기하기", onClick = { showGiveUpDialog = true })
                         }
                     }
                 }
