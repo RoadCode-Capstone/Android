@@ -625,7 +625,7 @@ fun LevelTestResultScreen(navController: NavController, roadmapPlanViewModel: Ro
 
                     Button( // 홈으로 돌아가기 버튼
                         onClick = {
-                                  /* TODO: 홈 화면으로 이동 */
+                            navController.navigate("home")
                         },
                         modifier = Modifier
                             .fillMaxWidth()
