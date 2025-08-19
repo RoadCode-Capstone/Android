@@ -167,7 +167,7 @@ class RoadmapViewModel @Inject constructor(private val repository: RoadmapReposi
             }
         }
     }
-    
+
     /* 로드맵 포기 함수 */
     fun giveUpRoadmap() {
         viewModelScope.launch {
@@ -177,6 +177,13 @@ class RoadmapViewModel @Inject constructor(private val repository: RoadmapReposi
                 result
                     .onSuccess { message ->
                         Log.d(TAG, message)
+                    }
+                    .onFailure { e ->
+                        e.printStackTrace()
+                    }
+            }
+        }
+    }
 
     /* 선택한 로드맵 상태 설정 함수 */
     fun setStatus(name: String, checked: Boolean) {
