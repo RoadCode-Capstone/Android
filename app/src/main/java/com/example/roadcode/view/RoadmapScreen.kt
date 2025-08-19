@@ -225,12 +225,13 @@ fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewMod
                                         onClick = {
                                             /* TODO: 문제 풀이 화면으로 이동 */
                                         },
+                                        enabled = if (roadmapStatus != "GAVE_UP") true else false,
                                         modifier = Modifier
                                             .weight(1f)
                                             .height(50.dp),
                                         shape = RoundedCornerShape(20.dp),
                                         colors = ButtonDefaults.buttonColors(
-                                            containerColor = PointColor,
+                                            containerColor = if (roadmapStatus != "GAVE_UP") PointColor else Color.Gray,
                                             contentColor = Color.White
                                         )
                                     ) {
