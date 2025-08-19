@@ -134,14 +134,16 @@ fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewMod
                             }
                         },
                         actions = {
-                            IconButton(
-                                onClick = { isDrawerOpen = true } // 로드맵 관련 메뉴 드로어 열기
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Menu,
-                                    contentDescription = "로드맵 관련 메뉴 버튼",
-                                    tint = PrimaryColor
-                                )
+                            if (roadmapStatus != "GAVE_UP") {
+                                IconButton(
+                                    onClick = { isDrawerOpen = true } // 로드맵 관련 메뉴 드로어 열기
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Menu,
+                                        contentDescription = "로드맵 관련 메뉴 버튼",
+                                        tint = PrimaryColor
+                                    )
+                                }
                             }
                         }
                     )
