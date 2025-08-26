@@ -61,4 +61,8 @@ interface JsonService {
     // 순위 조회
     @GET("api/v1/points/ranking")
     suspend fun getRanking(@Header("Authorization") token: String, @Query("start") start: String, @Query("end") end: String): Response<ResponseUtilDTO.Response<PointDTO.GetRankingResponse>>
+
+    // 날짜별 포인트 내역 조회
+    @GET("/api/v1/points/my?groupBy=DATE")
+    suspend fun getPointsByDate(@Header("Authorization") token: String, @Query("start") start: String, @Query("end") end: String): Response<ResponseUtilDTO.Response<PointDTO.GetPointsByDateResponse>>
 }
