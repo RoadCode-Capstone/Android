@@ -33,4 +33,24 @@ class PointRepository @Inject constructor() {
     }.catch { e ->
         emit(Result.failure(e))
     }
+
+    /* 포인트 내역 조회 */
+    suspend fun getPointsByDate(start: String, end: String): Flow<Result<PointDTO.GetPointsByDateResponse>> = flow {
+        val response = jsonService.getPointsByDate(token, start, end)
+
+        if (response.isSuccessful) {
+            val body = response.body()
+
+            if (body?.code != "SUCCESS") {
+                throw Exception("${body?.code.toString()}: ${body?.message.toString()}")
+            }
+
+            val pointsData = body!!.data!!
+            emit(Result.success(pointsData))
+        } else {
+            throw HttpException(response)
+        }
+    }.catch { e ->
+        emit(Result.failure(e))
+    }
 }
