@@ -77,7 +77,7 @@ fun RankingScreen(navController: NavController, rankingViewModel: RankingViewMod
                 },
                 actions = {
                     IconButton(
-                        onClick = { /* TODO: 마이페이지 화면으로 이동 */ }
+                        onClick = { navController.navigate("mypage") }
                     ) {
                         Icon(
                             imageVector = Icons.Default.Person,
