@@ -83,7 +83,7 @@ fun MypageScreen(navController: NavController) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 MypageBar(text = "포인트")
-                MypageItem(text = "포인트 내역", onClick = { /* TODO: 포인트 내역 화면으로 이동 */ })
+                MypageItem(text = "포인트 내역", onClick = { navController.navigate("point") })
                 Divider(modifier = Modifier.fillMaxWidth(), thickness = 1.dp, color = Color.LightGray)
                 
                 MypageBar(text = "회원 정보")
