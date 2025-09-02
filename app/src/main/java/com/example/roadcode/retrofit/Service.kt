@@ -6,6 +6,7 @@ import com.example.roadcode.data.model.ProblemDTO
 import com.example.roadcode.data.model.ResponseUtilDTO
 import com.example.roadcode.data.model.RoadmapDTO
 import com.example.roadcode.data.model.TagDTO
+import com.example.roadcode.data.model.UserDTO
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
@@ -13,6 +14,7 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Headers
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -65,4 +67,12 @@ interface JsonService {
     // 날짜별 포인트 내역 조회
     @GET("/api/v1/points/my?groupBy=DATE")
     suspend fun getPointsByDate(@Header("Authorization") token: String, @Query("start") start: String, @Query("end") end: String): Response<ResponseUtilDTO.Response<PointDTO.GetPointsByDateResponse>>
+
+    // 회원 정보 조회
+    @GET("/api/v1/member")
+    suspend fun getUserInfo(@Header("Authorization") token: String): Response<ResponseUtilDTO.Response<UserDTO.GetUserInfoResponse>>
+
+    // 회원 정보 수정
+    @PUT("/api/v1/member")
+    suspend fun editUserInfo(@Header("Authorization") token: String, @Body request: UserDTO.EditUserInfoRequest): Response<ResponseUtilDTO.Response<Nothing>>
 }
