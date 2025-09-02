@@ -1,0 +1,56 @@
+package com.example.roadcode.data.repository
+
+import com.example.roadcode.data.model.LevelTestDTO
+import com.example.roadcode.data.model.UserDTO
+import com.example.roadcode.retrofit.JsonService
+import com.example.roadcode.retrofit.RetrofitInstance
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
+import retrofit2.HttpException
+import javax.inject.Inject
+
+class UserRepository @Inject constructor() {
+    private val jsonService: JsonService = RetrofitInstance.retrofit.create(JsonService::class.java)
+    private val token: String = "Bearer fixed-test-token"
+
+    /* 회원 정보 조회 */
+    suspend fun getUserInfo(): Flow<Result<UserDTO.GetUserInfoResponse>> = flow {
+        val response = jsonService.getUserInfo(token)
+
+        if (response.isSuccessful) {
+            val body = response.body()
+
+            if (body?.code != "SUCCESS") {
+                throw Exception("${body?.code.toString()}: ${body?.message.toString()}")
+            }
+
+            val userInfo = body.data!!
+            emit(Result.success(userInfo))
+        } else {
+            throw HttpException(response)
+        }
+    }.catch { e ->
+        emit(Result.failure(e))
+    }
+
+    /* 회원 정보 수정 */
+    suspend fun editUserInfo(request: UserDTO.EditUserInfoRequest): Flow<Result<String>> = flow {
+        val response = jsonService.editUserInfo(token, request)
+
+        if (response.isSuccessful) {
+            val body = response.body()
+
+            if (body?.code != "SUCCESS") {
+                throw Exception("${body?.code.toString()}: ${body?.message.toString()}")
+            }
+
+            val message = body.message!!
+            emit(Result.success(message))
+        } else {
+            throw HttpException(response)
+        }
+    }.catch { e ->
+        emit(Result.failure(e))
+    }
+}
