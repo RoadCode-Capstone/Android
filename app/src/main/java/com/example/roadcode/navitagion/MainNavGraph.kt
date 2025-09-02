@@ -22,12 +22,14 @@ import com.example.roadcode.view.RoadmapPlanGoalScreen
 import com.example.roadcode.view.RoadmapPlanLanguageScreen
 import com.example.roadcode.view.RoadmapPlanTypeScreen
 import com.example.roadcode.view.RoadmapScreen
+import com.example.roadcode.view.UserInfoScreen
 import com.example.roadcode.viewmodel.CalendarViewModel
 import com.example.roadcode.viewmodel.LevelTestViewModel
 import com.example.roadcode.viewmodel.PointViewModel
 import com.example.roadcode.viewmodel.RankingViewModel
 import com.example.roadcode.viewmodel.RoadmapPlanViewModel
 import com.example.roadcode.viewmodel.RoadmapViewModel
+import com.example.roadcode.viewmodel.UserViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -38,6 +40,7 @@ fun MainNavGraph(navController: NavHostController = rememberNavController()) {
     val rankingViewModel: RankingViewModel = hiltViewModel()
     val calendarViewModel: CalendarViewModel = hiltViewModel()
     val pointViewModel: PointViewModel = hiltViewModel()
+    val userViewModel: UserViewModel = hiltViewModel()
 
     NavHost(navController = navController, startDestination = "mypage") {
         composable("plan_language") { RoadmapPlanLanguageScreen(navController, roadmapPlanViewModel) }                                  // 학습 계획 설정 화면 (언어)
@@ -50,6 +53,7 @@ fun MainNavGraph(navController: NavHostController = rememberNavController()) {
         composable("roadmap") { RoadmapScreen(navController, roadmapViewModel) }                                                        // 로드맵 조회 화면
         composable("mypage") { MypageScreen(navController) }                                                                            // 마이페이지 화면
         composable("point") { PointScreen(navController, pointViewModel) }                                                              // 포인트 내역 조회 화면
+        composable("userInfo") { UserInfoScreen(navController, userViewModel) }                                                         // 회원 정보 조회 화면
 
         bottomNavGraph(navController, roadmapViewModel, calendarViewModel, rankingViewModel) // 하단 내비게이션 바
     }

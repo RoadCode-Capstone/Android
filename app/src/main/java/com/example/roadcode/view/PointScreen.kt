@@ -24,6 +24,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,7 +43,7 @@ import java.time.YearMonth
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PointScreen(navController: NavController, pointViewModel: PointViewModel) {
-    val uiItems = pointViewModel.uiItems.collectAsState()
+    val uiItems by pointViewModel.uiItems.collectAsState()
 
     Scaffold(
         topBar = {
@@ -81,7 +82,7 @@ fun PointScreen(navController: NavController, pointViewModel: PointViewModel) {
                     .padding(horizontal = 30.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                uiItems.value.forEachIndexed { idx, item ->
+                uiItems.forEachIndexed { idx, item ->
                     when (item) {
                         is PointViewModel.PointUiItem.MonthHeader -> {
                             item {
@@ -90,7 +91,7 @@ fun PointScreen(navController: NavController, pointViewModel: PointViewModel) {
                         }
                         is PointViewModel.PointUiItem.DayHeader -> {
                             item {
-                                if (uiItems.value[idx - 1] !is PointViewModel.PointUiItem.MonthHeader) {
+                                if (uiItems[idx - 1] !is PointViewModel.PointUiItem.MonthHeader) {
                                     Divider(
                                         modifier = Modifier.fillMaxWidth().padding(bottom = 15.dp),
                                         color = Color.LightGray,
