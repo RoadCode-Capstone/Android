@@ -53,4 +53,24 @@ class UserRepository @Inject constructor() {
     }.catch { e ->
         emit(Result.failure(e))
     }
+
+    /* 닉네임 중복 체크 */
+    suspend fun checkNickname(request: String): Flow<Result<Boolean>> = flow {
+        val response = jsonService.checkNickname(request)
+
+        if (response.isSuccessful) {
+            val body = response.body()
+
+            if (body?.code != "SUCCESS") {
+                throw Exception("${body?.code.toString()}: ${body?.message.toString()}")
+            }
+
+            val duplicated = body.data!!.duplicated
+            emit(Result.success(duplicated))
+        } else {
+            throw HttpException(response)
+        }
+    }.catch { e ->
+        emit(Result.failure(e))
+    }
 }
