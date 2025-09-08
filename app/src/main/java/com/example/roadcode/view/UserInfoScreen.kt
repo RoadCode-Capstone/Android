@@ -162,7 +162,10 @@ fun UserInfoScreen(navController: NavController, userViewModel: UserViewModel) {
                         Spacer(modifier = Modifier.width(20.dp))
                         
                         Button( // 회원 정보 수정 버튼
-                            onClick = { userViewModel.editUserInfo() },
+                            onClick = {
+                                userViewModel.editUserInfo()
+                                userViewModel.setEditMode(false)
+                            },
                             modifier = Modifier
                                 .weight(0.5f)
                                 .height(50.dp),
