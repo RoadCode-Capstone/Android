@@ -75,4 +75,8 @@ interface JsonService {
     // 회원 정보 수정
     @PUT("/api/v1/member")
     suspend fun editUserInfo(@Header("Authorization") token: String, @Body request: UserDTO.EditUserInfoRequest): Response<ResponseUtilDTO.Response<Nothing>>
+
+    // 닉네임 중복 체크
+    @GET("/api/v1/member/exists-nickname")
+    suspend fun checkNickname(@Query("nickname") nickname: String): Response<ResponseUtilDTO.Response<UserDTO.CheckNicknameResponse>>
 }

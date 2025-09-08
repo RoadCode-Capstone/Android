@@ -8,6 +8,8 @@ import com.example.roadcode.data.model.UserDTO
 import com.example.roadcode.data.repository.TagRepository
 import com.example.roadcode.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -19,7 +21,9 @@ import javax.inject.Inject
 data class UserInfoUiState(
     val isEdit: Boolean = false,
     val userInfo: UserDTO.GetUserInfoResponse = UserDTO.GetUserInfoResponse("", ""),
-    val nicknameInput: String = userInfo.nickname
+    val nicknameInput: String = userInfo.nickname,
+    val isAvailable: Boolean = false,
+    val supportingText: String = "현재 닉네임과 같습니다."
 )
 
 @HiltViewModel
@@ -33,6 +37,8 @@ class UserViewModel @Inject constructor(private val repository: UserRepository) 
     private val _toast = MutableSharedFlow<String>(replay = 0, extraBufferCapacity = 1)
     val toast = _toast.asSharedFlow()
 
+    private var nicknameCheckJob: Job? = null   // 마지막 값 입력 후 0.5초 뒤에 닉네임 중복 체크 위한 Job
+
     init {
         getUserInfo()
     }
@@ -41,7 +47,7 @@ class UserViewModel @Inject constructor(private val repository: UserRepository) 
     fun setEditMode(isEdit: Boolean) {
         _userInfoUiState.update {
             if (isEdit) {
-                it.copy(isEdit = true, nicknameInput = it.userInfo.nickname)
+                it.copy(isEdit = true, nicknameInput = it.userInfo.nickname, isAvailable = false, supportingText = "현재 닉네임과 같습니다.")
             }
             else {
                 it.copy(isEdit = false)
@@ -52,6 +58,19 @@ class UserViewModel @Inject constructor(private val repository: UserRepository) 
     /* 입력한 닉네임 변경 함수 */
     fun updateNicknameInput(value: String) {
         _userInfoUiState.update { it.copy(nicknameInput = value) }
+
+        nicknameCheckJob?.cancel()  // 이전 작업 취소
+
+        // 기존 닉네임과 같은 경우
+        if (_userInfoUiState.value.userInfo.nickname == value) {
+            _userInfoUiState.update { it.copy(isAvailable = false, supportingText = "현재 닉네임과 같습니다.") }
+            return
+        }
+
+        nicknameCheckJob = viewModelScope.launch {
+            delay(500L) // 0.5초 후 닉네임 중복 체크
+            checkNickname(value)
+        }
     }
 
     /* 회원 정보 조회 함수 */
@@ -85,6 +104,22 @@ class UserViewModel @Inject constructor(private val repository: UserRepository) 
                         }
                         _toast.emit(message)
                         Log.d(TAG, message)
+                    }
+                    .onFailure { e ->
+                        e.printStackTrace()
+                    }
+            }
+        }
+    }
+
+    /* 닉네임 중복 체크 함수 */
+    fun checkNickname(nickname: String) {
+        viewModelScope.launch {
+            repository.checkNickname(nickname).collect() { result ->
+                result
+                    .onSuccess { duplicated ->
+                        _userInfoUiState.update { it.copy(isAvailable = !duplicated, supportingText = if (duplicated) "중복되는 닉네임입니다." else "사용 가능한 닉네임입니다.") }
+                        Log.d(TAG, "닉네임 중복 여부: ${duplicated}")
                     }
                     .onFailure { e ->
                         e.printStackTrace()

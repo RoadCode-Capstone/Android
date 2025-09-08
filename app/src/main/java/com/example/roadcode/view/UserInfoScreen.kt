@@ -1,9 +1,11 @@
 package com.example.roadcode.view
 
 import android.widget.Toast
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,9 +14,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -22,6 +28,9 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -36,8 +45,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -113,13 +125,13 @@ fun UserInfoScreen(navController: NavController, userViewModel: UserViewModel) {
                     .padding(horizontal = 30.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                if (!userInfoUiState.isEdit) {
+                if (!userInfoUiState.isEdit) {  // 회원 정보 조회 화면
                     InfoBar(name = "이메일", data = userInfoUiState.userInfo.email)
                     InfoBar(name = "닉네임", data = userInfoUiState.userInfo.nickname)
                 }
-                else {
+                else {  // 회원 정보 수정 화면
                     InfoBar(name = "이메일", data = userInfoUiState.userInfo.email)
-                    InfoEditBar(name = "닉네임", data = userInfoUiState.nicknameInput, onValueChange = { userViewModel.updateNicknameInput(it) })
+                    InfoEditBar(name = "닉네임", data = userInfoUiState.nicknameInput, isAvailable = userInfoUiState.isAvailable, supportingText = userInfoUiState.supportingText, onValueChange = { userViewModel.updateNicknameInput(it) })
 
                     Row(
                         modifier = Modifier
@@ -158,7 +170,8 @@ fun UserInfoScreen(navController: NavController, userViewModel: UserViewModel) {
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = PointColor,
                                 contentColor = Color.White
-                            )
+                            ),
+                            enabled = userInfoUiState.isAvailable
                         ) {
                             Text(
                                 text = "수정",
@@ -202,24 +215,54 @@ fun InfoBar(name: String, data: String) {
 
 /* 정보 수정 바 */
 @Composable
-fun InfoEditBar(name: String, data: String, onValueChange: (String) -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(60.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+fun InfoEditBar(name: String, data: String, isAvailable: Boolean, supportingText: String, onValueChange: (String) -> Unit) {
+    Column(
+        modifier = Modifier.fillMaxWidth()
     ) {
-        Text(
-            text = name,
-            fontSize = 16.sp,
-            color = PrimaryColor,
-            fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = name,
+                fontSize = 16.sp,
+                color = PrimaryColor,
+                fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
+            )
 
-        TextField(
-            value = data,
-            onValueChange = onValueChange
-        )
+            OutlinedTextField(
+                value = data,
+                onValueChange = onValueChange,
+                singleLine = true,
+                isError = !isAvailable,
+                trailingIcon = {
+                    if (!isAvailable) {
+                        Icon(
+                            imageVector = Icons.Filled.Error,
+                            contentDescription = "닉네임 중복 에러",
+                            tint = MaterialTheme.colorScheme.error
+                        )
+                    }
+                },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color.Gray,
+                    unfocusedBorderColor = Color.Gray,
+                    errorBorderColor = MaterialTheme.colorScheme.error
+                )
+            )
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Spacer(modifier = Modifier.weight(0.3f))
+            Text(
+                text = supportingText,
+                fontSize = 14.sp,
+                color = if (isAvailable) Color.Green else MaterialTheme.colorScheme.error,
+                fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
+            )
+        }
     }
 }

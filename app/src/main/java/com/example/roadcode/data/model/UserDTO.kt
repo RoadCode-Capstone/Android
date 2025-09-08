@@ -11,4 +11,9 @@ object UserDTO {
     data class EditUserInfoRequest(
         val nickname: String    // 닉네임
     )
+
+    // 닉네임 중복 체크 응답
+    data class CheckNicknameResponse(
+        val duplicated: Boolean // 닉네임 중복 여부
+    )
 }
