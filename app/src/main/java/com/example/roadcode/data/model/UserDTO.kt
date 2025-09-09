@@ -16,4 +16,15 @@ object UserDTO {
     data class CheckNicknameResponse(
         val duplicated: Boolean // 닉네임 중복 여부
     )
+
+    // 비밀번호 재확인 요청
+    data class VerifyPasswordRequest(
+        val password: String    // 비밀번호
+    )
+
+    // 비밀번호 변경 요청
+    data class EditPasswordRequest(
+        val currentPassword: String,    // 현재 비밀번호
+        val newPassword: String         // 새로운 비밀번호
+    )
 }
