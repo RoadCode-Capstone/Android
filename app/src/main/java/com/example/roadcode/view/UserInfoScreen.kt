@@ -84,17 +84,19 @@ fun UserInfoScreen(navController: NavController, userViewModel: UserViewModel) {
                     )
                 },
                 navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            userViewModel.setEditMode(false)
-                            navController.popBackStack()
+                    if (!userInfoUiState.isEdit) {
+                        IconButton(
+                            onClick = {
+                                userViewModel.setEditMode(false)
+                                navController.popBackStack()
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "뒤로 가기 버튼",
+                                tint = PrimaryColor
+                            )
                         }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "뒤로 가기 버튼",
-                            tint = PrimaryColor
-                        )
                     }
                 },
                 actions = {
@@ -131,7 +133,13 @@ fun UserInfoScreen(navController: NavController, userViewModel: UserViewModel) {
                 }
                 else {  // 회원 정보 수정 화면
                     InfoBar(name = "이메일", data = userInfoUiState.userInfo.email)
-                    InfoEditBar(name = "닉네임", data = userInfoUiState.nicknameInput, isAvailable = userInfoUiState.isAvailable, supportingText = userInfoUiState.supportingText, onValueChange = { userViewModel.updateNicknameInput(it) })
+                    InfoEditBar(
+                        name = "닉네임",
+                        data = userInfoUiState.nicknameInput,
+                        isAvailable = userInfoUiState.isAvailable,
+                        supportingText = userInfoUiState.supportingText,
+                        onValueChange = { userViewModel.updateNicknameInput(it) }
+                    )
 
                     Row(
                         modifier = Modifier
