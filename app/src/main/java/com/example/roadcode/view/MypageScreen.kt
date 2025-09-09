@@ -88,7 +88,7 @@ fun MypageScreen(navController: NavController) {
                 
                 MypageBar(text = "회원 정보")
                 MypageItem(text = "조회 및 수정", onClick = { navController.navigate("userInfo") })
-                MypageItem(text = "비밀번호 변경", onClick = { /* TODO: 비밀번호 변경 화면으로 이동 */ })
+                MypageItem(text = "비밀번호 변경", onClick = { navController.navigate("password") })
                 Divider(modifier = Modifier.fillMaxWidth(), thickness = 1.dp, color = Color.LightGray)
 
                 MypageBar(text = "계정")
