@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -45,6 +46,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -132,7 +134,8 @@ fun PasswordScreen(navController: NavController, passwordViewModel: PasswordView
                 PasswordTextField(
                     label = "비밀번호 확인",
                     data = passwordUiState.verifyPasswordInput,
-                    onValueChange = { passwordViewModel.updatePassword(PasswordField.VERIFY, it) }
+                    onValueChange = { passwordViewModel.updatePassword(PasswordField.VERIFY, it) },
+                    isSame = passwordUiState.isSame
                 )
 
                 Spacer(modifier = Modifier.height(100.dp))
@@ -172,7 +175,7 @@ fun PasswordScreen(navController: NavController, passwordViewModel: PasswordView
 
 /* 비밀번호 입력 필드 */
 @Composable
-fun PasswordTextField(label: String, data: String, onValueChange: (String) -> Unit) {
+fun PasswordTextField(label: String, data: String, onValueChange: (String) -> Unit, isSame: Boolean? = null) {
     var passwordVisible by remember { mutableStateOf(false) }
 
     OutlinedTextField(  // 비밀번호 입력 필드
@@ -198,7 +201,16 @@ fun PasswordTextField(label: String, data: String, onValueChange: (String) -> Un
             focusedBorderColor = Color.Gray,
             unfocusedBorderColor = Color.Gray,
             errorBorderColor = MaterialTheme.colorScheme.error
-        )
+        ),
+        isError = isSame != null && !isSame,
+        supportingText = if (isSame != null && !isSame) {
+            {
+                Text(
+                    text = "입력하신 비밀번호가 일치하지 않습니다.",
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+        } else null
     )
 
     Spacer(modifier = Modifier.height(20.dp))
