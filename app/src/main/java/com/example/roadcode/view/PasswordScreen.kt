@@ -53,6 +53,7 @@ import androidx.navigation.NavController
 import com.example.roadcode.R
 import com.example.roadcode.ui.theme.PointColor
 import com.example.roadcode.ui.theme.PrimaryColor
+import com.example.roadcode.util.rememberOnce
 import com.example.roadcode.viewmodel.PasswordField
 import com.example.roadcode.viewmodel.PasswordViewModel
 
@@ -70,7 +71,7 @@ fun PasswordScreen(navController: NavController, passwordViewModel: PasswordView
         }
     }
 
-    if (navigateBack) {
+    if (navigateBack) rememberOnce {
         passwordViewModel.setFalseNavigateBack()
         navController.popBackStack()
     }
@@ -88,7 +89,7 @@ fun PasswordScreen(navController: NavController, passwordViewModel: PasswordView
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { navController.popBackStack() }
+                        onClick = rememberOnce { navController.popBackStack() }
                     ) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,

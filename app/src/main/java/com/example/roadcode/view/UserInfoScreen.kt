@@ -57,6 +57,7 @@ import com.example.roadcode.R
 import com.example.roadcode.data.model.LevelTestDTO
 import com.example.roadcode.ui.theme.PointColor
 import com.example.roadcode.ui.theme.PrimaryColor
+import com.example.roadcode.util.rememberOnce
 import com.example.roadcode.viewmodel.UserViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -86,7 +87,7 @@ fun UserInfoScreen(navController: NavController, userViewModel: UserViewModel) {
                 navigationIcon = {
                     if (!userInfoUiState.isEdit) {
                         IconButton(
-                            onClick = {
+                            onClick = rememberOnce {
                                 userViewModel.setEditMode(false)
                                 navController.popBackStack()
                             }

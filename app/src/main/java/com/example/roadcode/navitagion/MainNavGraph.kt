@@ -44,7 +44,7 @@ fun MainNavGraph(navController: NavHostController = rememberNavController()) {
     val pointViewModel: PointViewModel = hiltViewModel()
     val userViewModel: UserViewModel = hiltViewModel()
 
-    NavHost(navController = navController, startDestination = "mypage") {
+    NavHost(navController = navController, startDestination = "home") {
         composable("plan_language") { RoadmapPlanLanguageScreen(navController, roadmapPlanViewModel) }                                  // 학습 계획 설정 화면 (언어)
         composable("plan_type") { RoadmapPlanTypeScreen(navController, roadmapPlanViewModel) }                                          // 학습 계획 설정 화면 (유형)
         composable("plan_algorithm") { RoadmapPlanAlgorithmScreen(navController, roadmapPlanViewModel) }                                // 학습 계획 설정 화면 (알고리즘)

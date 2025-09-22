@@ -78,6 +78,7 @@ import com.example.roadcode.ui.theme.BackGrayColor
 import com.example.roadcode.ui.theme.LineColor
 import com.example.roadcode.ui.theme.PointColor
 import com.example.roadcode.ui.theme.PrimaryColor
+import com.example.roadcode.util.rememberOnce
 import com.example.roadcode.viewmodel.LevelTestViewModel
 import com.example.roadcode.viewmodel.RoadmapPlanViewModel
 import com.example.roadcode.viewmodel.RoadmapViewModel
@@ -110,7 +111,7 @@ fun LevelTestReadyScreen(navController: NavController, roadmapViewModel: Roadmap
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { navController.popBackStack() }
+                        onClick = rememberOnce { navController.popBackStack() }
                     ) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
@@ -598,7 +599,7 @@ fun LevelTestResultScreen(navController: NavController, roadmapPlanViewModel: Ro
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Button( // 바로 학습하러 가기 버튼
-                        onClick = {
+                        onClick = rememberOnce {
                             navController.navigate("roadmap_list") {    // 로드맵 목록 조회 화면 추가
                                 popUpTo(0) { inclusive = true}  // 모든 백스택 제거
                             }
