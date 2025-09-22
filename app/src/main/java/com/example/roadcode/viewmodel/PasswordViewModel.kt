@@ -38,7 +38,7 @@ data class PasswordUiState(
     val currentPasswordInput: String = "",  // 현재 비밀번호
     val newPasswordInput: String = "",      // 새로운 비밀번호
     val verifyPasswordInput: String = "",   // 비밀번호 확인
-    val isSame: Boolean = false             // 새로운 비밀번호와 비밀번호 확인 일치 여부
+    val isSame: Boolean = true              // 새로운 비밀번호와 비밀번호 확인 일치 여부
 )
 
 enum class PasswordField {
