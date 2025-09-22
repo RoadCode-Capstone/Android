@@ -7,12 +7,12 @@ plugins {
 
 android {
     namespace = "com.example.roadcode"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.roadcode"
-        minSdk = 24
-        targetSdk = 34
+        minSdk = 23
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
