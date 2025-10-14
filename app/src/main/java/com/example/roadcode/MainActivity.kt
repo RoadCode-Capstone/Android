@@ -31,10 +31,14 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.example.roadcode.navitagion.MainNavGraph
+import com.example.roadcode.util.scheduleDailyNotification
 import com.example.roadcode.util.showNotification
 import com.example.roadcode.view.*
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.HiltAndroidApp
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -43,40 +47,15 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MainNavGraph()
-            RequestNotificationPermission()
         }
+        saveTodayActiveDate(this)
     }
 
-    @Composable
-    fun RequestNotificationPermission() {
-        val permissionState = remember { mutableStateOf(checkNotificationPermission()) }
-
-        if (permissionState.value) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text("알림 권한 받음")
-
-                Button(onClick = {
-                    showNotification(context = this@MainActivity)
-                }) {
-                    Text("알림 생성")
-                }
-            }
-        } else {
-            Text("알림 권한 필요함")
-        }
-    }
-
-    // 알림 권한 확인
-    private fun checkNotificationPermission(): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
-        } else {
-            true
-        }
+    /* 마지막으로 앱 실행한 날짜 저장 (알림 전송 여부 확인용) */
+    private fun saveTodayActiveDate(context: Context) {
+        val prefs = context.getSharedPreferences("attendance_prefs", Context.MODE_PRIVATE)
+        val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+        prefs.edit().putString("last_active_date", today).apply()
     }
 }
 

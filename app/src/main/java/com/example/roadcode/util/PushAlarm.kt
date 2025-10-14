@@ -1,6 +1,7 @@
 package com.example.roadcode.util
 
 import android.Manifest
+import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -13,7 +14,9 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.example.roadcode.MainActivity
 import com.example.roadcode.R
+import java.util.Calendar
 
+/* 알림 출력 */
 fun showNotification(context: Context) {
     // 알림 채널 설정 (Android 8.0 이상)
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -60,4 +63,33 @@ fun showNotification(context: Context) {
 
         notify(1, builder.build())
     }
+}
+
+/* 알림 예약 */
+fun scheduleDailyNotification(context: Context, hour: Int, minute: Int) {
+    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+    val intent = Intent(context, NotificationReceiver::class.java)
+    val pendingIntent = PendingIntent.getBroadcast(
+        context,
+        0,
+        intent,
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+    )
+
+    val calendar = Calendar.getInstance().apply {
+        timeInMillis = System.currentTimeMillis()
+        set(Calendar.HOUR_OF_DAY, hour)
+        set(Calendar.MINUTE, minute)
+        set(Calendar.SECOND, 0)
+        set(Calendar.MILLISECOND, 0)
+        if (before(Calendar.getInstance())) add(Calendar.DAY_OF_YEAR, 1) // 이미 지난 시간이라면 다음날로
+    }
+
+    // 매일 같은 시간에 반복
+    alarmManager.setRepeating(
+        AlarmManager.RTC_WAKEUP,
+        calendar.timeInMillis,
+        AlarmManager.INTERVAL_DAY,
+        pendingIntent
+    )
 }
