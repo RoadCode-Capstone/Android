@@ -87,4 +87,8 @@ interface JsonService {
     // 비밀번호 변경
     @PUT("/api/v1/member/password")
     suspend fun editPassword(@Header("Authorization") token: String, @Body request: UserDTO.EditPasswordRequest): Response<ResponseUtilDTO.Response<Nothing>>
+
+    // 출석 체크
+    @POST("/api/v1/points/attendance/check")
+    suspend fun checkAttendance(@Header("Authorization") token: String): Response<ResponseUtilDTO.Response<Nothing>>
 }
