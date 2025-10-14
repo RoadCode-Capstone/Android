@@ -5,12 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.roadcode.data.model.ProblemDTO
 import com.example.roadcode.data.model.RoadmapDTO
-import com.example.roadcode.data.repository.LevelTestRepository
 import com.example.roadcode.data.repository.RoadmapRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlinx.coroutines.flow.combine
@@ -22,16 +20,16 @@ class RoadmapViewModel @Inject constructor(private val repository: RoadmapReposi
         private const val TAG = "RoadmapViewModel"
     }
 
-    private val _roadmaps = MutableStateFlow<List<RoadmapDTO.roadmapsData>>(emptyList())    // 로드맵 목록
+    private val _roadmaps = MutableStateFlow<List<RoadmapDTO.RoadmapsData>>(emptyList())    // 로드맵 목록
     val roadmaps = _roadmaps.asStateFlow()
     private val _roadmapId = MutableStateFlow<Long>(0)   // 로드맵 아이디
 //    private val _roadmapId = MutableStateFlow<Long>(35)      // (테스트)
     val roadmapId = _roadmapId.asStateFlow()
-    private val _roadmapStatus = MutableStateFlow<String>("")   // 로드맵 상태
+    private val _roadmapStatus = MutableStateFlow("")   // 로드맵 상태
     val roadmapStatus = _roadmapStatus.asStateFlow()
-    private val _roadmapInfo = MutableStateFlow<RoadmapDTO.roadmapData?>(null)   // 로드맵 정보
+    private val _roadmapInfo = MutableStateFlow(RoadmapDTO.RoadmapData())   // 로드맵 정보
     val roadmapInfo = _roadmapInfo.asStateFlow()
-    private val _problems = MutableStateFlow<List<RoadmapDTO.roadmapProblem>>(emptyList())  // 문제 목록
+    private val _problems = MutableStateFlow<List<RoadmapDTO.RoadmapProblem>>(emptyList())  // 문제 목록
 //    private val _problems = MutableStateFlow<List<RoadmapDTO.roadmapProblem>>(listOf(
 //        RoadmapDTO.roadmapProblem(771, 2195, 0, "IN_PROGRESS"),
 //        RoadmapDTO.roadmapProblem(772, 14, 1, "NOT_STARTED"),

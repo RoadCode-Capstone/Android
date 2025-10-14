@@ -15,7 +15,7 @@ class RoadmapRepository @Inject constructor() {
     private val token: String = "Bearer fixed-test-token"
 
     /* 로드맵 생성 */
-    suspend fun createRoadmap(request: RoadmapDTO.createRequest): Flow<Result<Long>> = flow {
+    suspend fun createRoadmap(request: RoadmapDTO.CreateRequest): Flow<Result<Long>> = flow {
         val response = jsonService.createRoadmap(token, request)
 
         if (response.isSuccessful) {
@@ -35,7 +35,7 @@ class RoadmapRepository @Inject constructor() {
     }
 
     /* 로드맵 정보 조회 */
-    suspend fun getRoadmap(request: Long): Flow<Result<RoadmapDTO.roadmapData>> = flow {
+    suspend fun getRoadmap(request: Long): Flow<Result<RoadmapDTO.RoadmapData>> = flow {
         val response = jsonService.getRoadmap(token, request)
 
         if (response.isSuccessful) {
@@ -55,7 +55,7 @@ class RoadmapRepository @Inject constructor() {
     }
 
     /* 로드맵 문제 목록 조회 */
-    suspend fun getRoadmapProblems(request: Long): Flow<Result<List<RoadmapDTO.roadmapProblem>>> = flow {
+    suspend fun getRoadmapProblems(request: Long): Flow<Result<List<RoadmapDTO.RoadmapProblem>>> = flow {
         val response = jsonService.getRoadmapProblems(token, request)
 
         if (response.isSuccessful) {
@@ -95,7 +95,7 @@ class RoadmapRepository @Inject constructor() {
     }
 
     /* 회원 로드맵 목록 조회 */
-    suspend fun getRoadmaps(request: List<String>): Flow<Result<List<RoadmapDTO.roadmapsData>>> = flow {
+    suspend fun getRoadmaps(request: List<String>): Flow<Result<List<RoadmapDTO.RoadmapsData>>> = flow {
         try {
             val response = jsonService.getRoadmaps(token, request)
             if (response.isSuccessful) {

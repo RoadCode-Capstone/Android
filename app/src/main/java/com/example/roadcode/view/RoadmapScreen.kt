@@ -28,7 +28,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
@@ -40,18 +39,13 @@ import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.Divider
-import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalDrawerSheet
-import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -74,22 +68,20 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 import com.example.roadcode.R
-import com.example.roadcode.data.model.LevelTestDTO
 import com.example.roadcode.data.model.RoadmapDTO
 import com.example.roadcode.ui.theme.BackGrayColor
 import com.example.roadcode.ui.theme.PointColor
 import com.example.roadcode.ui.theme.PrimaryColor
 import com.example.roadcode.util.rememberOnce
 import com.example.roadcode.view.component.CustomAlertDialog
+import com.example.roadcode.viewmodel.ProblemViewModel
 import com.example.roadcode.viewmodel.RoadmapViewModel
-import kotlinx.coroutines.launch
-import kotlin.math.round
 
 /* 로드맵 조회 화면 */
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewModel) {
+fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewModel, problemViewModel: ProblemViewModel) {
     val scope = rememberCoroutineScope()
     var isDrawerOpen by remember { mutableStateOf(false) }      // 드로어 열림 여부 변수
     var showGiveUpDialog by remember { mutableStateOf(false) }  // 팝업창 열림 여부 변수
@@ -201,10 +193,13 @@ fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewMod
 
                                 Spacer(modifier = Modifier.padding(bottom = 12.dp))
 
-                                if (problems.isNotEmpty()) {
+                                if (problems.isNotEmpty()) {    // 단계 바 출력
                                     StepBar(
                                         problems,
-                                        onClick = { idx -> roadmapViewModel.setProblemIdx(idx) }) // 단계 바 출력
+                                        onClick = { idx ->
+                                            roadmapViewModel.setProblemIdx(idx)
+                                        }
+                                    )
                                 }
                             }
 
@@ -224,7 +219,8 @@ fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewMod
                                 ) {
                                     Button( // 시작하기 버튼
                                         onClick = {
-                                            /* TODO: 문제 풀이 화면으로 이동 */
+                                            problemViewModel.getProblem(problems[problemIdx].problemId)
+                                            navController.navigate("problem")
                                         },
                                         enabled = if (roadmapStatus != "GAVE_UP") true else false,
                                         modifier = Modifier
@@ -386,7 +382,7 @@ fun ProblemPreview(modifier: Modifier, title: String, description: String) {
 
 /* 단계 바 */
 @Composable
-fun StepBar(problems: List<RoadmapDTO.roadmapProblem>, onClick: (Int) -> Unit) {
+fun StepBar(problems: List<RoadmapDTO.RoadmapProblem>, onClick: (Int) -> Unit) {
     LazyColumn(
         modifier = Modifier
             .fillMaxHeight()
