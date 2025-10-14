@@ -7,4 +7,22 @@ object SubmissionDTO {
         val language: String,   // 언어
         val sourceCode: String  // 풀이 코드
     )
+
+    // 풀이 제출 요청
+    data class SubmitSolutionRequest(
+        val language: String,   // 언어
+        val sourceCode: String  // 소스 코드
+    )
+
+    // 풀이 제출 응답
+    data class SubmitSolutionResponse(
+        val allPassed: Boolean,                         // 테스트케이스 전체 통과 여부
+        val testcaseResults: List<TestcaseResultData>   // 테스트케이스 결과 목록
+    )
+
+    // 테스트케이스 결과
+    data class TestcaseResultData(
+        val passed: Boolean,    // 통과 여부
+        val message: String     // 통과 못한 경우, 오류 생긴 경우 메시지
+    )
 }

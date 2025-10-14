@@ -13,17 +13,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -38,9 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -181,7 +174,7 @@ fun StateCheckbox(name: String, state: Boolean, onChecked: (Boolean) -> Unit) {
 
 /* 로드맵 목록 아이템 */
 @Composable
-fun RoadmapItem(roadmapInfo: RoadmapDTO.roadmapsData, progress: String, onClick: () -> Unit) {
+fun RoadmapItem(roadmapInfo: RoadmapDTO.RoadmapsData, progress: String, onClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()

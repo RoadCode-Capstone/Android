@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.roadcode.data.model.RoadmapDTO
-import com.example.roadcode.data.repository.LevelTestRepository
 import com.example.roadcode.data.repository.RoadmapRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -56,7 +55,7 @@ class RoadmapPlanViewModel @Inject constructor(private val repository: RoadmapRe
     /* 로드맵 생성 함수 */
     fun createRoadmap(result: Int, completed: (Long) -> Unit) {
         viewModelScope.launch {
-            val request = RoadmapDTO.createRequest(plan.value.selectedType!!, plan.value.selectedLanguage!!, plan.value.selectedAlgorithm, plan.value.selectedGoal!!, result)
+            val request = RoadmapDTO.CreateRequest(plan.value.selectedType!!, plan.value.selectedLanguage!!, plan.value.selectedAlgorithm, plan.value.selectedGoal!!, result)
             repository.createRoadmap(request).collect() { result ->
                 result
                     .onSuccess { roadmapId ->

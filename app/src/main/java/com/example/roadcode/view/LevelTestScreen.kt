@@ -356,7 +356,7 @@ fun LevelTestScreen(navController: NavController, roadmapViewModel: RoadmapPlanV
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ProblemPager(problemInfos: List<String>, language: String, initCode: String, onCodeChanged: (String) -> Unit) { // [제목, 설명, 입력 설명, 출력 설명, 시간제한, 메모리제한], 사용 언어, 초기 코드, 코드 변경 시 동작
+private fun ProblemPager(problemInfos: List<String>, language: String, initCode: String, onCodeChanged: (String) -> Unit) { // [제목, 설명, 입력 설명, 출력 설명, 시간제한, 메모리제한], 사용 언어, 초기 코드, 코드 변경 시 동작
     val pagerState = rememberPagerState(pageCount = { 2 })
     val keys = listOf("제목", "문제 설명", "입력 설명", "출력 설명", "시간 제한", "메모리 제한")
     var currentCode by remember(initCode) { mutableStateOf(initCode) }
