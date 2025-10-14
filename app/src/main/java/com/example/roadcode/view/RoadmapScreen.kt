@@ -79,6 +79,7 @@ import com.example.roadcode.data.model.RoadmapDTO
 import com.example.roadcode.ui.theme.BackGrayColor
 import com.example.roadcode.ui.theme.PointColor
 import com.example.roadcode.ui.theme.PrimaryColor
+import com.example.roadcode.util.rememberOnce
 import com.example.roadcode.view.component.CustomAlertDialog
 import com.example.roadcode.viewmodel.RoadmapViewModel
 import kotlinx.coroutines.launch
@@ -124,7 +125,7 @@ fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewMod
                         },
                         navigationIcon = {
                             IconButton(
-                                onClick = { navController.popBackStack() }
+                                onClick = rememberOnce { navController.popBackStack() }
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.ArrowBack,

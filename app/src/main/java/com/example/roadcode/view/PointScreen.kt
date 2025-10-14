@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.roadcode.R
 import com.example.roadcode.ui.theme.PrimaryColor
+import com.example.roadcode.util.rememberOnce
 import com.example.roadcode.viewmodel.PointViewModel
 import java.time.LocalDate
 import java.time.YearMonth
@@ -58,7 +59,7 @@ fun PointScreen(navController: NavController, pointViewModel: PointViewModel) {
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { navController.popBackStack() }
+                        onClick = rememberOnce { navController.popBackStack() }
                     ) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,

@@ -57,6 +57,7 @@ import com.example.roadcode.R
 import com.example.roadcode.data.model.LevelTestDTO
 import com.example.roadcode.ui.theme.PointColor
 import com.example.roadcode.ui.theme.PrimaryColor
+import com.example.roadcode.util.rememberOnce
 import com.example.roadcode.viewmodel.UserViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -84,17 +85,19 @@ fun UserInfoScreen(navController: NavController, userViewModel: UserViewModel) {
                     )
                 },
                 navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            userViewModel.setEditMode(false)
-                            navController.popBackStack()
+                    if (!userInfoUiState.isEdit) {
+                        IconButton(
+                            onClick = rememberOnce {
+                                userViewModel.setEditMode(false)
+                                navController.popBackStack()
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "뒤로 가기 버튼",
+                                tint = PrimaryColor
+                            )
                         }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "뒤로 가기 버튼",
-                            tint = PrimaryColor
-                        )
                     }
                 },
                 actions = {
@@ -131,7 +134,13 @@ fun UserInfoScreen(navController: NavController, userViewModel: UserViewModel) {
                 }
                 else {  // 회원 정보 수정 화면
                     InfoBar(name = "이메일", data = userInfoUiState.userInfo.email)
-                    InfoEditBar(name = "닉네임", data = userInfoUiState.nicknameInput, isAvailable = userInfoUiState.isAvailable, supportingText = userInfoUiState.supportingText, onValueChange = { userViewModel.updateNicknameInput(it) })
+                    InfoEditBar(
+                        name = "닉네임",
+                        data = userInfoUiState.nicknameInput,
+                        isAvailable = userInfoUiState.isAvailable,
+                        supportingText = userInfoUiState.supportingText,
+                        onValueChange = { userViewModel.updateNicknameInput(it) }
+                    )
 
                     Row(
                         modifier = Modifier
@@ -162,7 +171,10 @@ fun UserInfoScreen(navController: NavController, userViewModel: UserViewModel) {
                         Spacer(modifier = Modifier.width(20.dp))
                         
                         Button( // 회원 정보 수정 버튼
-                            onClick = { userViewModel.editUserInfo() },
+                            onClick = {
+                                userViewModel.editUserInfo()
+                                userViewModel.setEditMode(false)
+                            },
                             modifier = Modifier
                                 .weight(0.5f)
                                 .height(50.dp),

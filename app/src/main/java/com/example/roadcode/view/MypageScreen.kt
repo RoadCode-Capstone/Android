@@ -40,6 +40,7 @@ import androidx.navigation.NavController
 import com.example.roadcode.R
 import com.example.roadcode.ui.theme.PointColor
 import com.example.roadcode.ui.theme.PrimaryColor
+import com.example.roadcode.util.rememberOnce
 import com.example.roadcode.view.component.BottomNavigationBar
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -58,7 +59,7 @@ fun MypageScreen(navController: NavController) {
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { navController.popBackStack() }
+                        onClick = rememberOnce { navController.popBackStack() }
                     ) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
@@ -88,7 +89,7 @@ fun MypageScreen(navController: NavController) {
                 
                 MypageBar(text = "회원 정보")
                 MypageItem(text = "조회 및 수정", onClick = { navController.navigate("userInfo") })
-                MypageItem(text = "비밀번호 변경", onClick = { /* TODO: 비밀번호 변경 화면으로 이동 */ })
+                MypageItem(text = "비밀번호 변경", onClick = { navController.navigate("password") })
                 Divider(modifier = Modifier.fillMaxWidth(), thickness = 1.dp, color = Color.LightGray)
 
                 MypageBar(text = "계정")

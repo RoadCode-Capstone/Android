@@ -1,9 +1,11 @@
 package com.example.roadcode.data.repository
 
 import com.example.roadcode.data.model.LevelTestDTO
+import com.example.roadcode.data.model.ResponseUtilDTO
 import com.example.roadcode.data.model.UserDTO
 import com.example.roadcode.retrofit.JsonService
 import com.example.roadcode.retrofit.RetrofitInstance
+import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
@@ -68,6 +70,72 @@ class UserRepository @Inject constructor() {
             val duplicated = body.data!!.duplicated
             emit(Result.success(duplicated))
         } else {
+            throw HttpException(response)
+        }
+    }.catch { e ->
+        emit(Result.failure(e))
+    }
+
+    /* 비밀번호 재확인 */
+    suspend fun verifyPassword(request: UserDTO.VerifyPasswordRequest): Flow<Result<String>> = flow {
+        val response = jsonService.verifyPassword(token, request)
+
+        if (response.isSuccessful) {
+            val body = response.body()
+
+            if (body?.code != "SUCCESS") {
+                throw Exception("${body?.code.toString()}: ${body?.message.toString()}")
+            }
+
+            val codeMessage = "${response.code()}:${body.message!!}"
+            emit(Result.success(codeMessage))
+        }
+        else if (response.code() == 400) {  // HTTP 코드 400
+            val errorJson = response.errorBody()?.string()
+            val errorBody = runCatching {
+                Gson().fromJson(
+                    errorJson,
+                    ResponseUtilDTO.Response::class.java
+                ) as ResponseUtilDTO.Response<*>
+            }.getOrNull()
+
+            val codeMessage = "${response.code()}:${errorBody?.message}"
+            emit(Result.success(codeMessage))
+        }
+        else {
+            throw HttpException(response)
+        }
+    }.catch { e ->
+        emit(Result.failure(e))
+    }
+
+    /* 비밀번호 변경 */
+    suspend fun editPassword(request: UserDTO.EditPasswordRequest): Flow<Result<String>> = flow {
+        val response = jsonService.editPassword(token, request)
+
+        if (response.isSuccessful) {
+            val body = response.body()
+
+            if (body?.code != "SUCCESS") {
+                throw Exception("${body?.code.toString()}: ${body?.message.toString()}")
+            }
+
+            val codeMessage = "${response.code()}:${body.message!!}"
+            emit(Result.success(codeMessage))
+        }
+        else if (response.code() == 400) {  // HTTP 코드 400
+            val errorJson = response.errorBody()?.string()
+            val errorBody = runCatching {
+                Gson().fromJson(
+                    errorJson,
+                    ResponseUtilDTO.Response::class.java
+                ) as ResponseUtilDTO.Response<*>
+            }.getOrNull()
+
+            val codeMessage = "${response.code()}:${errorBody?.message}"
+            emit(Result.success(codeMessage))
+        }
+        else {
             throw HttpException(response)
         }
     }.catch { e ->

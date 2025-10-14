@@ -49,6 +49,7 @@ import com.example.roadcode.R
 import com.example.roadcode.ui.theme.BackGrayColor
 import com.example.roadcode.ui.theme.PointColor
 import com.example.roadcode.ui.theme.PrimaryColor
+import com.example.roadcode.util.rememberOnce
 import com.example.roadcode.view.component.AlgorithmItem
 import com.example.roadcode.viewmodel.RoadmapPlanViewModel
 import com.example.roadcode.viewmodel.TagViewModel
@@ -72,7 +73,7 @@ fun RoadmapPlanLanguageScreen(navController: NavController, roadmapPlanViewModel
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { navController.popBackStack() }
+                        onClick = rememberOnce { navController.popBackStack() }
                     ) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
@@ -250,7 +251,7 @@ fun RoadmapPlanTypeScreen(navController: NavController, roadmapPlanViewModel: Ro
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { navController.popBackStack() }
+                        onClick = rememberOnce { navController.popBackStack() }
                     ) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
@@ -385,7 +386,7 @@ fun RoadmapPlanAlgorithmScreen(navController: NavController, roadmapPlanViewMode
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { navController.popBackStack() }
+                        onClick = rememberOnce { navController.popBackStack() }
                     ) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
@@ -482,7 +483,7 @@ fun RoadmapPlanGoalScreen(navController: NavController, roadmapPlanViewModel: Ro
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { navController.popBackStack() }
+                        onClick = rememberOnce { navController.popBackStack() }
                     ) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,

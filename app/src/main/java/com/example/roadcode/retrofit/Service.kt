@@ -79,4 +79,12 @@ interface JsonService {
     // 닉네임 중복 체크
     @GET("/api/v1/member/exists-nickname")
     suspend fun checkNickname(@Query("nickname") nickname: String): Response<ResponseUtilDTO.Response<UserDTO.CheckNicknameResponse>>
+
+    // 비밀번호 재확인
+    @POST("/api/v1/member/verify-password")
+    suspend fun verifyPassword(@Header("Authorization") token: String, @Body request: UserDTO.VerifyPasswordRequest): Response<ResponseUtilDTO.Response<Nothing>>
+
+    // 비밀번호 변경
+    @PUT("/api/v1/member/password")
+    suspend fun editPassword(@Header("Authorization") token: String, @Body request: UserDTO.EditPasswordRequest): Response<ResponseUtilDTO.Response<Nothing>>
 }
