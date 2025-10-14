@@ -45,6 +45,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -56,11 +57,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavController
 import com.example.roadcode.R
 import com.example.roadcode.data.model.ProblemDTO
@@ -257,46 +262,67 @@ private fun ProblemPager(problemInfos: List<String>, language: String, initCode:
                             .fillMaxSize()
                             .padding(bottom = 20.dp)
                     ) {
+                        val context = LocalContext.current
+                        val lifecycleOwner = LocalLifecycleOwner.current
+
+                        val webView = remember {
+                            WebView(context).apply {
+                                settings.javaScriptEnabled = true
+                                settings.domStorageEnabled = true
+                                settings.allowFileAccess = true
+
+                                setLayerType(android.view.View.LAYER_TYPE_SOFTWARE, null)
+
+                                isFocusableInTouchMode = true
+                                requestFocus()
+
+                                webViewClient = object : WebViewClient() {
+                                    override fun onPageFinished(view: WebView?, url: String?) {
+                                        super.onPageFinished(view, url)
+                                        evaluateJavascript("setMode('$language');", null)
+                                        val safeCode = JSONObject.quote(currentCode)
+                                        evaluateJavascript("setCode($safeCode);", null)
+                                    }
+                                }
+
+                                addJavascriptInterface(object {
+                                    @JavascriptInterface
+                                    fun onCodeSubmit(code: String) {
+                                        currentCode = code
+                                        onCodeChanged(code)
+                                    }
+                                }, "Android")
+
+                                loadUrl("file:///android_asset/editor.html")
+                            }
+                        }
+
                         AndroidView(
                             modifier = Modifier.fillMaxSize(),
-                            factory = { context ->
-                                WebView(context).apply {
-                                    settings.javaScriptEnabled = true
-                                    settings.allowFileAccess = true
-                                    settings.domStorageEnabled = true
-
-                                    isFocusableInTouchMode = true
-                                    requestFocus()
-
-                                    webViewClient = object : WebViewClient() {
-                                        override fun onPageFinished(view: WebView?, url: String?) {
-                                            super.onPageFinished(view, url)
-
-                                            // 페이지 로드 완료 후 언어 모드 설정
-                                            evaluateJavascript("setMode('$language');", null)
-
-                                            // 저장된 코드 초기값 넣기
-                                            val safeCode = JSONObject.quote(currentCode)
-                                            evaluateJavascript("setCode($safeCode);", null)
-                                        }
-                                    }
-
-                                    // 안드로이드로 코드 자동 전송 (editor.html에서 setInterval 돌리고 있음)
-                                    addJavascriptInterface(object {
-                                        @JavascriptInterface
-                                        fun onCodeSubmit(code: String) {
-                                            currentCode = code
-                                            onCodeChanged(code)
-                                        }
-                                    }, "Android")
-
-                                    loadUrl("file:///android_asset/editor.html")
-                                }
-                            }
+                            factory = { webView }
                         )
 
+                        DisposableEffect(lifecycleOwner) {
+                            val observer = LifecycleEventObserver { _, event ->
+                                when (event) {
+                                    Lifecycle.Event.ON_RESUME -> webView.onResume()
+                                    Lifecycle.Event.ON_PAUSE  -> webView.onPause()
+                                    else -> Unit
+                                }
+                            }
+                            lifecycleOwner.lifecycle.addObserver(observer)
+
+                            onDispose {
+                                try {
+                                    webView.onPause()
+                                    (webView.parent as? android.view.ViewGroup)?.removeView(webView)
+                                } catch (_: Exception) { }
+                                lifecycleOwner.lifecycle.removeObserver(observer)
+                            }
+                        }
                     }
                 }
+
             }
         }
     }
