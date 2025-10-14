@@ -15,10 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForwardIos
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,10 +35,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.roadcode.R
-import com.example.roadcode.ui.theme.PointColor
 import com.example.roadcode.ui.theme.PrimaryColor
 import com.example.roadcode.util.rememberOnce
-import com.example.roadcode.view.component.BottomNavigationBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

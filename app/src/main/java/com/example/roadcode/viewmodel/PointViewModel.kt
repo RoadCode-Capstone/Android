@@ -11,9 +11,11 @@ import com.example.roadcode.data.repository.PointRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.YearMonth
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
@@ -25,7 +27,6 @@ class PointViewModel @Inject constructor(private val repository: PointRepository
     }
 
     sealed class PointUiItem {
-        data class MonthHeader(val yearMonth: YearMonth) : PointUiItem()
         data class DayHeader(val date: Int, val dayTotal: Int) : PointUiItem()
         data class Entry(val name: String, val amount: Int) : PointUiItem()
     }
@@ -34,6 +35,8 @@ class PointViewModel @Inject constructor(private val repository: PointRepository
     val points = _points.asStateFlow()
     private val _uiItems = MutableStateFlow<List<PointUiItem>>(emptyList())
     val uiItems = _uiItems.asStateFlow()
+    private val _yearMonth = MutableStateFlow(YearMonth.now(ZoneId.of("Asia/Seoul")))
+    val yearMonth = _yearMonth.asStateFlow()
 
     private val pointTypeMap = mapOf(
         "ATTENDANCE" to "출석",
@@ -44,13 +47,33 @@ class PointViewModel @Inject constructor(private val repository: PointRepository
     )
 
     init {
-        getPointsByDate("2025-07-01", "2025-08-31")
+        getPointsByDate()
+    }
+
+    /* 이전 달로 이동 */
+    fun prevMonth() {
+        _yearMonth.update { it.minusMonths(1) }
+        getPointsByDate()
+        Log.d(TAG, "이전 달로 이동: ${_yearMonth.value}")
+    }
+
+    /* 다음 달로 이동 */
+    fun nextMonth() {
+        _yearMonth.update { it.plusMonths(1) }
+        getPointsByDate()
+        Log.d(TAG, "다음 달로 이동: ${_yearMonth.value}")
     }
 
     /* 날짜별 포인트 내역 조회 함수 */
     @RequiresApi(Build.VERSION_CODES.O)
-    fun getPointsByDate(start: String, end: String) {
+    fun getPointsByDate() {
         viewModelScope.launch {
+//            val start = "2025-07-01"
+//            val end = "2025-08-31"
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+            val start = yearMonth.value.atDay(1).format(formatter)
+            val end = yearMonth.value.atEndOfMonth().format(formatter)
+
             repository.getPointsByDate(start, end).collect() { result ->
                 result
                     .onSuccess { pointsData ->
@@ -81,8 +104,6 @@ class PointViewModel @Inject constructor(private val repository: PointRepository
 
         val items = mutableListOf<PointUiItem>()
         for ((ym, days) in byMonth) {
-            items += PointUiItem.MonthHeader(ym)
-
             for (d in days) {
                 val localDate = LocalDate.parse(d.date, dateFormatter)
                 items += PointUiItem.DayHeader(date = localDate.dayOfMonth, dayTotal = d.totalPoint)

@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ChevronLeft
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -45,6 +47,7 @@ import java.time.YearMonth
 @Composable
 fun PointScreen(navController: NavController, pointViewModel: PointViewModel) {
     val uiItems by pointViewModel.uiItems.collectAsState()
+    val yearMonth by pointViewModel.yearMonth.collectAsState()
 
     Scaffold(
         topBar = {
@@ -83,18 +86,19 @@ fun PointScreen(navController: NavController, pointViewModel: PointViewModel) {
                     .padding(horizontal = 30.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                item {
+                    MonthBar(yearMonth = yearMonth, onClickPrevMonth = { pointViewModel.prevMonth() }, onClickNextMonth = { pointViewModel.nextMonth() })
+                }
+
                 uiItems.forEachIndexed { idx, item ->
                     when (item) {
-                        is PointViewModel.PointUiItem.MonthHeader -> {
-                            item {
-                                MonthBar(yearMonth = item.yearMonth)
-                            }
-                        }
                         is PointViewModel.PointUiItem.DayHeader -> {
                             item {
-                                if (uiItems[idx - 1] !is PointViewModel.PointUiItem.MonthHeader) {
+                                if (idx != 0) {
                                     Divider(
-                                        modifier = Modifier.fillMaxWidth().padding(bottom = 15.dp),
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(bottom = 15.dp),
                                         color = Color.LightGray,
                                         thickness = 0.5.dp
                                     )
@@ -119,24 +123,28 @@ fun PointScreen(navController: NavController, pointViewModel: PointViewModel) {
 /* 월 출력 바 */
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun MonthBar(yearMonth: YearMonth) {
+private fun MonthBar(yearMonth: YearMonth, onClickPrevMonth: () -> Unit, onClickNextMonth: () -> Unit) {
     val nowYear = YearMonth.now(java.time.ZoneId.of("Asia/Seoul")).year
     val printYearMonth = if (nowYear == yearMonth.year) "${yearMonth.monthValue}월" else "${yearMonth.year}년 ${yearMonth.monthValue}월"    // 현재 년도와 같으면 월만 출력, 다르면 년월 출력
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 20.dp)
-            .padding(horizontal = 10.dp),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
+            .padding(horizontal = 10.dp)
+            .padding(bottom = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
+        MonthMoveButton(icon = Icons.Default.ChevronLeft, onClick = { onClickPrevMonth() })
+
         Text(
             text = printYearMonth,
             fontSize = 17.sp,
             color = PrimaryColor,
             fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
         )
+
+        MonthMoveButton(icon = Icons.Default.ChevronRight, onClick = { onClickNextMonth() })
     }
 }
 

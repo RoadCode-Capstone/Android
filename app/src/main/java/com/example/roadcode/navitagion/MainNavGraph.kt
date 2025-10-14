@@ -25,6 +25,7 @@ import com.example.roadcode.view.RoadmapPlanLanguageScreen
 import com.example.roadcode.view.RoadmapPlanTypeScreen
 import com.example.roadcode.view.RoadmapScreen
 import com.example.roadcode.view.UserInfoScreen
+import com.example.roadcode.viewmodel.AttendanceViewModel
 import com.example.roadcode.viewmodel.CalendarViewModel
 import com.example.roadcode.viewmodel.LevelTestViewModel
 import com.example.roadcode.viewmodel.PasswordViewModel
@@ -38,6 +39,7 @@ import com.example.roadcode.viewmodel.UserViewModel
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MainNavGraph(navController: NavHostController = rememberNavController()) {
+    val attendanceViewModel: AttendanceViewModel = hiltViewModel()  // 앱 실행 시 출석 체크 자동 실행
     val roadmapPlanViewModel: RoadmapPlanViewModel = hiltViewModel()
     val levelTestViewModel: LevelTestViewModel = hiltViewModel()
     val roadmapViewModel: RoadmapViewModel = hiltViewModel()
