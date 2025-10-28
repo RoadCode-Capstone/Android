@@ -515,9 +515,9 @@ fun RoadmapPlanGoalScreen(navController: NavController, roadmapPlanViewModel: Ro
                 Spacer(modifier = Modifier.height(50.dp))
 
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 70.dp),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Button( // 1 버튼
                         onClick = { selectedGoal = 1 },
@@ -542,8 +542,6 @@ fun RoadmapPlanGoalScreen(navController: NavController, roadmapPlanViewModel: Ro
                         }
                     }
 
-                    Spacer(modifier = Modifier.width(16.dp))
-
                     Button( // 2 버튼
                         onClick = { selectedGoal = 2 },
                         modifier = Modifier.size(50.dp),
@@ -567,8 +565,6 @@ fun RoadmapPlanGoalScreen(navController: NavController, roadmapPlanViewModel: Ro
                         }
                     }
 
-                    Spacer(modifier = Modifier.width(16.dp))
-
                     Button( // 3 버튼
                         onClick = { selectedGoal = 3 },
                         modifier = Modifier.size(50.dp),
@@ -585,56 +581,6 @@ fun RoadmapPlanGoalScreen(navController: NavController, roadmapPlanViewModel: Ro
                         ) {
                             Text(
                                 text = "3",
-                                fontSize = 20.sp,
-                                color = Color.Black,
-                                fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    Button( // 4 버튼
-                        onClick = { selectedGoal = 4 },
-                        modifier = Modifier.size(50.dp),
-                        shape = CircleShape,
-                        border = BorderStroke(0.5.dp, PrimaryColor),
-                        contentPadding = PaddingValues(0.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = BackGrayColor
-                        )
-                    ) {
-                        Box(
-                            modifier = Modifier.size(50.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "4",
-                                fontSize = 20.sp,
-                                color = Color.Black,
-                                fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    Button( // 5 버튼
-                        onClick = { selectedGoal = 5 },
-                        modifier = Modifier.size(50.dp),
-                        shape = CircleShape,
-                        border = BorderStroke(0.5.dp, PrimaryColor),
-                        contentPadding = PaddingValues(0.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = BackGrayColor
-                        )
-                    ) {
-                        Box(
-                            modifier = Modifier.size(50.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "5",
                                 fontSize = 20.sp,
                                 color = Color.Black,
                                 fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
