@@ -2,6 +2,7 @@ package com.example.roadcode.data.repository
 
 import android.util.Log
 import com.example.roadcode.data.model.ResponseUtilDTO
+import com.example.roadcode.data.repository.ResponseHandler.handleResponse
 import com.example.roadcode.retrofit.JsonService
 import com.example.roadcode.retrofit.RetrofitInstance
 import kotlinx.coroutines.flow.Flow
@@ -15,22 +16,6 @@ class TagRepository @Inject constructor() {
     private val jsonService: JsonService = RetrofitInstance.retrofit.create(JsonService::class.java)
 
     /* 태그 목록 조회 */
-    suspend fun fetchTags(): Flow<Result<List<String>>> = flow {
-        val response = jsonService.getTags()
-
-        if (response.isSuccessful) {
-            val body = response.body()
-
-            if (body?.code != "SUCCESS") {
-                throw Exception("${body?.code.toString()}: ${body?.message.toString()}")
-            }
-
-            val tags = body!!.data!!.tags
-            emit(Result.success(tags))
-        } else {
-            throw HttpException(response)
-        }
-    }.catch { e ->
-        emit(Result.failure(e))
-    }
+    suspend fun fetchTags() =
+        handleResponse { jsonService.getTags() }
 }
