@@ -28,6 +28,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -42,6 +43,7 @@ import com.example.roadcode.R
 import com.example.roadcode.ui.theme.PointColor
 import com.example.roadcode.ui.theme.PrimaryColor
 import com.example.roadcode.view.component.BottomNavigationBar
+import com.example.roadcode.viewmodel.AttendanceViewModel
 import com.example.roadcode.viewmodel.CalendarViewModel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -52,10 +54,14 @@ import java.time.YearMonth
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun HomeScreen(navController: NavController, calendarViewModel: CalendarViewModel) {
+fun HomeScreen(navController: NavController, attendanceViewModel: AttendanceViewModel, calendarViewModel: CalendarViewModel) {
     val yearMonth by calendarViewModel.yearMonth.collectAsState()
     val year = yearMonth.year
     val month = yearMonth.monthValue
+
+    LaunchedEffect(Unit) {
+        attendanceViewModel.checkAttendance()
+    }
 
     Scaffold(
         topBar = {
