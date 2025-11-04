@@ -47,6 +47,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -93,11 +94,22 @@ fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewMod
     val progress by roadmapViewModel.progress.collectAsState()              // 달성률
     val roadmapStatus by roadmapViewModel.roadmapStatus.collectAsState()    // 로드맵 상태
 
+    val navigateBack by roadmapViewModel.navigateBack.collectAsState()
+
+    LaunchedEffect(navigateBack) {
+        if (navigateBack) {
+            roadmapViewModel.setFalseNavigateBack()
+            navController.popBackStack()
+        }
+    }
+
     if (showGiveUpDialog) {
         CustomAlertDialog(
-            showDialog = showGiveUpDialog,
             text = "학습 로드맵을 포기하겠습니까?",
-            onConfirm = { roadmapViewModel.giveUpRoadmap() },
+            onConfirm = {
+                showGiveUpDialog = false
+                roadmapViewModel.giveUpRoadmap()
+            },
             onDismiss = { showGiveUpDialog = false }
         )
     }

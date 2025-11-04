@@ -43,8 +43,7 @@ import androidx.navigation.NavController
 import com.example.roadcode.R
 import com.example.roadcode.ui.theme.PrimaryColor
 import com.example.roadcode.util.rememberOnce
-import com.example.roadcode.view.component.CustomDialog
-import com.example.roadcode.viewmodel.LoginEvent
+import com.example.roadcode.view.component.CustomAlertDialog
 import com.example.roadcode.viewmodel.LogoutEvent
 import com.example.roadcode.viewmodel.LogoutViewModel
 
@@ -56,10 +55,10 @@ fun MypageScreen(navController: NavController, logoutViewModel: LogoutViewModel)
     var isLogoutDialogOpen by remember { mutableStateOf(false) }
 
     if (isLogoutDialogOpen) {
-        CustomDialog(
-            title = "로그아웃 하시겠습니까?",
+        CustomAlertDialog(
+            text = "로그아웃 하시겠습니까?",
             onDismiss = { isLogoutDialogOpen = false },
-            onClickConfirm = {
+            onConfirm = {
                 logoutViewModel.logout()
                 isLogoutDialogOpen = false
             }
