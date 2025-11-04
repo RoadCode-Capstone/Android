@@ -22,6 +22,9 @@ class RoadmapViewModel @Inject constructor(private val repository: RoadmapReposi
         private const val TAG = "RoadmapViewModel"
     }
 
+    private val _navigateBack = MutableStateFlow(false)
+    val navigateBack = _navigateBack.asStateFlow()
+
     private val _roadmaps = MutableStateFlow<List<RoadmapDTO.RoadmapsData>>(emptyList())    // 로드맵 목록
     val roadmaps = _roadmaps.asStateFlow()
     private val _roadmapId = MutableStateFlow<Long>(0)   // 로드맵 아이디
@@ -81,6 +84,11 @@ class RoadmapViewModel @Inject constructor(private val repository: RoadmapReposi
                     }
             }
         }
+    }
+
+    /* 뒤로 가기 처리 함수 */
+    fun setFalseNavigateBack() {
+        _navigateBack.value = false
     }
 
     /* 로드맵 아이디 설정 함수 */
@@ -231,6 +239,7 @@ class RoadmapViewModel @Inject constructor(private val repository: RoadmapReposi
                     .onSuccess { body ->
                         when (body.code) {
                             "SUCCESS" -> {
+                                _navigateBack.value = true
                                 Log.d(TAG, "로드맵 포기 성공")
                             }
                             "E028" -> { // 완료된 로드맵을 포기하려는 경우
