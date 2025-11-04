@@ -64,4 +64,8 @@ class UserRepository @Inject constructor(private val tokenRepository: TokenRepos
     /* 이메일 중복 체크 */
     suspend fun checkDuplicatedEmail(request: String) =
         handleResponse { jsonService.checkDuplicatedEmail(request) }
+
+    /* 로그아웃 */
+    suspend fun logout() =
+        handleResponse { jsonService.logout(tokenRepository.getBearerToken()) }
 }

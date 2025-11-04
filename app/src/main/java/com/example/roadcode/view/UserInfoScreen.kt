@@ -227,7 +227,13 @@ fun InfoBar(name: String, data: String) {
 
 /* 정보 수정 바 */
 @Composable
-fun InfoEditBar(name: String, data: String, isAvailable: Boolean, supportingText: String, onValueChange: (String) -> Unit) {
+fun InfoEditBar(
+    name: String,
+    data: String,
+    isAvailable: Boolean = true,
+    supportingText: String = "",
+    onValueChange: (String) -> Unit
+) {
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -237,6 +243,7 @@ fun InfoEditBar(name: String, data: String, isAvailable: Boolean, supportingText
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
+                modifier = Modifier.weight(0.25f),
                 text = name,
                 fontSize = 16.sp,
                 color = PrimaryColor,
@@ -244,6 +251,7 @@ fun InfoEditBar(name: String, data: String, isAvailable: Boolean, supportingText
             )
 
             OutlinedTextField(
+                modifier = Modifier.weight(0.75f),
                 value = data,
                 onValueChange = onValueChange,
                 singleLine = true,
