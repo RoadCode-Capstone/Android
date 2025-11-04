@@ -10,8 +10,10 @@ object SubmissionDTO {
 
     // 풀이 제출 요청
     data class SubmitSolutionRequest(
-        val language: String,   // 언어
-        val sourceCode: String  // 소스 코드
+        val roadmapId: Long,        // 로드맵 아이디
+        val roadmapProblemId: Long, // 로드맵 문제 아이디
+        val language: String,       // 언어
+        val sourceCode: String      // 소스 코드
     )
 
     // 풀이 제출 응답

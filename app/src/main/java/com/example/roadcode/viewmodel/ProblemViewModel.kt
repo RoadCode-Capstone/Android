@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.roadcode.data.model.ProblemDTO
+import com.example.roadcode.data.model.RoadmapDTO
 import com.example.roadcode.data.model.SubmissionDTO
 import com.example.roadcode.data.repository.RoadmapRepository
 import com.example.roadcode.data.repository.SubmissionRepository
@@ -78,8 +79,13 @@ class ProblemViewModel @Inject constructor(private val repository: SubmissionRep
     }
 
     /* 풀이 제출 함수 */
-    fun submitSolution(language: String) {
-        val request = SubmissionDTO.SubmitSolutionRequest(language, code.value)
+    fun submitSolution(roadmapInfo: RoadmapDTO.RoadmapData) {
+        val request = SubmissionDTO.SubmitSolutionRequest(
+            roadmapInfo.roadmapId,
+            roadmapInfo.currentProblem.roadmapProblemId,
+            roadmapInfo.language,
+            code.value
+        )
 
         viewModelScope.launch {
             repository.submitSolution(problemId.value, request).collect() { result ->
