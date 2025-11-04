@@ -1,5 +1,6 @@
 package com.example.roadcode.view
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -39,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
@@ -55,6 +57,8 @@ import com.example.roadcode.viewmodel.RoadmapViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RoadmapListScreen(navController: NavController, roadmapViewModel: RoadmapViewModel) {
+    val context = LocalContext.current
+
     val roadmaps by roadmapViewModel.roadmaps.collectAsState()  // 로드맵 목록
     val progress by roadmapViewModel.progress.collectAsState()  // 달성률
     val status by roadmapViewModel.status.collectAsState()      // 선택한 로드맵 상태
@@ -89,7 +93,13 @@ fun RoadmapListScreen(navController: NavController, roadmapViewModel: RoadmapVie
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { navController.navigate("plan_language") },  // 로드맵 생성 화면으로 이동
+                onClick = {
+                    if (roadmaps.any { it.status == "IN_PROGRESS" }) {
+                        Toast.makeText(context, "이미 진행 중인 로드맵이 있습니다.", Toast.LENGTH_SHORT).show()
+                    } else {
+                        navController.navigate("plan_language") // 로드맵 생성 화면으로 이동
+                    }
+                },
                 containerColor = PointColor,
                 shape = CircleShape
             ) {

@@ -28,29 +28,12 @@ class RoadmapViewModel @Inject constructor(private val repository: RoadmapReposi
     private val _roadmaps = MutableStateFlow<List<RoadmapDTO.RoadmapsData>>(emptyList())    // 로드맵 목록
     val roadmaps = _roadmaps.asStateFlow()
     private val _roadmapId = MutableStateFlow<Long>(0)   // 로드맵 아이디
-//    private val _roadmapId = MutableStateFlow<Long>(35)      // (테스트)
     val roadmapId = _roadmapId.asStateFlow()
     private val _roadmapStatus = MutableStateFlow("")   // 로드맵 상태
     val roadmapStatus = _roadmapStatus.asStateFlow()
     private val _roadmapInfo = MutableStateFlow(RoadmapDTO.RoadmapData())   // 로드맵 정보
     val roadmapInfo = _roadmapInfo.asStateFlow()
     private val _problems = MutableStateFlow<List<RoadmapDTO.RoadmapProblem>>(emptyList())  // 문제 목록
-//    private val _problems = MutableStateFlow<List<RoadmapDTO.roadmapProblem>>(listOf(
-//        RoadmapDTO.roadmapProblem(771, 2195, 0, "IN_PROGRESS"),
-//        RoadmapDTO.roadmapProblem(772, 14, 1, "NOT_STARTED"),
-//        RoadmapDTO.roadmapProblem(773, 20, 2, "NOT_STARTED"),
-//        RoadmapDTO.roadmapProblem(774, 62, 3, "NOT_STARTED"),
-//        RoadmapDTO.roadmapProblem(775, 98, 4, "NOT_STARTED"),
-//        RoadmapDTO.roadmapProblem(776, 10, 5, "NOT_STARTED"),
-//        RoadmapDTO.roadmapProblem(777, 209, 6, "NOT_STARTED"),
-//        RoadmapDTO.roadmapProblem(778, 289, 7, "NOT_STARTED"),
-//        RoadmapDTO.roadmapProblem(779, 331, 8, "NOT_STARTED"),
-//        RoadmapDTO.roadmapProblem(780, 15, 9, "NOT_STARTED"),
-//        RoadmapDTO.roadmapProblem(781, 45, 10, "NOT_STARTED"),
-//        RoadmapDTO.roadmapProblem(782, 122, 11, "NOT_STARTED"),
-//        RoadmapDTO.roadmapProblem(783, 11, 12, "NOT_STARTED"),
-//        RoadmapDTO.roadmapProblem(784, 23, 13, "NOT_STARTED"),
-//        RoadmapDTO.roadmapProblem(785, 7, 14, "NOT_STARTED")))    // (테스트)
     val problems = _problems.asStateFlow()
     private val _problemInfo = MutableStateFlow<ProblemDTO.ProblemData?>(null)  // 문제 정보
     val problemInfo = _problemInfo.asStateFlow()
@@ -284,6 +267,12 @@ class RoadmapViewModel @Inject constructor(private val repository: RoadmapReposi
                             "SUCCESS" -> {
                                 val roadmaps = body.data!!.roadmaps
                                 _roadmaps.value = roadmaps
+
+                                val continueRoadmap = roadmaps.find { it.status == "IN_PROGRESS" }
+                                continueRoadmap?.let {  // 진행 중인 로드맵은 1개이므로 진행 중 상태의 로드맵 정보 조회
+                                    setRoadmapId(it.roadmapId)
+                                    setProgress()
+                                }
 
                                 Log.d(TAG, "로드맵 목록 조회 성공\n${roadmaps}")
                             }
