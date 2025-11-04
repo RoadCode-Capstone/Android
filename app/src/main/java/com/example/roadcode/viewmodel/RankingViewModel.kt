@@ -1,6 +1,8 @@
 package com.example.roadcode.viewmodel
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.roadcode.data.model.PointDTO
@@ -12,8 +14,12 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.YearMonth
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
+@RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
 class RankingViewModel @Inject constructor(private val repository: PointRepository, private val tokenRepository: TokenRepository) : ViewModel() {
     companion object {
@@ -29,11 +35,16 @@ class RankingViewModel @Inject constructor(private val repository: PointReposito
     private val _topPercent = MutableStateFlow<Int>(0)  // 상위 퍼센트
     val topPercent = _topPercent.asStateFlow()
 
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    val yearMonth = YearMonth.from(LocalDate.now())
+    val startDate = yearMonth.atDay(1).format(formatter)
+    val endDate = yearMonth.atEndOfMonth().format(formatter)
+
     init {
         viewModelScope.launch {
             tokenRepository.tokenFlow.collect { token ->
                 if (!token.isNullOrBlank()) {
-                    getRanking("2025-06-06", "2025-08-06")  // TODO: 현재 월로 변경
+                    getRanking(startDate, endDate)
                 }
             }
         }
