@@ -1,5 +1,6 @@
 package com.example.roadcode.view
 
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -24,11 +25,16 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
@@ -37,10 +43,47 @@ import androidx.navigation.NavController
 import com.example.roadcode.R
 import com.example.roadcode.ui.theme.PrimaryColor
 import com.example.roadcode.util.rememberOnce
+import com.example.roadcode.view.component.CustomDialog
+import com.example.roadcode.viewmodel.LoginEvent
+import com.example.roadcode.viewmodel.LogoutEvent
+import com.example.roadcode.viewmodel.LogoutViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MypageScreen(navController: NavController) {
+fun MypageScreen(navController: NavController, logoutViewModel: LogoutViewModel) {
+    val context = LocalContext.current
+
+    var isLogoutDialogOpen by remember { mutableStateOf(false) }
+
+    if (isLogoutDialogOpen) {
+        CustomDialog(
+            title = "로그아웃 하시겠습니까?",
+            onDismiss = { isLogoutDialogOpen = false },
+            onClickConfirm = {
+                logoutViewModel.logout()
+                isLogoutDialogOpen = false
+            }
+        )
+    }
+
+    LaunchedEffect(Unit) {
+        logoutViewModel.toast.collect { msg ->
+            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        logoutViewModel.event.collect { event ->
+            when (event) {
+                is LogoutEvent.LogoutSuccess -> {
+                    navController.navigate("login") {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            }
+        }
+    }
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -88,8 +131,8 @@ fun MypageScreen(navController: NavController) {
                 Divider(modifier = Modifier.fillMaxWidth(), thickness = 1.dp, color = Color.LightGray)
 
                 MypageBar(text = "계정")
-                MypageItem(text = "로그아웃", onClick = { /* TODO: 로그아웃 기능 */ })
-                MypageItem(text = "탈퇴", onClick = { /* TODO: 탈퇴 기능 */ })
+                MypageItem(text = "로그아웃", onClick = { isLogoutDialogOpen = true })
+                MypageItem(text = "탈퇴", onClick = { navController.navigate("delete_user") })
             }
         }
     }
