@@ -120,7 +120,7 @@ class RegisterViewModel @Inject constructor(private val repository: UserReposito
                     .onSuccess { body ->
                         when (body.code) {
                             "SUCCESS" -> {
-                                _registerUiState.update { it.copy(verifiedEmail = email) }
+                                _registerUiState.update { it.copy(verifiedEmail = email, isVerifyEmail = false) }
                                 startTimer()
                                 _toast.emit(body.message ?: "")
                                 Log.d(TAG, "인증코드 발송 성공")

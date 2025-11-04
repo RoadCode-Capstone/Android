@@ -44,7 +44,6 @@ class UserViewModel @Inject constructor(private val repository: UserRepository, 
             tokenRepository.tokenFlow.collect { token ->
                 if (!token.isNullOrBlank()) {
                     getUserInfo()
-                    cancel()
                 }
             }
         }

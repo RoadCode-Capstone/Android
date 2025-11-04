@@ -56,7 +56,7 @@ class LoginViewModel @Inject constructor(private val tokenRepository: TokenRepos
     }
 
     /* 로그인 함수 */
-    fun login(context: Context) {
+    fun login() {
         val request = UserDTO.EmailLoginRequest(email = loginUiState.value.email, password = loginUiState.value.password)
 
         viewModelScope.launch {
@@ -66,7 +66,6 @@ class LoginViewModel @Inject constructor(private val tokenRepository: TokenRepos
                         when (body.code) {
                             "SUCCESS" -> {
                                 val token = body.data!!.accessToken
-//                                TokenManager.saveToken(context, token)   // DataStore에 token 저장
                                 tokenRepository.saveToken(token) // DataStore에 token 저장
 
                                 Log.d(TAG, "로그인 성공: token=${token}")

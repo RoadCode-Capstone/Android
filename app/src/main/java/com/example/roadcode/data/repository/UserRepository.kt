@@ -68,4 +68,8 @@ class UserRepository @Inject constructor(private val tokenRepository: TokenRepos
     /* 로그아웃 */
     suspend fun logout() =
         handleResponse { jsonService.logout(tokenRepository.getBearerToken()) }
+
+    /* 비밀번호 재설정 */
+    suspend fun resetPassword(reqeust: UserDTO.ResetPasswordRequest) =
+        handleResponse { jsonService.resetPassword(reqeust) }
 }

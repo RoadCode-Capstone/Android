@@ -61,4 +61,10 @@ object UserDTO {
         val email: String,              // 이메일
         val verificationCode: String    // 인증코드
     )
+
+    // 비밀번호 재설정 요청
+    data class ResetPasswordRequest(
+        val email: String,      // 이메일
+        val newPassword: String // 새로운 비밀번호
+    )
 }

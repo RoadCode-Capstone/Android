@@ -21,6 +21,7 @@ import com.example.roadcode.view.PointScreen
 import com.example.roadcode.view.ProblemScreen
 import com.example.roadcode.view.RankingScreen
 import com.example.roadcode.view.RegisterScreen
+import com.example.roadcode.view.ResetPasswordScreen
 import com.example.roadcode.view.RoadmapListScreen
 import com.example.roadcode.view.RoadmapPlanAlgorithmScreen
 import com.example.roadcode.view.RoadmapPlanGoalScreen
@@ -39,6 +40,7 @@ import com.example.roadcode.viewmodel.PointViewModel
 import com.example.roadcode.viewmodel.ProblemViewModel
 import com.example.roadcode.viewmodel.RankingViewModel
 import com.example.roadcode.viewmodel.RegisterViewModel
+import com.example.roadcode.viewmodel.ResetPasswordViewModel
 import com.example.roadcode.viewmodel.RoadmapPlanViewModel
 import com.example.roadcode.viewmodel.RoadmapViewModel
 import com.example.roadcode.viewmodel.UserViewModel
@@ -59,6 +61,7 @@ fun MainNavGraph(navController: NavHostController = rememberNavController()) {
     val loginViewModel: LoginViewModel = hiltViewModel()
     val registerViewModel: RegisterViewModel = hiltViewModel()
     val logoutViewModel: LogoutViewModel = hiltViewModel()
+    val resetPasswordViewModel: ResetPasswordViewModel = hiltViewModel()
 
     NavHost(navController = navController, startDestination = "login") {
         composable("plan_language") { RoadmapPlanLanguageScreen(navController, roadmapPlanViewModel) }                                  // 학습 계획 설정 화면 (언어)
@@ -80,6 +83,7 @@ fun MainNavGraph(navController: NavHostController = rememberNavController()) {
         composable("delete_user") { DeleteUserScreen(navController, deleteUserViewModel) }                                              // 회원 탈퇴 화면
         composable("login") { LoginScreen(navController, loginViewModel) }                                                              // 로그인 화면
         composable("register") { RegisterScreen(navController, registerViewModel) }                                                     // 회원가입 화면
+        composable("resetPassword") { ResetPasswordScreen(navController, resetPasswordViewModel) }                                      // 비밀번호 재설정 화면
 
         bottomNavGraph(navController, attendanceViewModel, roadmapViewModel, calendarViewModel, rankingViewModel) // 하단 내비게이션 바
     }

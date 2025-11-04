@@ -1,7 +1,6 @@
 package com.example.roadcode.view
 
 import android.widget.Toast
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -83,16 +82,16 @@ fun RegisterScreen(navController: NavController, registerViewModel: RegisterView
         }
     }
 
-    DisposableEffect(Unit) {
-        onDispose {
-            registerViewModel.init()
+    LaunchedEffect(navigateBack) {
+        if (navigateBack) {
+            registerViewModel.setFalseNavigateBack()
+            navController.popBackStack()
         }
     }
 
-    LaunchedEffect(navigateBack) {
-        if (navigateBack) {
-            navController.popBackStack()
-            registerViewModel.setFalseNavigateBack()
+    DisposableEffect(Unit) {
+        onDispose {
+            registerViewModel.init()
         }
     }
 
@@ -154,13 +153,13 @@ fun RegisterCard(registerUiState: RegisterUiState, registerViewModel: RegisterVi
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             // 이메일 입력 & 이메일 중복 확인 버튼
-            EmailBar(registerUiState, registerViewModel)
+            EmailBar(registerUiState.email, registerUiState.verifiedEmail, changedInput = { registerViewModel.updateInput(RegisterField.EMAIL, it) }, clickedBtn = { registerViewModel.verifyEmailRegister() })
 
             // 인증코드 입력 & 인증코드 발송 버튼(재발송) & 5분 타이머 & 인증코드 확인 버튼
-            VerifyCodeBar(registerUiState, registerViewModel)
+            VerifyCodeBar(registerUiState.code, registerUiState.isVerifyEmail, registerUiState.codeTimer, changedInput = { registerViewModel.updateInput(RegisterField.CODE, it) }, clickedBtn = { registerViewModel.verifyCode() })
 
             // 비밀번호 입력
-            PasswordBar(registerUiState, registerViewModel)
+            PasswordBar(registerUiState.password, changedInput = { registerViewModel.updateInput(RegisterField.PASSWORD, it) })
 
             // 닉네임 입력 & 닉네임 중복 확인 버튼
             NicknameBar(registerUiState, registerViewModel)
@@ -194,9 +193,11 @@ fun RegisterCard(registerUiState: RegisterUiState, registerViewModel: RegisterVi
 
 /* 이메일 입력 & 인증코드 전송 버튼 바 */
 @Composable
-private fun EmailBar(
-    registerUiState: RegisterUiState,
-    registerViewModel: RegisterViewModel
+fun EmailBar(
+    email: String,
+    verifiedEmail: String,
+    changedInput: (String) -> Unit,
+    clickedBtn: () -> Unit
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -221,8 +222,8 @@ private fun EmailBar(
         ) {
             OutlinedTextField(
                 modifier = Modifier.weight(0.62f),
-                value = registerUiState.email,
-                onValueChange = { registerViewModel.updateInput(RegisterField.EMAIL, it) },
+                value = email,
+                onValueChange = { changedInput(it) },
                 singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = Color.Gray,
@@ -233,7 +234,7 @@ private fun EmailBar(
             )
 
             Button( // 인증코드 발송 버튼 버튼 - 중복되는 이메일이면 오류 출력, 눌렸으면 재전송으로 바꾸기
-                onClick = { registerViewModel.verifyEmailRegister() },
+                onClick = { clickedBtn() },
                 modifier = Modifier.weight(0.38f),
                 shape = RoundedCornerShape(20.dp),
                 colors = ButtonDefaults.buttonColors(
@@ -243,7 +244,7 @@ private fun EmailBar(
                 contentPadding = PaddingValues(horizontal = 6.dp, vertical = 2.dp)
             ) {
                 Text(
-                    text = if (registerUiState.verifiedEmail.isNotBlank() && registerUiState.email == registerUiState.verifiedEmail) "인증코드 재전송" else "인증코드 받기",
+                    text = if (verifiedEmail.isNotBlank() && email == verifiedEmail) "인증코드 재전송" else "인증코드 받기",
                     fontSize = 14.sp,
                     color = Color.White,
                     fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
@@ -256,9 +257,12 @@ private fun EmailBar(
 
 /* 인증코드 입력 & 5분 타이머 & 인증코드 확인 버튼 바 */
 @Composable
-private fun VerifyCodeBar(
-    registerUiState: RegisterUiState,
-    registerViewModel: RegisterViewModel
+fun VerifyCodeBar(
+    code: String,
+    isVerifyEmail: Boolean,
+    codeTimer: Int,
+    changedInput: (String) -> Unit,
+    clickedBtn: () -> Unit
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -283,8 +287,8 @@ private fun VerifyCodeBar(
         ) {
             OutlinedTextField(
                 modifier = Modifier.weight(0.8f),
-                value = registerUiState.code,
-                onValueChange = { registerViewModel.updateInput(RegisterField.CODE, it) },
+                value = code,
+                onValueChange = { changedInput(it) },
                 singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = Color.Gray,
@@ -292,7 +296,7 @@ private fun VerifyCodeBar(
                     errorBorderColor = MaterialTheme.colorScheme.error
                 ),
                 trailingIcon = {
-                    if (registerUiState.isVerifyEmail) {
+                    if (isVerifyEmail) {
                         Icon(
                             imageVector = Icons.Default.CheckCircle,
                             contentDescription = "이메일 검증 완료 버튼",
@@ -301,13 +305,13 @@ private fun VerifyCodeBar(
                     }
                     else {
                         Text(
-                            text = if (registerUiState.codeTimer == 0) "" else String.format(
+                            text = if (codeTimer == 0) "" else String.format(
                                 "%02d:%02d",
-                                registerUiState.codeTimer / 60,
-                                registerUiState.codeTimer % 60
+                                codeTimer / 60,
+                                codeTimer % 60
                             ),
                             fontSize = 12.sp,
-                            color = if (registerUiState.codeTimer > 0) Color.Red else Color.Gray,
+                            color = if (codeTimer > 0) Color.Red else Color.Gray,
                             modifier = Modifier.padding(end = 5.dp)
                         )
                     }
@@ -315,7 +319,7 @@ private fun VerifyCodeBar(
             )
 
             Button( // 인증코드 확인 버튼
-                onClick = { registerViewModel.verifyCode() },
+                onClick = { clickedBtn() },
                 modifier = Modifier.weight(0.2f),
                 shape = RoundedCornerShape(20.dp),
                 colors = ButtonDefaults.buttonColors(
@@ -337,9 +341,9 @@ private fun VerifyCodeBar(
 
 /* 비밀번호 입력 바 */
 @Composable
-private fun PasswordBar(
-    registerUiState: RegisterUiState,
-    registerViewModel: RegisterViewModel
+fun PasswordBar(
+    password: String,
+    changedInput: (String) -> Unit,
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
 
@@ -365,8 +369,8 @@ private fun PasswordBar(
             verticalAlignment = Alignment.CenterVertically
         ) {
             OutlinedTextField(
-                value = registerUiState.password,
-                onValueChange = { registerViewModel.updateInput(RegisterField.PASSWORD, it) },
+                value = password,
+                onValueChange = { changedInput(it) },
                 singleLine = true,
                 trailingIcon = {
                     val image = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff

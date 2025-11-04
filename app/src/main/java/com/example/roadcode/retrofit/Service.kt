@@ -200,4 +200,10 @@ interface JsonService {
     suspend fun logout(
         @Header("Authorization") token: String
     ): ApiResponse<Nothing>
+
+    // 비밀번호 재설정
+    @POST("/api/v1/auth/reset-password")
+    suspend fun resetPassword(
+        @Body request: UserDTO.ResetPasswordRequest
+    ): ApiResponse<Nothing>
 }

@@ -34,6 +34,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -52,6 +53,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -176,7 +178,7 @@ fun LoginCard(context: Context, navController: NavController, loginUiState: Logi
                 }
 
                 Button( // 로그인 버튼
-                    onClick = { loginViewModel.login(context) },
+                    onClick = { loginViewModel.login() },
                     modifier = Modifier
                         .weight(0.5f)
                         .height(50.dp),
@@ -191,6 +193,23 @@ fun LoginCard(context: Context, navController: NavController, loginUiState: Logi
                         fontSize = 16.sp,
                         color = Color.White,
                         fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
+                    )
+                }
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                TextButton(
+                    onClick = { navController.navigate("resetPassword") }
+                ) {
+                    Text(
+                        text = "비밀번호 초기화",
+                        fontSize = 14.sp,
+                        color = Color.Gray,
+                        fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium)),
+                        textDecoration = TextDecoration.Underline
                     )
                 }
             }
