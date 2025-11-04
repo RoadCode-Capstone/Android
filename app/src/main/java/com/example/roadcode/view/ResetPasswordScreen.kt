@@ -46,6 +46,8 @@ import com.example.roadcode.R
 import com.example.roadcode.ui.theme.PointColor
 import com.example.roadcode.ui.theme.PrimaryColor
 import com.example.roadcode.util.rememberOnce
+import com.example.roadcode.view.component.LoadingOverlay
+import com.example.roadcode.view.component.LoadingOverlayName
 import com.example.roadcode.viewmodel.RegisterField
 import com.example.roadcode.viewmodel.RegisterUiState
 import com.example.roadcode.viewmodel.RegisterViewModel
@@ -60,6 +62,8 @@ fun ResetPasswordScreen(navController: NavController, resetPasswordViewModel: Re
     val context = LocalContext.current
 
     val navigateBack by resetPasswordViewModel.navigateBack.collectAsState()
+    val isLoading by resetPasswordViewModel.isLoading.collectAsState()
+
     val resetPasswordUiState by resetPasswordViewModel.resetPasswordUiState.collectAsState()
 
     LaunchedEffect(Unit) {
@@ -115,6 +119,8 @@ fun ResetPasswordScreen(navController: NavController, resetPasswordViewModel: Re
             ) {
                 ResetPasswordCard(resetPasswordUiState, resetPasswordViewModel)
             }
+
+            LoadingOverlay(isLoading, LoadingOverlayName.DEFAULT)
         }
     }
 }
@@ -155,6 +161,9 @@ fun ResetPasswordCard(resetPasswordUiState: ResetPasswordUiState, resetPasswordV
                 changedInput = { resetPasswordViewModel.updateInput(ResetPasswordField.PASSWORD, it) }
             )
 
+            // 비밀번호 체크 입력
+            CheckPasswordBar(resetPasswordUiState.verifyPasswordInput, resetPasswordUiState.isSame, changedInput = { resetPasswordViewModel.updateInput(ResetPasswordField.VERIFY, it) })
+
             Spacer(modifier = Modifier.weight(1f))
 
             // 비밀번호 재설정 버튼
@@ -169,7 +178,7 @@ fun ResetPasswordCard(resetPasswordUiState: ResetPasswordUiState, resetPasswordV
                     containerColor = PointColor,
                     contentColor = Color.White
                 ),
-                enabled = resetPasswordUiState.isVerifyEmail && resetPasswordUiState.password.isNotBlank()
+                enabled = resetPasswordUiState.isVerifyEmail && resetPasswordUiState.password.isNotBlank() && resetPasswordUiState.isSame
             ) {
                 Text(
                     text = "비밀번호 재설정",

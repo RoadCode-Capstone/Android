@@ -21,6 +21,9 @@ class ProblemViewModel @Inject constructor(private val repository: SubmissionRep
         private const val TAG = "ProblemViewModel"
     }
 
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading = _isLoading.asStateFlow()
+
     private val _problemId = MutableStateFlow<Long>(0)    // 문제 아이디
     val problemId = _problemId.asStateFlow()
     private val _problemInfo = MutableStateFlow<List<String>>(emptyList()) // 문제 정보 (제목, 설명, 입력 설명, 출력 설명, 시간제한, 메모리제한)
@@ -88,6 +91,7 @@ class ProblemViewModel @Inject constructor(private val repository: SubmissionRep
         )
 
         viewModelScope.launch {
+            _isLoading.value = true
             repository.submitSolution(problemId.value, request).collect() { result ->
                 result
                     .onSuccess { body ->
@@ -117,6 +121,7 @@ class ProblemViewModel @Inject constructor(private val repository: SubmissionRep
                         Log.e(TAG, "네트워크 오류: ${e.message}")
                     }
             }
+            _isLoading.value = false
         }
     }
 

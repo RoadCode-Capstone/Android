@@ -11,19 +11,22 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/* 학습 계획 데이터 클래스 */
+data class Plan(
+    val selectedLanguage: String? = null,
+    val selectedType: String? = null,
+    val selectedAlgorithm: String? = null,
+    val selectedGoal: Int? = null
+)
+
 @HiltViewModel
 class RoadmapPlanViewModel @Inject constructor(private val repository: RoadmapRepository) : ViewModel() {
     companion object {
         private const val TAG = "RoadmapPlanViewModel"
     }
 
-    /* 학습 계획 데이터 클래스 */
-    data class Plan(
-        val selectedLanguage: String? = null,
-        val selectedType: String? = null,
-        val selectedAlgorithm: String? = null,
-        val selectedGoal: Int? = null
-    )
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading = _isLoading.asStateFlow()
 
     private val _plan = MutableStateFlow(Plan())
     val plan = _plan.asStateFlow()
@@ -57,6 +60,7 @@ class RoadmapPlanViewModel @Inject constructor(private val repository: RoadmapRe
         val request = RoadmapDTO.CreateRequest(plan.value.selectedType!!, plan.value.selectedLanguage!!, plan.value.selectedAlgorithm, plan.value.selectedGoal!!, result)
         Log.d(TAG, "로드맵 생성 요청\n${request}")
         viewModelScope.launch {
+            _isLoading.value = true
             repository.createRoadmap(request).collect() { result ->
                 result
                     .onSuccess { body ->
@@ -83,6 +87,7 @@ class RoadmapPlanViewModel @Inject constructor(private val repository: RoadmapRe
                         Log.e(TAG, "네트워크 오류: ${e.message}")
                     }
             }
+            _isLoading.value = false
         }
     }
 }

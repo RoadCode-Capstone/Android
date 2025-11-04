@@ -32,7 +32,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -45,10 +44,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -59,13 +56,11 @@ import com.example.roadcode.R
 import com.example.roadcode.ui.theme.PointColor
 import com.example.roadcode.ui.theme.PrimaryColor
 import com.example.roadcode.util.rememberOnce
-import com.example.roadcode.viewmodel.LoginField
-import com.example.roadcode.viewmodel.LoginUiState
-import com.example.roadcode.viewmodel.LoginViewModel
+import com.example.roadcode.view.component.LoadingOverlay
+import com.example.roadcode.view.component.LoadingOverlayName
 import com.example.roadcode.viewmodel.RegisterField
 import com.example.roadcode.viewmodel.RegisterUiState
 import com.example.roadcode.viewmodel.RegisterViewModel
-import kotlinx.coroutines.delay
 
 /* 회원가입 화면 */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -74,6 +69,8 @@ fun RegisterScreen(navController: NavController, registerViewModel: RegisterView
     val context = LocalContext.current
 
     val navigateBack by registerViewModel.navigateBack.collectAsState()
+    val isLoading by registerViewModel.isLoading.collectAsState()
+
     val registerUiState by registerViewModel.registerUiState.collectAsState()
 
     LaunchedEffect(Unit) {
@@ -135,6 +132,8 @@ fun RegisterScreen(navController: NavController, registerViewModel: RegisterView
             ) {
                 RegisterCard(registerUiState, registerViewModel)
             }
+
+            LoadingOverlay(isLoading, LoadingOverlayName.DEFAULT)
         }
     }
 }
@@ -161,6 +160,9 @@ fun RegisterCard(registerUiState: RegisterUiState, registerViewModel: RegisterVi
             // 비밀번호 입력
             PasswordBar(registerUiState.password, changedInput = { registerViewModel.updateInput(RegisterField.PASSWORD, it) })
 
+            // 비밀번호 체크 입력
+            CheckPasswordBar(registerUiState.verifyPasswordInput, registerUiState.isSame, changedInput = { registerViewModel.updateInput(RegisterField.VERIFY, it) })
+
             // 닉네임 입력 & 닉네임 중복 확인 버튼
             NicknameBar(registerUiState, registerViewModel)
 
@@ -178,7 +180,7 @@ fun RegisterCard(registerUiState: RegisterUiState, registerViewModel: RegisterVi
                     containerColor = PointColor,
                     contentColor = Color.White
                 ),
-                enabled = registerUiState.isVerifyEmail && registerUiState.isVerifyNickname && registerUiState.password.isNotBlank()
+                enabled = registerUiState.isVerifyEmail && registerUiState.isVerifyNickname && registerUiState.password.isNotBlank() && registerUiState.isSame
             ) {
                 Text(
                     text = "회원가입",
@@ -391,6 +393,44 @@ fun PasswordBar(
                 ),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+            )
+        }
+    }
+}
+
+/* 비밀번호 확인 바 */
+@Composable
+fun CheckPasswordBar(
+    checkPassword: String,
+    isSame: Boolean,
+    changedInput: (String) -> Unit,
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "비밀번호 확인",
+                fontSize = 16.sp,
+                color = PrimaryColor,
+                fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
+            )
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            PasswordTextField(
+                label = "",
+                data = checkPassword,
+                onValueChange = { changedInput(it) },
+                isSame = isSame
             )
         }
     }

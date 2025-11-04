@@ -21,10 +21,12 @@ data class ResetPasswordUiState(
     val password: String = "",
     val codeTimer: Int = 0,
     val verifiedEmail: String = "",
-    val isVerifyEmail: Boolean = false
+    val isVerifyEmail: Boolean = false,
+    val verifyPasswordInput: String = "",   // 비밀번호 확인
+    val isSame: Boolean = true              // 새로운 비밀번호와 비밀번호 확인 일치 여부
 )
 
-enum class ResetPasswordField { EMAIL, CODE, PASSWORD }
+enum class ResetPasswordField { EMAIL, CODE, PASSWORD, VERIFY }
 
 @HiltViewModel
 class ResetPasswordViewModel @Inject constructor(private val repository: UserRepository) : ViewModel() {
@@ -39,6 +41,8 @@ class ResetPasswordViewModel @Inject constructor(private val repository: UserRep
     val toast = _toast.asSharedFlow()
     private val _navigateBack = MutableStateFlow(false)
     val navigateBack = _navigateBack.asStateFlow()
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading = _isLoading.asStateFlow()
 
     /* 뒤로 가기 처리 함수 */
     fun setFalseNavigateBack() {
@@ -53,7 +57,8 @@ class ResetPasswordViewModel @Inject constructor(private val repository: UserRep
             when (field) {
                 ResetPasswordField.EMAIL ->      state.copy(email = filtered, isVerifyEmail = false)
                 ResetPasswordField.CODE ->       state.copy(code = filtered)
-                ResetPasswordField.PASSWORD ->   state.copy(password = filtered)
+                ResetPasswordField.PASSWORD ->   state.copy(password = filtered, isSame = state.verifyPasswordInput == filtered)
+                ResetPasswordField.VERIFY ->     state.copy(verifyPasswordInput = value, isSame = state.password == value)
             }
         }
     }
@@ -75,7 +80,8 @@ class ResetPasswordViewModel @Inject constructor(private val repository: UserRep
     /* 이메일로 인증코드 전송 함수 */
     fun verifyEmailRegister() {
         viewModelScope.launch {
-            // 인증코드 발송
+            _isLoading.value = true
+
             val request = UserDTO.VerifyEmailRequest(email = resetPasswordUiState.value.email.trim())
 
             repository.verifyEmailPassword(request).collect() { result ->
@@ -107,6 +113,7 @@ class ResetPasswordViewModel @Inject constructor(private val repository: UserRep
                         e.printStackTrace()
                     }
             }
+            _isLoading.value = false
         }
     }
 

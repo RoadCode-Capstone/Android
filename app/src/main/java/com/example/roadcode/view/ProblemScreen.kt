@@ -30,7 +30,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Article
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -39,8 +38,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarData
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -51,7 +48,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -68,15 +64,14 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavController
 import com.example.roadcode.R
-import com.example.roadcode.data.model.ProblemDTO
 import com.example.roadcode.ui.theme.LineColor
 import com.example.roadcode.ui.theme.PointColor
 import com.example.roadcode.ui.theme.PrimaryColor
 import com.example.roadcode.util.rememberOnce
-import com.example.roadcode.view.component.CustomAlertDialog
+import com.example.roadcode.view.component.LoadingOverlay
+import com.example.roadcode.view.component.LoadingOverlayName
 import com.example.roadcode.viewmodel.ProblemViewModel
 import com.example.roadcode.viewmodel.RoadmapViewModel
-import kotlinx.coroutines.launch
 import org.json.JSONObject
 
 /* 문제 풀이 화면 */
@@ -84,6 +79,8 @@ import org.json.JSONObject
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProblemScreen(navController: NavController, problemViewModel: ProblemViewModel, roadmapViewModel: RoadmapViewModel) {
+    val isLoading by problemViewModel.isLoading.collectAsState()
+
     val roadmapInfo by roadmapViewModel.roadmapInfo.collectAsState()
     val problemInfo by problemViewModel.problemInfo.collectAsState()
     val code by problemViewModel.code.collectAsState()
@@ -137,38 +134,45 @@ fun ProblemScreen(navController: NavController, problemViewModel: ProblemViewMod
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(30.dp)
         ) {
-            Box(modifier = Modifier.weight(1f)) {
-                ProblemPager( // 문제 출력
-                    problemInfo,
-                    roadmapInfo.language,
-                    code,
-                    onCodeChanged = { problemViewModel.updateCode(it) })
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(30.dp)
+            ) {
+                Box(modifier = Modifier.weight(1f)) {
+                    ProblemPager( // 문제 출력
+                        problemInfo,
+                        roadmapInfo.language,
+                        code,
+                        onCodeChanged = { problemViewModel.updateCode(it) })
+                }
+
+                Button( // 제출하기 버튼
+                    onClick = { problemViewModel.submitSolution(roadmapInfo) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = PointColor,
+                        contentColor = Color.White
+                    )
+                ) {
+                    Text(
+                        text = "제출하기",
+                        fontSize = 16.sp,
+                        color = Color.White,
+                        fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
+                    )
+                }
             }
 
-            Button( // 제출하기 버튼
-                onClick = { problemViewModel.submitSolution(roadmapInfo.language) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp),
-                shape = RoundedCornerShape(20.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = PointColor,
-                    contentColor = Color.White
-                )
-            ) {
-                Text(
-                    text = "제출하기",
-                    fontSize = 16.sp,
-                    color = Color.White,
-                    fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
-                )
-            }
+            LoadingOverlay(isLoading, LoadingOverlayName.RESULT)
         }
     }
 }

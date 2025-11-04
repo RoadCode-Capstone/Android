@@ -24,10 +24,12 @@ data class RegisterUiState(
     val codeTimer: Int = 0,
     val verifiedEmail: String = "",
     val isVerifyEmail: Boolean = false,
-    val isVerifyNickname: Boolean = false
+    val isVerifyNickname: Boolean = false,
+    val verifyPasswordInput: String = "",   // 비밀번호 확인
+    val isSame: Boolean = true              // 새로운 비밀번호와 비밀번호 확인 일치 여부
 )
 
-enum class RegisterField { EMAIL, CODE, PASSWORD, NICKNAME }
+enum class RegisterField { EMAIL, CODE, PASSWORD, NICKNAME, VERIFY }
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(private val repository: UserRepository) : ViewModel() {
@@ -39,6 +41,8 @@ class RegisterViewModel @Inject constructor(private val repository: UserReposito
     val toast = _toast.asSharedFlow()
     private val _navigateBack = MutableStateFlow(false)
     val navigateBack = _navigateBack.asStateFlow()
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading = _isLoading.asStateFlow()
 
     private val _registerUiState = MutableStateFlow(RegisterUiState())
     val registerUiState = _registerUiState.asStateFlow()
@@ -60,8 +64,9 @@ class RegisterViewModel @Inject constructor(private val repository: UserReposito
             when (field) {
                 RegisterField.EMAIL ->      state.copy(email = filtered, isVerifyEmail = false)
                 RegisterField.CODE ->       state.copy(code = filtered)
-                RegisterField.PASSWORD ->   state.copy(password = filtered)
+                RegisterField.PASSWORD ->   state.copy(password = filtered, isSame = state.verifyPasswordInput == filtered)
                 RegisterField.NICKNAME ->   state.copy(nickname = value)
+                RegisterField.VERIFY ->     state.copy(verifyPasswordInput = value, isSame = state.password == value)
             }
         }
     }
@@ -104,11 +109,13 @@ class RegisterViewModel @Inject constructor(private val repository: UserReposito
     /* 이메일로 인증코드 전송 함수 */
     fun verifyEmailRegister() {
         viewModelScope.launch {
+            _isLoading.value = true
+
             val email = registerUiState.value.email.trim()
-            // 이메일 중복 체크
-            val duplicated = checkDuplicatedEmail()
+            val duplicated = checkDuplicatedEmail() // 이메일 중복 체크
             if (duplicated) {
                 _toast.emit("이미 사용중인 이메일입니다.")
+                _isLoading.value = false
                 return@launch
             }
 
@@ -144,6 +151,7 @@ class RegisterViewModel @Inject constructor(private val repository: UserReposito
                         e.printStackTrace()
                     }
             }
+            _isLoading.value = false
         }
     }
 
