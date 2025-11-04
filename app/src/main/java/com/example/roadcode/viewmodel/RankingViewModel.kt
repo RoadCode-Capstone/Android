@@ -34,7 +34,6 @@ class RankingViewModel @Inject constructor(private val repository: PointReposito
             tokenRepository.tokenFlow.collect { token ->
                 if (!token.isNullOrBlank()) {
                     getRanking("2025-06-06", "2025-08-06")  // TODO: 현재 월로 변경
-                    cancel()
                 }
             }
         }

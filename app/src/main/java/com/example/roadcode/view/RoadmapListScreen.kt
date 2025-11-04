@@ -60,7 +60,7 @@ fun RoadmapListScreen(navController: NavController, roadmapViewModel: RoadmapVie
     val status by roadmapViewModel.status.collectAsState()      // 선택한 로드맵 상태
 
     LaunchedEffect(Unit) {
-        roadmapViewModel.getRoadmaps(null)  // TODO: 토큰 리프레쉬 해결되면 없어도 됨
+        roadmapViewModel.getRoadmaps(null)  // 토큰 리프레쉬 해결되면 없어도 됨
     }
 
     Scaffold(
@@ -135,7 +135,7 @@ fun RoadmapListScreen(navController: NavController, roadmapViewModel: RoadmapVie
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     items(roadmaps) { roadmapInfo ->
-                        RoadmapItem(roadmapInfo, progress, onClick = {
+                        RoadmapItem(roadmapInfo, progress, onClick = {  // TODO: progress 이상함, 순위 화면 들어갈 때 순위 조회해야함
                             roadmapViewModel.setRoadmapId(roadmapInfo.roadmapId)    // 클릭한 로드맵 아이디로 변경
                             roadmapViewModel.setRoadmapStatus(roadmapInfo.status)   // 클릭한 로드맵 상태로 변경
                             navController.navigate("roadmap")                 // 로드맵 조회 화면으로 이동

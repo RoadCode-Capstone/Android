@@ -53,7 +53,6 @@ class PointViewModel @Inject constructor(private val repository: PointRepository
             tokenRepository.tokenFlow.collect { token ->
                 if (!token.isNullOrBlank()) {
                     getPointsByDate()
-                    cancel()
                 }
             }
         }

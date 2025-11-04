@@ -21,7 +21,6 @@ class AttendanceViewModel @Inject constructor(private val repository: Attendance
             tokenRepository.tokenFlow.collect { token ->
                 if (!token.isNullOrBlank()) {
                     checkAttendance()
-                    cancel()
                 }
             }
         }
