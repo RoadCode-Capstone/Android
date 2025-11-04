@@ -71,9 +71,11 @@ fun PasswordScreen(navController: NavController, passwordViewModel: PasswordView
         }
     }
 
-    if (navigateBack) rememberOnce {
-        passwordViewModel.setFalseNavigateBack()
-        navController.popBackStack()
+    LaunchedEffect(navigateBack) {
+        if (navigateBack) {
+            passwordViewModel.setFalseNavigateBack()
+            navController.popBackStack()
+        }
     }
 
     Scaffold(

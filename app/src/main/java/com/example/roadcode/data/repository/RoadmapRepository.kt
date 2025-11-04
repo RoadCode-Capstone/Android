@@ -31,7 +31,7 @@ class RoadmapRepository @Inject constructor(private val tokenRepository: TokenRe
         handleResponse { jsonService.getProblem(tokenRepository.getBearerToken(), request) }
 
     /* 회원 로드맵 목록 조회 */
-    suspend fun getRoadmaps(request: List<String>) =
+    suspend fun getRoadmaps(request: List<String>?) =
         handleResponse { jsonService.getRoadmaps(tokenRepository.getBearerToken(), request) }
 
     /* 로드맵 포기 */

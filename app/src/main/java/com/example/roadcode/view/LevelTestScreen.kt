@@ -197,8 +197,8 @@ fun LevelTestReadyScreen(navController: NavController, roadmapViewModel: Roadmap
                     onClick = {
                         // 레벨 테스트 생성
                         val request = LevelTestDTO.createRequest(plan.selectedType!!, plan.selectedLanguage!!, plan.selectedAlgorithm)
-//                        levelTestViewModel.createLevelTest(request)
-                        levelTestViewModel.getLevelTestProblems(listOf(584, 2000, 237, 62, 70))
+                        levelTestViewModel.createLevelTest(request)
+//                        levelTestViewModel.getLevelTestProblems(listOf(584, 2000, 237, 62, 70))
                         navController.navigate("level_test")
                     },
                     modifier = Modifier

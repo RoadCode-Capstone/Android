@@ -6,13 +6,25 @@ import androidx.lifecycle.viewModelScope
 import com.example.roadcode.data.repository.AttendanceRepository
 import com.example.roadcode.data.repository.TokenRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AttendanceViewModel @Inject constructor(private val repository: AttendanceRepository) : ViewModel() {
+class AttendanceViewModel @Inject constructor(private val repository: AttendanceRepository, private val tokenRepository: TokenRepository) : ViewModel() {
     companion object {
         private val TAG = "AttendanceViewModel"
+    }
+
+    init {
+        viewModelScope.launch {
+            tokenRepository.tokenFlow.collect { token ->
+                if (!token.isNullOrBlank()) {
+                    checkAttendance()
+                    cancel()
+                }
+            }
+        }
     }
 
     /* 출석 체크 */

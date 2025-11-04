@@ -59,10 +59,6 @@ fun HomeScreen(navController: NavController, attendanceViewModel: AttendanceView
     val year = yearMonth.year
     val month = yearMonth.monthValue
 
-    LaunchedEffect(Unit) {
-        attendanceViewModel.checkAttendance()
-    }
-
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(

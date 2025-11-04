@@ -6,7 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.roadcode.data.model.ProblemDTO
 import com.example.roadcode.data.model.RoadmapDTO
 import com.example.roadcode.data.repository.RoadmapRepository
+import com.example.roadcode.data.repository.TokenRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -15,7 +17,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 
 @HiltViewModel
-class RoadmapViewModel @Inject constructor(private val repository: RoadmapRepository) : ViewModel() {
+class RoadmapViewModel @Inject constructor(private val repository: RoadmapRepository, private val tokenRepository: TokenRepository) : ViewModel() {
     companion object {
         private const val TAG = "RoadmapViewModel"
     }
@@ -57,27 +59,27 @@ class RoadmapViewModel @Inject constructor(private val repository: RoadmapReposi
     val status = _status.asStateFlow()
 
     init {
-        getRoadmaps(status.value)   // (테스트)
-
-        setRoadmapId(35)    // (테스트)
-
-        viewModelScope.launch { // 문제 인덱스, 문제 목록이 바뀔 때마다 실행
-            combine(problemIdx, problems) { idx, list -> idx to list }
-                .collect { (idx, list) ->
-                    if (idx in list.indices) {
-                        val problemId = list[idx].problemId
-                        getProblem(problemId)   // 문제 정보 조회
+        viewModelScope.launch {
+            // 문제 인덱스, 문제 목록이 바뀔 때마다 문제 정보 조회
+            launch {
+                combine(problemIdx, problems) { idx, list -> idx to list }
+                    .collect { (idx, list) ->
+                        if (idx in list.indices) {
+                            val problemId = list[idx].problemId
+                            getProblem(problemId)
+                        }
                     }
             }
-        }
 
-        viewModelScope.launch { // 로드맵 정보, 문제 목록이 바뀔 때마다 실행
-            combine(roadmapInfo, problems) { info, problems -> info to problems }
-                .collect { (info, problems) ->
-                    if (info != null && problems.isNotEmpty()) {
-                        setProgress()   // 달성률 계산
+            // 로드맵 정보, 문제 목록이 바뀔 때마다 실행
+            launch {
+                combine(roadmapInfo, problems) { info, problems -> info to problems }
+                    .collect { (info, problems) ->
+                        if (info != null && problems.isNotEmpty()) {
+                            setProgress()
+                        }
                     }
-                }
+            }
         }
     }
 
@@ -104,17 +106,33 @@ class RoadmapViewModel @Inject constructor(private val repository: RoadmapReposi
 
     /* 로드맵 정보 조회 함수 */
     fun getRoadmap() {
-        viewModelScope.launch {
-            val request = roadmapId.value
+        val request = roadmapId.value
 
+        viewModelScope.launch {
             repository.getRoadmap(request).collect() { result ->
                 result
-                    .onSuccess { roadmapInfo ->
-                        _roadmapInfo.value = roadmapInfo
-                        Log.d(TAG, "로드맵 정보: ${roadmapInfo}")
+                    .onSuccess { body ->
+                        when (body.code) {
+                            "SUCCESS" -> {
+                                val roadmapInfo = body.data!!
+                                _roadmapInfo.value = roadmapInfo
+
+                                Log.d(TAG, "로드맵 정보 조회 성공\n${roadmapInfo}")
+                            }
+                            "E001" -> { // 사용자 토큰이 잘못된 경우
+                                Log.d(TAG, "로드맵 정보 조회 실패: 사용자 토큰이 잘못된 경우")
+                            }
+                            "E018" -> { // 로드맵을 찾을 수 없는 경우(로드맵 ID가 잘못됐거나 생성되지 않음)
+                                Log.d(TAG, "로드맵 정보 조회 실패: 로드맵을 찾을 수 없는 경우(로드맵 ID가 잘못됐거나 생성되지 않음)")
+                            }
+                            "E021" -> { // 회원이 해당 로드맵의 주인이 아닌 경우
+                                Log.d(TAG, "로드맵 정보 조회 실패: 회원이 해당 로드맵의 주인이 아닌 경우")
+                            }
+                            else -> Log.d(TAG, "로드맵 정보 조회 실패: 알 수 없는 오류")
+                        }
                     }
                     .onFailure { e ->
-                        e.printStackTrace()
+                        Log.e(TAG, "네트워크 오류: ${e.message}")
                     }
             }
         }
@@ -138,19 +156,32 @@ class RoadmapViewModel @Inject constructor(private val repository: RoadmapReposi
 
     /* 로드맵 문제 목록 조회 함수 */
     fun getRoadmapProblems() {
-        viewModelScope.launch {
-            val request = roadmapId.value
+        val request = roadmapId.value
 
+        viewModelScope.launch {
             repository.getRoadmapProblems(request).collect() { result ->
                 result
-                    .onSuccess { problems ->
-                        _problems.value = problems
-                        Log.d(TAG, "로드맵 문제 목록: ${problems}")
+                    .onSuccess { body ->
+                        when (body.code) {
+                            "SUCCESS" -> {
+                                val problems = body.data!!.roadmapProblems
+                                _problems.value = problems
 
-                        setProblemIdx(roadmapInfo.value!!.currentProblem.order) // 현재 풀어야 하는 문제 인덱스로 변경
+                                setProblemIdx(roadmapInfo.value!!.currentProblem.order) // 현재 풀어야 하는 문제 인덱스로 변경
+
+                                Log.d(TAG, "로드맵 문제 목록 조회 성공\n${problems}")
+                            }
+                            "E001" -> { // 사용자 토큰이 잘못된 경우
+                                Log.d(TAG, "로드맵 문제 목록 조회 실패: 사용자 토큰이 잘못된 경우")
+                            }
+                            "E021" -> { // 회원이 해당 로드맵의 주인이 아닌 경우
+                                Log.d(TAG, "로드맵 문제 목록 조회 실패: 회원이 해당 로드맵의 주인이 아닌 경우")
+                            }
+                            else -> Log.d(TAG, "로드맵 문제 목록 조회 실패: 알 수 없는 오류")
+                        }
                     }
                     .onFailure { e ->
-                        e.printStackTrace()
+                        Log.e(TAG, "네트워크 오류: ${e.message}")
                     }
             }
         }
@@ -158,17 +189,33 @@ class RoadmapViewModel @Inject constructor(private val repository: RoadmapReposi
 
     /* 문제 정보 조회 함수 */
     fun getProblem(problemId: Long) {
-        viewModelScope.launch {
-            val request = problemId
+        val request = problemId
 
+        viewModelScope.launch {
             repository.getProblem(request).collect() { result ->
                 result
-                    .onSuccess { problemInfo ->
-                        _problemInfo.value = problemInfo
-                        Log.d(TAG, "문제 정보: ${problemInfo}")
+                    .onSuccess { body ->
+                        when (body.code) {
+                            "SUCCESS" -> {
+                                val problemInfo = body.data!!
+                                _problemInfo.value = problemInfo
+
+                                Log.d(TAG, "로드맵 정보 조회 성공\n${problemInfo}")
+                            }
+                            "E001" -> { // 사용자를 찾을 수 없음
+                                Log.d(TAG, "로드맵 정보 조회 실패: 사용자를 찾을 수 없음")
+                            }
+                            "E002" -> { // 토큰 없음
+                                Log.d(TAG, "로드맵 정보 조회 실패: 토큰 없음")
+                            }
+                            "E014" -> { // 문제 id가 잘못된 경우(문제가 없는 경우)
+                                Log.d(TAG, "로드맵 정보 조회 실패: 문제 id가 잘못된 경우(문제가 없는 경우)")
+                            }
+                            else -> Log.d(TAG, "로드맵 정보 조회 실패: 알 수 없는 오류")
+                        }
                     }
                     .onFailure { e ->
-                        e.printStackTrace()
+                        Log.e(TAG, "네트워크 오류: ${e.message}")
                     }
             }
         }
@@ -176,16 +223,27 @@ class RoadmapViewModel @Inject constructor(private val repository: RoadmapReposi
 
     /* 로드맵 포기 함수 */
     fun giveUpRoadmap() {
-        viewModelScope.launch {
-            val request = roadmapId.value
+        val request = roadmapId.value
 
+        viewModelScope.launch {
             repository.giveUpRoadmap(request).collect() { result ->
                 result
-                    .onSuccess { message ->
-                        Log.d(TAG, message)
+                    .onSuccess { body ->
+                        when (body.code) {
+                            "SUCCESS" -> {
+                                Log.d(TAG, "로드맵 포기 성공")
+                            }
+                            "E028" -> { // 완료된 로드맵을 포기하려는 경우
+                                Log.d(TAG, "로드맵 포기 실패: 완료된 로드맵을 포기하려는 경우")
+                            }
+                            "E029" -> { // 이미 포기한 로드맵을 포기하려는 경우
+                                Log.d(TAG, "로드맵 포기 실패: 이미 포기한 로드맵을 포기하려는 경우")
+                            }
+                            else -> Log.d(TAG, "로드맵 포기 실패: 알 수 없는 오류")
+                        }
                     }
                     .onFailure { e ->
-                        e.printStackTrace()
+                        Log.e(TAG, "네트워크 오류: ${e.message}")
                     }
             }
         }
@@ -208,16 +266,29 @@ class RoadmapViewModel @Inject constructor(private val repository: RoadmapReposi
     }
 
     /* 로드맵 목록 조회 함수 */
-    fun getRoadmaps(status: List<String>) {
+    fun getRoadmaps(status: List<String>?) {
         viewModelScope.launch {
             repository.getRoadmaps(status).collect() { result ->
                 result
-                    .onSuccess { roadmaps ->
-                        _roadmaps.value = roadmaps
-                        Log.d(TAG, "로드맵 목록: ${roadmaps}")
+                    .onSuccess { body ->
+                        when (body.code) {
+                            "SUCCESS" -> {
+                                val roadmaps = body.data!!.roadmaps
+                                _roadmaps.value = roadmaps
+
+                                Log.d(TAG, "로드맵 목록 조회 성공\n${roadmaps}")
+                            }
+                            "E001" -> { // 사용자 email이 잘못된 경우
+                                Log.d(TAG, "로드맵 목록 조회 실패: 사용자 email이 잘못된 경우")
+                            }
+                            "ERROR" -> { // 로드맵 STATUS(파라미터)가 잘못된 경우
+                                Log.d(TAG, "로드맵 목록 조회 실패: 로드맵 STATUS(파라미터)가 잘못된 경우")
+                            }
+                            else -> Log.d(TAG, "로드맵 목록 조회 실패: 알 수 없는 오류")
+                        }
                     }
                     .onFailure { e ->
-                        e.printStackTrace()
+                        Log.e(TAG, "네트워크 오류: ${e.message}")
                     }
             }
         }

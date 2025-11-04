@@ -73,15 +73,30 @@ class LevelTestViewModel @Inject constructor(private val repository: LevelTestRe
         viewModelScope.launch {
             repository.createLevelTest(plans).collect() { result ->
                 result
-                    .onSuccess { levelTestIds ->
-                        _levelTestIds.value = levelTestIds
-                        Log.d(TAG, "레벨 테스트 아이디 목록: ${levelTestIds}")
+                    .onSuccess { body ->
+                        when (body.code) {
+                            "SUCCESS" -> {
+                                val levelTestIds = body.data!!.problemIds
+                                _levelTestIds.value = levelTestIds
 
-                        // 레벨 테스트 문제 조회
-                        getLevelTestProblems(levelTestIds)
+                                getLevelTestProblems(levelTestIds)  // 레벨 테스트 문제 조회
+
+                                Log.d(TAG, "레벨 테스트 생성 성공\n레벨 테스트 아이디 목록: ${levelTestIds}")
+                            }
+                            "E015" -> { // 언어 종류를 java/python/c(대소문자 상관 없음) 외에 다른 걸 입력한 경우
+                                Log.d(TAG, "레벨 테스트 생성 실패: 언어 종류를 java/python/c(대소문자 상관 없음) 외에 다른 걸 입력한 경우")
+                            }
+                            "E019" -> { // 로드맵 종류(type)를 algorithm, language(대소문자 상관 없음) 외에 다른 걸 입력할 경우
+                                Log.d(TAG, "레벨 테스트 생성 실패: 로드맵 종류(type)를 algorithm, language(대소문자 상관 없음) 외에 다른 걸 입력할 경우")
+                            }
+                            "E020" -> { // 존재하지 않는 알고리즘 입력할 경우
+                                Log.d(TAG, "레벨 테스트 생성 실패: 존재하지 않는 알고리즘 입력할 경우")
+                            }
+                            else -> Log.d(TAG, "레벨 테스트 생성 실패: 알 수 없는 오류")
+                        }
                     }
                     .onFailure { e ->
-                        e.printStackTrace()
+                        Log.e(TAG, "네트워크 오류: ${e.message}")
                     }
             }
         }
@@ -92,14 +107,21 @@ class LevelTestViewModel @Inject constructor(private val repository: LevelTestRe
         viewModelScope.launch {
             repository.getLevelTestProblems(problemIds).collect() { result ->
                 result
-                    .onSuccess { levelTestProblems ->
-                        _levelTestProblems.value = levelTestProblems
+                    .onSuccess { body ->
+                        when (body.code) {
+                            "SUCCESS" -> {
+                                val levelTestProblems = body.data!!.problems
+                                _levelTestProblems.value = levelTestProblems
 
-                        // 문제 정보 리스트 저장
-                        getProblemInfos()
+                                getProblemInfos()  // 문제 정보 리스트 저장
+
+                                Log.d(TAG, "레벨 테스트 문제 조회 성공\n${levelTestProblems}")
+                            }
+                            else -> Log.d(TAG, "레벨 테스트 문제 조회 실패: 알 수 없는 오류")
+                        }
                     }
                     .onFailure { e ->
-                        e.printStackTrace()
+                        Log.e(TAG, "네트워크 오류: ${e.message}")
                     }
             }
         }
@@ -107,24 +129,32 @@ class LevelTestViewModel @Inject constructor(private val repository: LevelTestRe
 
     /* 레벨 테스트 제출 함수 */
     fun submitLevelTest(language: String) {
-        viewModelScope.launch {
-            val submissions = levelTestIds.value.mapIndexed { index, id ->
-                SubmissionDTO.SubmissionData(
-                    problemId = id,
-                    language = language,
-                    sourceCode = codes.value[index] ?: ""
-                )
-            }
+        val submissions = levelTestIds.value.mapIndexed { index, id ->
+            SubmissionDTO.SubmissionData(
+                problemId = id,
+                language = language,
+                sourceCode = codes.value[index] ?: ""
+            )
+        }
 
-            val request = LevelTestDTO.submitRequest(submissions)
+        val request = LevelTestDTO.submitRequest(submissions)
+
+        viewModelScope.launch {
             repository.submitLevelTest(request).collect() { result ->
                 result
-                    .onSuccess { levelTestResults ->
-                        _levelTestResults.value = levelTestResults
-                        Log.d(TAG, "레벨 테스트 결과: ${levelTestResults}")
+                    .onSuccess { body ->
+                        when (body.code) {
+                            "SUCCESS" -> {
+                                val levelTestResults = body.data!!
+                                _levelTestResults.value = levelTestResults
+
+                                Log.d(TAG, "레벨 테스트 제출 성공\n${levelTestResults}")
+                            }
+                            else -> Log.d(TAG, "레벨 테스트 제출 실패: 알 수 없는 오류")
+                        }
                     }
                     .onFailure { e ->
-                        e.printStackTrace()
+                        Log.e(TAG, "네트워크 오류: ${e.message}")
                     }
             }
         }

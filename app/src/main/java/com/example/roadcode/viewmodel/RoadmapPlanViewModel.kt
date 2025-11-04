@@ -54,16 +54,33 @@ class RoadmapPlanViewModel @Inject constructor(private val repository: RoadmapRe
 
     /* 로드맵 생성 함수 */
     fun createRoadmap(result: Int, completed: (Long) -> Unit) {
+        val request = RoadmapDTO.CreateRequest(plan.value.selectedType!!, plan.value.selectedLanguage!!, plan.value.selectedAlgorithm, plan.value.selectedGoal!!, result)
+        Log.d(TAG, "로드맵 생성 요청\n${request}")
         viewModelScope.launch {
-            val request = RoadmapDTO.CreateRequest(plan.value.selectedType!!, plan.value.selectedLanguage!!, plan.value.selectedAlgorithm, plan.value.selectedGoal!!, result)
             repository.createRoadmap(request).collect() { result ->
                 result
-                    .onSuccess { roadmapId ->
-                        Log.d(TAG, "생성한 로드맵 아이디: ${roadmapId}")
-                        completed(roadmapId)
+                    .onSuccess { body ->
+                        when (body.code) {
+                            "SUCCESS" -> {
+                                val roadmapId = body.data!!.id
+                                completed(roadmapId)
+
+                                Log.d(TAG, "로드맵 생성 성공\n로드맵 아이디: ${roadmapId}")
+                            }
+                            "E015" -> { // 언어 종류를 java/python/c(대소문자 상관 없음) 외에 다른 걸 입력한 경우
+                                Log.d(TAG, "로드맵 생성 실패: 언어 종류를 java/python/c(대소문자 상관 없음) 외에 다른 걸 입력한 경우")
+                            }
+                            "E019" -> { // 로드맵 종류(type)를 algorithm, language(대소문자 상관 없음) 외에 다른 걸 입력할 경우
+                                Log.d(TAG, "로드맵 생성 실패: 로드맵 종류(type)를 algorithm, language(대소문자 상관 없음) 외에 다른 걸 입력할 경우")
+                            }
+                            "E020" -> { // 존재하지 않는 알고리즘 입력할 경우
+                                Log.d(TAG, "로드맵 생성 실패: 존재하지 않는 알고리즘 입력할 경우")
+                            }
+                            else -> Log.d(TAG, "로드맵 생성 실패: 알 수 없는 오류")
+                        }
                     }
                     .onFailure { e ->
-                        e.printStackTrace()
+                        Log.e(TAG, "네트워크 오류: ${e.message}")
                     }
             }
         }

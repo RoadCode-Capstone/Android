@@ -10,6 +10,7 @@ import com.example.roadcode.data.repository.SubmissionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -35,27 +36,42 @@ class ProblemViewModel @Inject constructor(private val repository: SubmissionRep
 
     /* 문제 정보 조회 함수 */
     fun getProblem(problemId: Long) {
-        viewModelScope.launch {
-            val request = problemId
+        val request = problemId
 
+        viewModelScope.launch {
             repository.getProblem(request).collect() { result ->
                 result
-                    .onSuccess { problemInfo ->
-                        val info = listOf(
-                            problemInfo.name,
-                            problemInfo.description,
-                            problemInfo.inputDescription,
-                            problemInfo.outputDescription,
-                            problemInfo.timeLimit,
-                            problemInfo.memoryLimit
-                        )
+                    .onSuccess { body ->
+                        when (body.code) {
+                            "SUCCESS" -> {
+                                val problemInfo = body.data!!
+                                val info = listOf(
+                                    problemInfo.name,
+                                    problemInfo.description,
+                                    problemInfo.inputDescription,
+                                    problemInfo.outputDescription,
+                                    problemInfo.timeLimit,
+                                    problemInfo.memoryLimit
+                                )
+                                _problemInfo.value = info
+                                _problemId.value = problemInfo.problemId
 
-                        _problemInfo.value = info
-                        _problemId.value = problemInfo.problemId
-                        Log.d(TAG, "문제 정보: ${problemInfo}")
+                                Log.d(TAG, "문제 정보 조회 성공\n${problemInfo}")
+                            }
+                            "E001" -> { // 사용자를 찾을 수 없음
+                                Log.d(TAG, "문제 정보 조회 실패: 사용자를 찾을 수 없음")
+                            }
+                            "E002" -> { // 토큰 없음
+                                Log.d(TAG, "문제 정보 조회 실패: 토큰 없음")
+                            }
+                            "E014" -> { // 문제 id가 잘못된 경우(문제가 없는 경우)
+                                Log.d(TAG, "문제 정보 조회 실패: 문제 id가 잘못된 경우(문제가 없는 경우)")
+                            }
+                            else -> Log.d(TAG, "문제 정보 조회 실패: 알 수 없는 오류")
+                        }
                     }
                     .onFailure { e ->
-                        e.printStackTrace()
+                        Log.e(TAG, "네트워크 오류: ${e.message}")
                     }
             }
         }
@@ -63,17 +79,36 @@ class ProblemViewModel @Inject constructor(private val repository: SubmissionRep
 
     /* 풀이 제출 함수 */
     fun submitSolution(language: String) {
-        viewModelScope.launch {
-            val request = SubmissionDTO.SubmitSolutionRequest(language, code.value)
+        val request = SubmissionDTO.SubmitSolutionRequest(language, code.value)
 
+        viewModelScope.launch {
             repository.submitSolution(problemId.value, request).collect() { result ->
                 result
-                    .onSuccess { result ->
-                        _result.value = if (result.allPassed) "풀이 성공!" else "풀이 실패"
-                        Log.d(TAG, "풀이 제출 결과: ${result}")
+                    .onSuccess { body ->
+                        when (body.code) {
+                            "SUCCESS" -> {
+                                val submissionResult = body.data!!
+                                _result.value = if (submissionResult.allPassed) "풀이 성공!" else "풀이 실패"
+
+                                Log.d(TAG, "풀이 제출 성공\n${submissionResult}")
+                            }
+                            "E001" -> { // 사용자를 찾을 수 없음
+                                Log.d(TAG, "풀이 제출 실패: 사용자를 찾을 수 없음")
+                            }
+                            "E002" -> { // 토큰 없음
+                                Log.d(TAG, "풀이 제출 실패: 토큰 없음")
+                            }
+                            "E013" -> { // 테스트 케이스가 없는 경우(문제 id가 잘못된 경우)
+                                Log.d(TAG, "풀이 제출 실패: 테스트 케이스가 없는 경우(문제 id가 잘못된 경우)")
+                            }
+                            "E015" -> { // 없는 언어를 입력한 경우(java/c/python 외 언어)
+                                Log.d(TAG, "풀이 제출 실패: 없는 언어를 입력한 경우(java/c/python 외 언어)")
+                            }
+                            else -> Log.d(TAG, "풀이 제출 실패: 알 수 없는 오류")
+                        }
                     }
                     .onFailure { e ->
-                        e.printStackTrace()
+                        Log.e(TAG, "네트워크 오류: ${e.message}")
                     }
             }
         }

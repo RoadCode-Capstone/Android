@@ -31,6 +31,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -57,6 +58,10 @@ fun RoadmapListScreen(navController: NavController, roadmapViewModel: RoadmapVie
     val roadmaps by roadmapViewModel.roadmaps.collectAsState()  // 로드맵 목록
     val progress by roadmapViewModel.progress.collectAsState()  // 달성률
     val status by roadmapViewModel.status.collectAsState()      // 선택한 로드맵 상태
+
+    LaunchedEffect(Unit) {
+        roadmapViewModel.getRoadmaps(null)  // TODO: 토큰 리프레쉬 해결되면 없어도 됨
+    }
 
     Scaffold(
         topBar = {

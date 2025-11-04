@@ -17,9 +17,9 @@ object RetrofitInstance {
 
     // timeout 설정 추가
     private val okHttpClient: OkHttpClient = OkHttpClient.Builder()
-        .connectTimeout(30, TimeUnit.SECONDS) // 연결 시도 제한 시간
-        .readTimeout(30, TimeUnit.SECONDS)    // 서버 응답 대기 시간
-        .writeTimeout(30, TimeUnit.SECONDS)   // 서버로 데이터 쓰는 시간
+        .connectTimeout(3, TimeUnit.MINUTES) // 연결 시도 제한 시간
+        .readTimeout(3, TimeUnit.MINUTES)    // 서버 응답 대기 시간
+        .writeTimeout(3, TimeUnit.MINUTES)   // 서버로 데이터 쓰는 시간
         .build()
 
     val retrofit: Retrofit by lazy {
