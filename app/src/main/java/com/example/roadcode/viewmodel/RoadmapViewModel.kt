@@ -131,11 +131,11 @@ class RoadmapViewModel @Inject constructor(private val repository: RoadmapReposi
 
     /* 달성률 계산 함수 */
     fun setProgress() {
-        if (roadmapInfo.value!!.currentProblem.order + 1 == problems.value.size) {
+        if (roadmapInfo.value.currentProblem.order + 1 == problems.value.size) {
             _progress.value = "100"
         }
         else {
-            val percentage = ((roadmapInfo.value!!.currentProblem.order).toFloat() / problems.value.size) * 100
+            val percentage = ((roadmapInfo.value.currentProblem.order).toFloat() / problems.value.size) * 100
             _progress.value = if (percentage == 0f) {
                 "0"
             }

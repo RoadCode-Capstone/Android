@@ -83,7 +83,6 @@ import com.example.roadcode.viewmodel.RoadmapViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewModel, problemViewModel: ProblemViewModel) {
-    val scope = rememberCoroutineScope()
     var isDrawerOpen by remember { mutableStateOf(false) }      // 드로어 열림 여부 변수
     var showGiveUpDialog by remember { mutableStateOf(false) }  // 팝업창 열림 여부 변수
 

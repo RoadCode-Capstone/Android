@@ -64,7 +64,7 @@ fun RoadmapListScreen(navController: NavController, roadmapViewModel: RoadmapVie
     val status by roadmapViewModel.status.collectAsState()      // 선택한 로드맵 상태
 
     LaunchedEffect(Unit) {
-        roadmapViewModel.getRoadmaps(null)  // 토큰 리프레쉬 해결되면 없어도 됨
+        roadmapViewModel.getRoadmaps(status)  // 토큰 리프레쉬 해결되면 없어도 됨
     }
 
     Scaffold(
