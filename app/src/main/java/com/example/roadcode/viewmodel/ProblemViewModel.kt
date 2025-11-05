@@ -30,8 +30,13 @@ class ProblemViewModel @Inject constructor(private val repository: SubmissionRep
     val problemInfo = _problemInfo.asStateFlow()
     private val _code = MutableStateFlow("") // 작성한 코드
     val code = _code.asStateFlow()
-    private val _result = MutableStateFlow("")  // 채점 결과
-    val result = _result.asStateFlow()
+    private val _isSuccess = MutableStateFlow<Boolean?>(null)   // 성공 여부
+    val isSuccess = _isSuccess.asStateFlow()
+
+    /* 성공 여부 초기화 */
+    fun resetIsSuccess() {
+        _isSuccess.value = null
+    }
 
     /* 코드 입력 이벤트 */
     fun updateCode(input: String) {
@@ -98,7 +103,7 @@ class ProblemViewModel @Inject constructor(private val repository: SubmissionRep
                         when (body.code) {
                             "SUCCESS" -> {
                                 val submissionResult = body.data!!
-                                _result.value = if (submissionResult.allPassed) "풀이 성공!" else "풀이 실패"
+                                _isSuccess.value = if (submissionResult.allPassed) true else false
 
                                 Log.d(TAG, "풀이 제출 성공\n${submissionResult}")
                             }
@@ -123,10 +128,5 @@ class ProblemViewModel @Inject constructor(private val repository: SubmissionRep
             }
             _isLoading.value = false
         }
-    }
-
-    /* 결과 초기화 */
-    fun clearResult() {
-        _result.value = ""
     }
 }

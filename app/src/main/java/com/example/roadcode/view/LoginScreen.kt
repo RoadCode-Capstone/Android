@@ -61,6 +61,8 @@ import com.example.roadcode.R
 import com.example.roadcode.ui.theme.PointColor
 import com.example.roadcode.ui.theme.PrimaryColor
 import com.example.roadcode.util.rememberOnce
+import com.example.roadcode.view.component.LoadingOverlay
+import com.example.roadcode.view.component.LoadingOverlayName
 import com.example.roadcode.viewmodel.LoginEvent
 import com.example.roadcode.viewmodel.LoginField
 import com.example.roadcode.viewmodel.LoginUiState
@@ -119,7 +121,7 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
                     contentDescription = "로드코드 글자 이미지"
                 )
 
-                LoginCard(context, navController, loginUiState, loginViewModel)
+                LoginCard(navController, loginUiState, loginViewModel)
             }
         }
     }
@@ -127,7 +129,7 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
 
 /* 로그인 카드 */
 @Composable
-fun LoginCard(context: Context, navController: NavController, loginUiState: LoginUiState, loginViewModel: LoginViewModel) {
+fun LoginCard(navController: NavController, loginUiState: LoginUiState, loginViewModel: LoginViewModel) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = Color.White),

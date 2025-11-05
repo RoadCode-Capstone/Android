@@ -129,7 +129,7 @@ class RoadmapViewModel @Inject constructor(private val repository: RoadmapReposi
         }
     }
 
-    /* 달성률 계산 함수 */
+    /* 달성률 계산 함수 TODO: 변경 필요 (문제 목록에서 현재 문제 인덱스를 찾아 나누기 전체 문제 수 곱하기 100) */
     fun setProgress() {
         if (roadmapInfo.value.currentProblem.order + 1 == problems.value.size) {
             _progress.value = "100"

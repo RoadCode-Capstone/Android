@@ -13,14 +13,18 @@ import android.webkit.WebViewClient
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
@@ -51,20 +55,24 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavController
 import com.example.roadcode.R
 import com.example.roadcode.ui.theme.LineColor
+import com.example.roadcode.ui.theme.PointBlue
 import com.example.roadcode.ui.theme.PointColor
 import com.example.roadcode.ui.theme.PrimaryColor
 import com.example.roadcode.util.rememberOnce
@@ -84,17 +92,22 @@ fun ProblemScreen(navController: NavController, problemViewModel: ProblemViewMod
     val roadmapInfo by roadmapViewModel.roadmapInfo.collectAsState()
     val problemInfo by problemViewModel.problemInfo.collectAsState()
     val code by problemViewModel.code.collectAsState()
-    val result by problemViewModel.result.collectAsState()
+    val isSuccess by problemViewModel.isSuccess.collectAsState()
 
-    val snackbarHostState = remember { SnackbarHostState() }
+    if (isSuccess != null) {
+        ResultDialog(
+            isSuccess!!,
+            onConfirm = {
+                if (isSuccess!!) {
+                    // 리뷰 작성 화면으로 이동
 
-    LaunchedEffect(result) {
-        if (result.isNotBlank()) {
-            result.let {
-                snackbarHostState.showSnackbar(it)
-                problemViewModel.clearResult()
+                }
+                problemViewModel.resetIsSuccess()
+            },
+            onDismiss = {
+                problemViewModel.resetIsSuccess()
             }
-        }
+        )
     }
 
     Scaffold(
@@ -131,8 +144,7 @@ fun ProblemScreen(navController: NavController, problemViewModel: ProblemViewMod
                     }
                 }
             )
-        },
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+        }
     ) { paddingValues ->
         Box(
             modifier = Modifier
@@ -327,6 +339,112 @@ private fun ProblemPager(problemInfos: List<String>, language: String, initCode:
                     }
                 }
 
+            }
+        }
+    }
+}
+
+/* 채점 결과 팝업창 */
+@Composable
+private fun ResultDialog(
+    isSuccess: Boolean,
+    onDismiss: () -> Unit = {},
+    onConfirm: () -> Unit = {}
+) {
+    Dialog(onDismissRequest = onDismiss) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .background(Color.White)
+                .padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = if (isSuccess) "맞았습니다!" else "틀렸습니다",
+                fontSize = 20.sp,
+                fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium)),
+                color = Color.Black,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            // 마스코트 이미지
+            Image(
+                painter = painterResource(id = if (isSuccess) R.drawable.mascot_smile else R.drawable.mascot_sad),
+                contentDescription = "Mascot",
+                modifier = Modifier
+                    .padding(bottom = 40.dp)
+                    .size(140.dp)
+            )
+
+            Button(
+                onClick = onConfirm,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (isSuccess) PointBlue else Color.Gray
+                )
+            ) {
+                Text(
+                    text = if (isSuccess) "코드 리뷰 작성하기" else "다시 도전하기",
+                    fontSize = 16.sp,
+                    fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun SuccessPopup(
+    onDismiss: () -> Unit = {},
+    onConfirm: () -> Unit = {}
+) {
+    Dialog(onDismissRequest = onDismiss) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .background(Color.White)
+                .padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "맞았습니다!",
+                fontSize = 20.sp,
+                fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium)),
+                color = Color.Black,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            // 🐰 팝업 아래 마스코트 이미지
+            Image(
+                painter = painterResource(id = R.drawable.mascot_smile),
+                contentDescription = "Mascot",
+                modifier = Modifier
+                    .padding(bottom = 40.dp)
+                    .size(120.dp)
+            )
+
+            Button(
+                onClick = onConfirm,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = PointBlue
+                )
+            ) {
+                Text(
+                    text = "코드 리뷰 작성하기",
+                    fontSize = 16.sp,
+                    fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
+                )
             }
         }
     }
