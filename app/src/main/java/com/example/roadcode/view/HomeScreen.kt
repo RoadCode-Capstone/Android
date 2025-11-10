@@ -19,13 +19,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
@@ -44,9 +41,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -66,11 +61,10 @@ import com.example.roadcode.data.model.SubmissionDTO
 import com.example.roadcode.ui.theme.PointColor
 import com.example.roadcode.ui.theme.PrimaryColor
 import com.example.roadcode.view.component.BottomNavigationBar
+import com.example.roadcode.viewmodel.AttendanceType
+import com.example.roadcode.viewmodel.AttendanceUiState
 import com.example.roadcode.viewmodel.AttendanceViewModel
 import com.example.roadcode.viewmodel.CalendarViewModel
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 import java.time.YearMonth
 
@@ -86,7 +80,7 @@ fun HomeScreen(navController: NavController, attendanceViewModel: AttendanceView
     val attendanceUiState by attendanceViewModel.attendanceUiState.collectAsState()
 
     LaunchedEffect(yearMonth) {
-        attendanceViewModel.getMonthAttendanceCnt(yearMonth)
+        attendanceViewModel.getMonthAttendanceInfo(yearMonth)
         attendanceViewModel.getMonthSubmissions(yearMonth)
     }
 
@@ -151,7 +145,7 @@ fun HomeScreen(navController: NavController, attendanceViewModel: AttendanceView
                 )
 
                 // 캘린더
-                Calendar(calendarViewModel, year, month)
+                Calendar(calendarViewModel, year, month, attendanceUiState)
 
                 Divider(
                     modifier = Modifier
@@ -161,7 +155,7 @@ fun HomeScreen(navController: NavController, attendanceViewModel: AttendanceView
                     thickness = 1.dp
                 )
 
-                /* TODO: 한 달 풀이 성공한 문제 출력 */
+                // 한 달 풀이 성공한 문제 출력
                 MonthSubmissions(attendanceUiState.submissions)
             }
         }
@@ -172,7 +166,7 @@ fun HomeScreen(navController: NavController, attendanceViewModel: AttendanceView
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MonthSubmissions(submissions: List<SubmissionDTO.MySubmissionsData>) {
-//    var expandedStates = remember { mutableStateMapOf<Long, Boolean>() }    // 문제별 풀이 목록 열림 여부 (키: date+problemId)
+//    var expandedStates = remember { mutableStateMapOf<Long, Boolean>() }    // 문제별 풀이 목록 열림 여부 (키: problemId)
     var expandedStates = remember { mutableStateMapOf<String, Boolean>() }    // 문제별 풀이 목록 열림 여부 (키: date+problemId)
 
     Column {
@@ -205,7 +199,8 @@ fun MonthSubmissions(submissions: List<SubmissionDTO.MySubmissionsData>) {
 
         LazyColumn(
             modifier = Modifier.fillMaxWidth().padding(vertical = 5.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+            verticalArrangement = Arrangement.spacedBy(20.dp),
+            contentPadding = PaddingValues(bottom = 30.dp)
         ) {
             if (submissions.isEmpty()) {
                 item {
@@ -347,7 +342,7 @@ fun MonthSubmissions(submissions: List<SubmissionDTO.MySubmissionsData>) {
 /* 캘린더 아이템 */
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun Calendar(calendarViewModel: CalendarViewModel, year: Int, month: Int) {
+fun Calendar(calendarViewModel: CalendarViewModel, year: Int, month: Int, attendanceUiState: AttendanceUiState) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -355,7 +350,7 @@ fun Calendar(calendarViewModel: CalendarViewModel, year: Int, month: Int) {
     ) {
         MonthBar(month = month, onClickPrevMonth = { calendarViewModel.prevMonth() }, onClickNextMonth = { calendarViewModel.nextMonth() })
         WeekDayBar()
-        DateGrid(year, month)
+        DateGrid(year, month, attendanceUiState)
     }
 }
 
@@ -419,7 +414,8 @@ fun WeekDayBar() {
 /* 전체 날짜 출력 */
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun DateGrid(year: Int, month: Int) {
+fun DateGrid(year: Int, month: Int, attendanceUiState: AttendanceUiState) {
+    val typeMap = attendanceUiState.attendanceTypeMap
     val startWeekDay = LocalDate.of(year, month, 1).dayOfWeek   // 월의 시작 요일 (월=1, 화=2, ..., 일=7)
     val endDayOfMonth = YearMonth.of(year, month).lengthOfMonth()          // 월의 마지막 날짜
     val total = startWeekDay.value % 7 + endDayOfMonth  // 총 칸 수
@@ -443,7 +439,8 @@ fun DateGrid(year: Int, month: Int) {
             }
 
             for (idx in 1..(7 - emptyCnt)) {
-                DayItem(date = date++)
+                DayItem(date = date, type = typeMap[date.toString()] ?: AttendanceType.NOT_LOGIN)
+                date++
             }
         }
 
@@ -457,7 +454,8 @@ fun DateGrid(year: Int, month: Int) {
             ) {
                 repeat(7) {
                     if (date <= endDayOfMonth) {
-                        DayItem(date = date++)
+                        DayItem(date = date, type = typeMap[date.toString()] ?: AttendanceType.NOT_LOGIN)
+                        date++
                     }
                     else {
                         Spacer(modifier = Modifier.size(30.dp))
@@ -470,12 +468,17 @@ fun DateGrid(year: Int, month: Int) {
 
 /* 날짜 출력 아이템  */
 @Composable
-fun DayItem(date: Int) {
+fun DayItem(date: Int, type: AttendanceType) {
     Box(
         modifier = Modifier
             .size(30.dp)
             .background(
-                color = PointColor, /* TODO: 출석 유형별 색상 구분 */
+                color = PointColor.copy(alpha = when (type) {
+                    // 출석 유형별 색상 구분 (일일 학습 목표 O: 100%, 일일 학습 목표 X 로그인 O: 50%, 로그인 X: 0%)
+                    AttendanceType.PERFECT      -> 1f
+                    AttendanceType.NOT_GOAL     -> 0.5f
+                    AttendanceType.NOT_LOGIN    -> 0f
+                }),
                 shape = RoundedCornerShape(5.dp)
             )
             .border(width = 1.dp, color = PrimaryColor, shape = RoundedCornerShape(5.dp)),
