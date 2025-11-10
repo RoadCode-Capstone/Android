@@ -79,6 +79,7 @@ import com.example.roadcode.util.rememberOnce
 import com.example.roadcode.view.component.LoadingOverlay
 import com.example.roadcode.view.component.LoadingOverlayName
 import com.example.roadcode.viewmodel.ProblemViewModel
+import com.example.roadcode.viewmodel.ReviewViewModel
 import com.example.roadcode.viewmodel.RoadmapViewModel
 import org.json.JSONObject
 
@@ -86,29 +87,32 @@ import org.json.JSONObject
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProblemScreen(navController: NavController, problemViewModel: ProblemViewModel, roadmapViewModel: RoadmapViewModel) {
+fun ProblemScreen(navController: NavController, problemViewModel: ProblemViewModel, roadmapViewModel: RoadmapViewModel, reviewViewModel: ReviewViewModel) {
     val isLoading by problemViewModel.isLoading.collectAsState()
 
     val roadmapInfo by roadmapViewModel.roadmapInfo.collectAsState()
     val problemInfo by problemViewModel.problemInfo.collectAsState()
+    val problemId by problemViewModel.problemId.collectAsState()
     val code by problemViewModel.code.collectAsState()
     val isSuccess by problemViewModel.isSuccess.collectAsState()
 
-    if (isSuccess != null) {
+//    if (isSuccess != null) {
         ResultDialog(
-            isSuccess!!,
+//            isSuccess!!,
+            true,
             onConfirm = {
-                if (isSuccess!!) {
-                    // 리뷰 작성 화면으로 이동
-
-                }
+//                if (isSuccess!!) {
+                    reviewViewModel.setProblemId(problemId)
+                    reviewViewModel.getOtherSolutions()
+                    navController.navigate("review_select") // 리뷰 작성할 풀이 선택 화면으로 이동
+//                }
                 problemViewModel.resetIsSuccess()
             },
             onDismiss = {
                 problemViewModel.resetIsSuccess()
             }
         )
-    }
+//    }
 
     Scaffold(
         topBar = {

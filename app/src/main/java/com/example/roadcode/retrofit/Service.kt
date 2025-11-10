@@ -4,6 +4,7 @@ import com.example.roadcode.data.model.LevelTestDTO
 import com.example.roadcode.data.model.PointDTO
 import com.example.roadcode.data.model.ProblemDTO
 import com.example.roadcode.data.model.ResponseUtilDTO
+import com.example.roadcode.data.model.ReviewDTO
 import com.example.roadcode.data.model.RoadmapDTO
 import com.example.roadcode.data.model.SubmissionDTO
 import com.example.roadcode.data.model.TagDTO
@@ -206,4 +207,19 @@ interface JsonService {
     suspend fun resetPassword(
         @Body request: UserDTO.ResetPasswordRequest
     ): ApiResponse<Nothing>
+
+    // 리뷰 작성
+    @POST("/api/v1/submissions/{submissionId}/reviews")
+    suspend fun submitReview(
+        @Header("Authorization") token: String,
+        @Path("submissionId") submissionId: Long,
+        @Body request: ReviewDTO.SubmitReviewRequest
+    ): ApiResponse<Nothing>
+
+    // 다른 사람 풀이 목록 조회
+    @GET("/api/v1/problem/{problemId}/submissions/success")
+    suspend fun getOtherSubmissions(
+        @Header("Authorization") token: String,
+        @Path("problemId") problemId: Long
+    ): ApiResponse<SubmissionDTO.GetOtherSubmissionResponse>
 }

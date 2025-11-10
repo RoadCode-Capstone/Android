@@ -233,7 +233,7 @@ fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewMod
                                             problemViewModel.getProblem(problems[problemIdx].problemId)
                                             navController.navigate("problem")
                                         },
-                                        enabled = if (roadmapStatus == "GAVE_UP" || roadmapInfo.currentProblem.order != problemIdx) false else true,
+//                                        enabled = if (roadmapStatus == "GAVE_UP" || roadmapInfo.currentProblem.order != problemIdx) false else true,
                                         modifier = Modifier
                                             .weight(1f)
                                             .height(50.dp),

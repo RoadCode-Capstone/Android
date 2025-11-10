@@ -21,4 +21,8 @@ class SubmissionRepository @Inject constructor(private val tokenRepository: Toke
     /* 풀이 제출 */
     suspend fun submitSolution(problemId: Long, request: SubmissionDTO.SubmitSolutionRequest) =
         handleResponse { jsonService.submitSolution(tokenRepository.getBearerToken(), problemId, request) }
+
+    /* 다른 사람 풀이 목록 조회 */
+    suspend fun getOtherSubmissions(problemId: Long) =
+        handleResponse { jsonService.getOtherSubmissions(tokenRepository.getBearerToken(), problemId) }
 }
