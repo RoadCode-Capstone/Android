@@ -2,24 +2,36 @@ package com.example.roadcode.view
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -31,18 +43,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.roadcode.R
+import com.example.roadcode.data.model.SubmissionDTO
 import com.example.roadcode.ui.theme.PointColor
 import com.example.roadcode.ui.theme.PrimaryColor
 import com.example.roadcode.view.component.BottomNavigationBar
@@ -54,6 +74,7 @@ import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 import java.time.YearMonth
 
+/* 홈(캘린더) 화면 */
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -62,10 +83,11 @@ fun HomeScreen(navController: NavController, attendanceViewModel: AttendanceView
     val year = yearMonth.year
     val month = yearMonth.monthValue
 
-    val attendanceCnt by attendanceViewModel.attendanceCnt.collectAsState() // 한 달 출석 개수
+    val attendanceUiState by attendanceViewModel.attendanceUiState.collectAsState()
 
     LaunchedEffect(yearMonth) {
         attendanceViewModel.getMonthAttendanceCnt(yearMonth)
+        attendanceViewModel.getMonthSubmissions(yearMonth)
     }
 
     Scaffold(
@@ -102,9 +124,13 @@ fun HomeScreen(navController: NavController, attendanceViewModel: AttendanceView
                 .padding(paddingValues)
         ) {
             Column(
-                modifier = Modifier.padding(horizontal = 30.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 30.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Spacer(modifier = Modifier.height(10.dp))
+
                 // 한 달 출석 횟수
                 Text(
                     buildAnnotatedString {
@@ -115,7 +141,7 @@ fun HomeScreen(navController: NavController, attendanceViewModel: AttendanceView
                                 fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
                             )
                         ) {
-                            append("${attendanceCnt}")
+                            append("${attendanceUiState.attendanceCnt}")
                         }
                         append("번 출석했어요!")
                     },
@@ -132,21 +158,199 @@ fun HomeScreen(navController: NavController, attendanceViewModel: AttendanceView
                         .fillMaxWidth()
                         .padding(vertical = 10.dp),
                     color = PrimaryColor,
-                    thickness = 0.5.dp
+                    thickness = 1.dp
                 )
 
                 /* TODO: 한 달 풀이 성공한 문제 출력 */
+                MonthSubmissions(attendanceUiState.submissions)
             }
         }
     }
 }
 
+/* 한 달 풀이 목록 출력 아이템 */
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun MonthSubmissions(submissions: List<SubmissionDTO.MySubmissionsData>) {
+//    var expandedStates = remember { mutableStateMapOf<Long, Boolean>() }    // 문제별 풀이 목록 열림 여부 (키: date+problemId)
+    var expandedStates = remember { mutableStateMapOf<String, Boolean>() }    // 문제별 풀이 목록 열림 여부 (키: date+problemId)
+
+    Column {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(vertical = 5.dp)
+        ) {
+            Text(
+                text = "날짜",
+                fontSize = 16.sp,
+                fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium)),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.weight(0.2f)
+            )
+
+            Text(
+                text = "문제 제목",
+                fontSize = 16.sp,
+                fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium)),
+                modifier = Modifier.weight(0.8f)
+            )
+        }
+
+        Divider(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 10.dp),
+            color = PrimaryColor,
+            thickness = 0.5.dp
+        )
+
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth().padding(vertical = 5.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
+        ) {
+            if (submissions.isEmpty()) {
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(top = 30.dp),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = "풀이 내역이 없어요",
+                            fontSize = 16.sp,
+                            fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium)),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            }
+            else {
+                submissions.forEach { submission ->
+                    itemsIndexed(submission.submissionDetails) { idx, submissionInfo ->
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(end = 10.dp),
+                            verticalAlignment = Alignment.Top
+                        ) {
+                            Row(
+                                modifier = Modifier.weight(0.2f),
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                // 날짜 출력 (같은 날짜는 한 번만 출력)
+                                val day = LocalDate.parse(submission.date).dayOfMonth.toString().padStart(2, '0')
+
+                                Text(
+                                    text = if (idx == 0) day else if (submission.date != submissions[idx - 1].date) day else "",
+                                    fontSize = 16.sp,
+                                    fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium)),
+                                )
+                            }
+
+                            Column(
+                                modifier = Modifier.weight(0.8f),
+                                verticalArrangement = Arrangement.spacedBy(15.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable(
+                                            interactionSource = remember { MutableInteractionSource() },
+                                            indication = null
+                                        ) {
+                                            expandedStates["${submission.date} + ${submissionInfo.problemId}"] =
+                                                !(expandedStates["${submission.date} + ${submissionInfo.problemId}"]
+                                                    ?: false)
+                                        },
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    val rotation by animateFloatAsState(
+                                        targetValue = if (expandedStates.getOrDefault(
+                                                "${submission.date} + ${submissionInfo.problemId}",
+                                                false
+                                            )
+                                        ) 90f else 0f
+                                    )
+
+                                    // 문제 제목 출력
+                                    Text(
+                                        text = submissionInfo.problemName,
+                                        fontSize = 16.sp,
+                                        fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
+                                    )
+
+                                    Icon(
+                                        imageVector = Icons.Default.ArrowForwardIos,
+                                        contentDescription = "풀이 목록 열림/닫힘 아이콘",
+                                        modifier = Modifier
+                                            .size(12.dp)
+                                            .rotate(rotation),
+                                        tint = PrimaryColor
+                                    )
+                                }
+
+                                // 풀이 목록 출력
+                                AnimatedVisibility(
+                                    visible = expandedStates.getOrDefault(
+                                        "${submission.date} + ${submissionInfo.problemId}",
+                                        false
+                                    )
+                                ) {
+                                    Column(
+                                        verticalArrangement = Arrangement.spacedBy(5.dp)
+                                    ) {
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            // 풀이 정보 출력
+                                            val submissionName =
+                                                "${if (submissionInfo.isSuccess) "[정답]" else "[오답]"} 풀이 시도 ${idx}"
+
+                                            Text(
+                                                text = submissionName,
+                                                fontSize = 14.sp,
+                                                fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
+                                            )
+
+                                            Button(
+                                                onClick = {
+                                                    /*TODO: 문제, 풀이, 리뷰 조회 화면으로 이동*/
+                                                },
+                                                modifier = Modifier.height(30.dp),
+                                                shape = RoundedCornerShape(20.dp),
+                                                colors = ButtonDefaults.buttonColors(
+                                                    containerColor = PointColor,
+                                                    disabledContentColor = Color.White
+                                                ),
+                                                enabled = submissionInfo.isSuccess,
+                                                contentPadding = PaddingValues(vertical = 0.dp, horizontal = 5.dp)
+                                            ) {
+                                                Text(
+                                                    text = "리뷰 보기",
+                                                    fontSize = 14.sp,
+                                                    color = PrimaryColor,
+                                                    fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+}
+
+/* 캘린더 아이템 */
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun Calendar(calendarViewModel: CalendarViewModel, year: Int, month: Int) {
     Column(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .padding(horizontal = 15.dp)
     ) {
         MonthBar(month = month, onClickPrevMonth = { calendarViewModel.prevMonth() }, onClickNextMonth = { calendarViewModel.nextMonth() })

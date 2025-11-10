@@ -29,7 +29,7 @@ object SubmissionDTO {
     )
 
     // 다른 사람 풀이 목록 조회 응답
-    data class GetOtherSubmissionResponse(
+    data class GetOtherSubmissionsResponse(
         val submissions: List<OtherSubmissionsData> // 다른 사람 풀이 목록
     )
 
@@ -40,5 +40,24 @@ object SubmissionDTO {
         val sourceCode: String = "",    // 풀이 코드
         val nickname: String = "",      // 풀이를 작성한 사용자 닉네임
         val createdAt: String = ""      // 생성일자
+    )
+
+    // 본인 풀이 목록 조회 응답
+    data class GetMySubmissionsResponse(
+        val history: List<MySubmissionsData>
+    )
+
+    // 본인 풀이 목록 데이터 구조
+    data class MySubmissionsData(
+        val date: String,
+        val submissionDetails: List<MySubmissionData>
+    )
+
+    // 본인 풀이 데이터 구조
+    data class MySubmissionData(
+        val problemId: Long,
+        val problemName: String,
+        val submissionId: Long,
+        val isSuccess: Boolean
     )
 }

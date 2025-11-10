@@ -237,6 +237,6 @@ interface JsonService {
         @Header("Authorization") token: String,
         @Query("start") start: String,
         @Query("end") end: String,
-        @Query("isSuccess") isSuccess: Boolean
+        @Query("isSuccess") isSuccess: Boolean?
     ): ApiResponse<SubmissionDTO.GetMySubmissionsResponse>
 }
