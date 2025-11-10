@@ -1,14 +1,8 @@
 package com.example.roadcode.data.repository
 
-import com.example.roadcode.data.model.PointDTO
-import com.example.roadcode.data.model.RoadmapDTO
 import com.example.roadcode.data.repository.ResponseHandler.handleResponse
 import com.example.roadcode.retrofit.JsonService
 import com.example.roadcode.retrofit.RetrofitInstance
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flow
-import retrofit2.HttpException
 import javax.inject.Inject
 
 class PointRepository @Inject constructor(private val tokenRepository: TokenRepository) {
@@ -18,7 +12,11 @@ class PointRepository @Inject constructor(private val tokenRepository: TokenRepo
     suspend fun getRanking(start: String, end: String) =
         handleResponse { jsonService.getRanking(tokenRepository.getBearerToken(), start, end) }
 
-    /* 포인트 내역 조회 */
+    /* 날짜별 포인트 내역 조회 */
     suspend fun getPointsByDate(start: String, end: String) =
         handleResponse { jsonService.getPointsByDate(tokenRepository.getBearerToken(), start, end) }
+
+    /* 종류별 포인트 내역 조회 */
+    suspend fun getPointsByType(start: String, end: String) =
+        handleResponse { jsonService.getPointsByType(tokenRepository.getBearerToken(), start, end) }
 }

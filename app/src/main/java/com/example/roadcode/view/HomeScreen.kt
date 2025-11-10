@@ -34,8 +34,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -58,6 +61,12 @@ fun HomeScreen(navController: NavController, attendanceViewModel: AttendanceView
     val yearMonth by calendarViewModel.yearMonth.collectAsState()
     val year = yearMonth.year
     val month = yearMonth.monthValue
+
+    val attendanceCnt by attendanceViewModel.attendanceCnt.collectAsState() // 한 달 출석 개수
+
+    LaunchedEffect(yearMonth) {
+        attendanceViewModel.getMonthAttendanceCnt(yearMonth)
+    }
 
     Scaffold(
         topBar = {
@@ -91,13 +100,43 @@ fun HomeScreen(navController: NavController, attendanceViewModel: AttendanceView
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(horizontal = 30.dp)
         ) {
-            /* TODO: 한 달 출석 횟수 출력 */
+            Column(
+                modifier = Modifier.padding(horizontal = 30.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // 한 달 출석 횟수
+                Text(
+                    buildAnnotatedString {
+                        append("이번 달에 총 ")
+                        withStyle(
+                            style = SpanStyle(
+                                color = PointColor,
+                                fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
+                            )
+                        ) {
+                            append("${attendanceCnt}")
+                        }
+                        append("번 출석했어요!")
+                    },
+                    fontSize = 16.sp,
+                    fontFamily = FontFamily(Font(R.font.spoqahansansneo_light)),
+                    modifier = Modifier.padding(bottom = 15.dp)
+                )
 
-            Calendar(calendarViewModel, year, month)
+                // 캘린더
+                Calendar(calendarViewModel, year, month)
 
-            /* TODO: 한 달 풀이 성공한 문제 출력 */
+                Divider(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 10.dp),
+                    color = PrimaryColor,
+                    thickness = 0.5.dp
+                )
+
+                /* TODO: 한 달 풀이 성공한 문제 출력 */
+            }
         }
     }
 }
@@ -113,13 +152,6 @@ fun Calendar(calendarViewModel: CalendarViewModel, year: Int, month: Int) {
         MonthBar(month = month, onClickPrevMonth = { calendarViewModel.prevMonth() }, onClickNextMonth = { calendarViewModel.nextMonth() })
         WeekDayBar()
         DateGrid(year, month)
-        Divider(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 10.dp),
-            color = PrimaryColor,
-            thickness = 0.5.dp
-        )
     }
 }
 

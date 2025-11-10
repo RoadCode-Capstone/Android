@@ -106,6 +106,14 @@ interface JsonService {
         @Query("end") end: String
     ):ApiResponse<PointDTO.GetPointsByDateResponse>
 
+    // 종류별 포인트 내역 조회
+    @GET("/api/v1/points/my?groupBy=TYPE")
+    suspend fun getPointsByType(
+        @Header("Authorization") token: String,
+        @Query("start") start: String,
+        @Query("end") end: String
+    ):ApiResponse<PointDTO.GetPointsByTypeResponse>
+
     // 회원 정보 조회
     @GET("/api/v1/member")
     suspend fun getUserInfo(
@@ -221,5 +229,14 @@ interface JsonService {
     suspend fun getOtherSubmissions(
         @Header("Authorization") token: String,
         @Path("problemId") problemId: Long
-    ): ApiResponse<SubmissionDTO.GetOtherSubmissionResponse>
+    ): ApiResponse<SubmissionDTO.GetOtherSubmissionsResponse>
+
+    // 본인 풀이 목록 조회
+    @GET("/api/v1/submissions")
+    suspend fun getMySubmissions(
+        @Header("Authorization") token: String,
+        @Query("start") start: String,
+        @Query("end") end: String,
+        @Query("isSuccess") isSuccess: Boolean
+    ): ApiResponse<SubmissionDTO.GetMySubmissionsResponse>
 }
