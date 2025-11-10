@@ -113,7 +113,6 @@ fun SelectSubmissionScreen(navController: NavController, reviewViewModel: Review
                     modifier = Modifier.fillMaxSize()
                 ) {
                     LazyColumn(
-//                        modifier = Modifier.padding(bottom = if (reviewUiState.complete >= 2) 100.dp else 0.dp),
                         modifier = Modifier.padding(bottom = 100.dp),
                         verticalArrangement = Arrangement.spacedBy(20.dp)
                     ) {
@@ -128,7 +127,6 @@ fun SelectSubmissionScreen(navController: NavController, reviewViewModel: Review
                         }
                     }
 
-//                if (reviewUiState.complete >= 2) {
                     Button(
                         onClick = { navController.popBackStack("roadmap_list", inclusive = false) },
                         modifier = Modifier
@@ -140,16 +138,16 @@ fun SelectSubmissionScreen(navController: NavController, reviewViewModel: Review
                         colors = ButtonDefaults.buttonColors(
                             containerColor = PointColor,
                             contentColor = Color.White
-                        )
+                        ),
+                        enabled = if (reviewUiState.complete >= 2) true else false
                     ) {
                         Text(
-                            text = "계속 로드맵 진행하기",
+                            text = if (reviewUiState.complete >= 2) "계속 로드맵 진행하기" else "성공 인정까지 남은 리뷰 ${2 - reviewUiState.complete}개",
                             fontSize = 16.sp,
                             color = Color.White,
                             fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
                         )
                     }
-//                }
                 }
             }
         }
