@@ -13,5 +13,6 @@ val Pink40 = Color(0xFF7D5260)
 val PrimaryColor = Color(0xFF2B3440)    // 주 색상
 val PointColor = Color(0xFFF2C53D)      // 포인트 색
 val BackGrayColor = Color(0xFFF9F9F9)   // 요소 배경색
+val DarkBackGrayColor = Color(0xFFE0E0E0)   // 요소 배경색 (진함)
 val LineColor = Color(0xFFB3B3B3)       // 선 색
 val PointBlue = Color(0xFF87BCED)       // 정답 포인트 색

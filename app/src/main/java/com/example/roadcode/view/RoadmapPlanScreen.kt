@@ -47,6 +47,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.roadcode.R
 import com.example.roadcode.ui.theme.BackGrayColor
+import com.example.roadcode.ui.theme.DarkBackGrayColor
 import com.example.roadcode.ui.theme.PointColor
 import com.example.roadcode.ui.theme.PrimaryColor
 import com.example.roadcode.util.rememberOnce
@@ -58,6 +59,8 @@ import com.example.roadcode.viewmodel.TagViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RoadmapPlanLanguageScreen(navController: NavController, roadmapPlanViewModel: RoadmapPlanViewModel) {
+    val plan by roadmapPlanViewModel.plan.collectAsState()
+
     var selectedLanguage by remember { mutableStateOf<String?>(null) }
 
     Scaffold(
@@ -91,7 +94,9 @@ fun RoadmapPlanLanguageScreen(navController: NavController, roadmapPlanViewModel
                 .padding(paddingValues)
         ) {
             Column(
-                modifier = Modifier.fillMaxSize().padding(bottom = 160.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 160.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Spacer(modifier = Modifier.height(30.dp))
@@ -110,9 +115,9 @@ fun RoadmapPlanLanguageScreen(navController: NavController, roadmapPlanViewModel
                         .width(300.dp)
                         .height(50.dp),
                     shape = RoundedCornerShape(5.dp),
-                    border = BorderStroke(0.5.dp, PrimaryColor),
+                    border = BorderStroke(if ((selectedLanguage.isNullOrBlank() && plan.selectedLanguage == "JAVA") || selectedLanguage == "JAVA") 1.dp else 0.5.dp, PrimaryColor),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = BackGrayColor
+                        containerColor = if ((selectedLanguage.isNullOrBlank() && plan.selectedLanguage == "JAVA") || selectedLanguage == "JAVA") DarkBackGrayColor else BackGrayColor
                     )
                 ) {
                     Row(
@@ -143,9 +148,9 @@ fun RoadmapPlanLanguageScreen(navController: NavController, roadmapPlanViewModel
                         .width(300.dp)
                         .height(50.dp),
                     shape = RoundedCornerShape(5.dp),
-                    border = BorderStroke(0.5.dp, PrimaryColor),
+                    border = BorderStroke(if ((selectedLanguage.isNullOrBlank() && plan.selectedLanguage == "Python") || selectedLanguage == "Python") 1.dp else 0.5.dp, PrimaryColor),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = BackGrayColor
+                        containerColor = if ((selectedLanguage.isNullOrBlank() && plan.selectedLanguage == "Python") || selectedLanguage == "Python") DarkBackGrayColor else BackGrayColor
                     )
                 ) {
                     Row(
@@ -176,9 +181,9 @@ fun RoadmapPlanLanguageScreen(navController: NavController, roadmapPlanViewModel
                         .width(300.dp)
                         .height(50.dp),
                     shape = RoundedCornerShape(5.dp),
-                    border = BorderStroke(0.5.dp, PrimaryColor),
+                    border = BorderStroke(if ((selectedLanguage.isNullOrBlank() && plan.selectedLanguage == "C") || selectedLanguage == "C") 1.dp else 0.5.dp, PrimaryColor),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = BackGrayColor
+                        containerColor = if ((selectedLanguage.isNullOrBlank() && plan.selectedLanguage == "C") || selectedLanguage == "C") DarkBackGrayColor else BackGrayColor
                     )
                 ) {
                     Row(
@@ -203,7 +208,9 @@ fun RoadmapPlanLanguageScreen(navController: NavController, roadmapPlanViewModel
             }
 
             Row(
-                modifier = Modifier.align(Alignment.BottomEnd).padding(end = 30.dp, bottom = 40.dp)
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(end = 30.dp, bottom = 40.dp)
             ) {
                 Button( // 다음 버튼
                     onClick = {
@@ -236,6 +243,8 @@ fun RoadmapPlanLanguageScreen(navController: NavController, roadmapPlanViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RoadmapPlanTypeScreen(navController: NavController, roadmapPlanViewModel: RoadmapPlanViewModel) {
+    val plan by roadmapPlanViewModel.plan.collectAsState()
+
     var selectedType by remember { mutableStateOf<String?>(null) }
 
     Scaffold(
@@ -269,7 +278,9 @@ fun RoadmapPlanTypeScreen(navController: NavController, roadmapPlanViewModel: Ro
                 .padding(paddingValues)
         ) {
             Column(
-                modifier = Modifier.fillMaxSize().padding(bottom = 160.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 160.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Spacer(modifier = Modifier.height(30.dp))
@@ -288,9 +299,9 @@ fun RoadmapPlanTypeScreen(navController: NavController, roadmapPlanViewModel: Ro
                         .width(300.dp)
                         .height(50.dp),
                     shape = RoundedCornerShape(5.dp),
-                    border = BorderStroke(0.5.dp, PrimaryColor),
+                    border = BorderStroke(if ((selectedType.isNullOrBlank() && plan.selectedType == "Language") || selectedType == "Language") 1.dp else 0.5.dp, PrimaryColor),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = BackGrayColor
+                        containerColor = if ((selectedType.isNullOrBlank() && plan.selectedType == "Language") || selectedType == "Language") DarkBackGrayColor else BackGrayColor
                     )
                 ) {
                     Row(
@@ -314,9 +325,9 @@ fun RoadmapPlanTypeScreen(navController: NavController, roadmapPlanViewModel: Ro
                         .width(300.dp)
                         .height(50.dp),
                     shape = RoundedCornerShape(5.dp),
-                    border = BorderStroke(0.5.dp, PrimaryColor),
+                    border = BorderStroke(if ((selectedType.isNullOrBlank() && plan.selectedType == "Algorithm") || selectedType == "Algorithm") 1.dp else 0.5.dp, PrimaryColor),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = BackGrayColor
+                        containerColor = if ((selectedType.isNullOrBlank() && plan.selectedType == "Algorithm") || selectedType == "Algorithm") DarkBackGrayColor else BackGrayColor
                     )
                 ) {
                     Row(
@@ -334,7 +345,9 @@ fun RoadmapPlanTypeScreen(navController: NavController, roadmapPlanViewModel: Ro
             }
 
             Row(
-                modifier = Modifier.align(Alignment.BottomEnd).padding(end = 30.dp, bottom = 40.dp)
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(end = 30.dp, bottom = 40.dp)
             ) {
                 Button( // 다음 버튼
                     onClick = {
@@ -370,6 +383,7 @@ fun RoadmapPlanTypeScreen(navController: NavController, roadmapPlanViewModel: Ro
 fun RoadmapPlanAlgorithmScreen(navController: NavController, roadmapPlanViewModel: RoadmapPlanViewModel) {
     val tagViewModel: TagViewModel = hiltViewModel()
     val tags by tagViewModel.tags.collectAsState()
+    val plan by roadmapPlanViewModel.plan.collectAsState()
 
     var selectedAlgorithm by remember { mutableStateOf<String?>(null) }
 
@@ -404,7 +418,9 @@ fun RoadmapPlanAlgorithmScreen(navController: NavController, roadmapPlanViewMode
                 .padding(paddingValues)
         ) {
             Column(
-                modifier = Modifier.fillMaxSize().padding(bottom = 160.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 160.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Spacer(modifier = Modifier.height(30.dp))
@@ -425,7 +441,7 @@ fun RoadmapPlanAlgorithmScreen(navController: NavController, roadmapPlanViewMode
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     items(tags) { tag ->
-                        AlgorithmItem(name = tag) {
+                        AlgorithmItem(name = tag, selectedAlgorithm = selectedAlgorithm, planSelectedAlgorithm = plan.selectedAlgorithm) {
                             selectedAlgorithm = tag
                         }
 
@@ -435,7 +451,9 @@ fun RoadmapPlanAlgorithmScreen(navController: NavController, roadmapPlanViewMode
             }
 
             Row(
-                modifier = Modifier.align(Alignment.BottomEnd).padding(end = 30.dp, bottom = 40.dp)
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(end = 30.dp, bottom = 40.dp)
             ) {
                 Button( // 다음 버튼
                     onClick = {
@@ -468,6 +486,8 @@ fun RoadmapPlanAlgorithmScreen(navController: NavController, roadmapPlanViewMode
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RoadmapPlanGoalScreen(navController: NavController, roadmapPlanViewModel: RoadmapPlanViewModel) {
+    val plan by roadmapPlanViewModel.plan.collectAsState()
+
     var selectedGoal by remember { mutableStateOf<Int?>(null) }
 
     Scaffold(
@@ -501,7 +521,9 @@ fun RoadmapPlanGoalScreen(navController: NavController, roadmapPlanViewModel: Ro
                 .padding(paddingValues)
         ) {
             Column(
-                modifier = Modifier.fillMaxSize().padding(bottom = 160.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 160.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Spacer(modifier = Modifier.height(30.dp))
@@ -515,7 +537,9 @@ fun RoadmapPlanGoalScreen(navController: NavController, roadmapPlanViewModel: Ro
                 Spacer(modifier = Modifier.height(50.dp))
 
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 70.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 70.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
@@ -523,10 +547,10 @@ fun RoadmapPlanGoalScreen(navController: NavController, roadmapPlanViewModel: Ro
                         onClick = { selectedGoal = 1 },
                         modifier = Modifier.size(50.dp),
                         shape = CircleShape,
-                        border = BorderStroke(0.5.dp, PrimaryColor),
                         contentPadding = PaddingValues(0.dp),
+                        border = BorderStroke(if ((selectedGoal == null && plan.selectedGoal == 1) || selectedGoal == 1) 1.dp else 0.5.dp, PrimaryColor),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = BackGrayColor
+                            containerColor = if ((selectedGoal == null && plan.selectedGoal == 1) || selectedGoal == 1) DarkBackGrayColor else BackGrayColor
                         )
                     ) {
                         Box(
@@ -546,10 +570,10 @@ fun RoadmapPlanGoalScreen(navController: NavController, roadmapPlanViewModel: Ro
                         onClick = { selectedGoal = 2 },
                         modifier = Modifier.size(50.dp),
                         shape = CircleShape,
-                        border = BorderStroke(0.5.dp, PrimaryColor),
                         contentPadding = PaddingValues(0.dp),
+                        border = BorderStroke(if ((selectedGoal == null && plan.selectedGoal == 2) || selectedGoal == 2) 1.dp else 0.5.dp, PrimaryColor),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = BackGrayColor
+                            containerColor = if ((selectedGoal == null && plan.selectedGoal == 2) || selectedGoal == 2) DarkBackGrayColor else BackGrayColor
                         )
                     ) {
                         Box(
@@ -569,10 +593,10 @@ fun RoadmapPlanGoalScreen(navController: NavController, roadmapPlanViewModel: Ro
                         onClick = { selectedGoal = 3 },
                         modifier = Modifier.size(50.dp),
                         shape = CircleShape,
-                        border = BorderStroke(0.5.dp, PrimaryColor),
                         contentPadding = PaddingValues(0.dp),
+                        border = BorderStroke(if ((selectedGoal == null && plan.selectedGoal == 3) || selectedGoal == 3) 1.dp else 0.5.dp, PrimaryColor),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = BackGrayColor
+                            containerColor = if ((selectedGoal == null && plan.selectedGoal == 3) || selectedGoal == 3) DarkBackGrayColor else BackGrayColor
                         )
                     ) {
                         Box(
@@ -591,7 +615,9 @@ fun RoadmapPlanGoalScreen(navController: NavController, roadmapPlanViewModel: Ro
             }
 
             Row(
-                modifier = Modifier.align(Alignment.BottomEnd).padding(end = 30.dp, bottom = 40.dp)
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(end = 30.dp, bottom = 40.dp)
             ) {
                 Button( // 다음 버튼
                     onClick = {

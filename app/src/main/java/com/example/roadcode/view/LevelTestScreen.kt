@@ -532,7 +532,7 @@ fun LevelTestResultScreen(navController: NavController, roadmapPlanViewModel: Ro
                 Spacer(modifier = Modifier.height(30.dp))
 
                 Text(
-                    text = "레벨 테스트 결과로\n맞춤 로드맵을 생성했어요",
+                    text = "레벨 테스트 결과로\n맞춤 로드맵을 생성할게요",
                     fontSize = 16.sp,
                     fontFamily = FontFamily(Font(R.font.spoqahansansneo_light)),
                     textAlign = TextAlign.Center,
