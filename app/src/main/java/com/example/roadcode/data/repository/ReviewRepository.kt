@@ -14,12 +14,15 @@ class ReviewRepository @Inject constructor(private val tokenRepository: TokenRep
         ResponseHandler.handleResponse { jsonService.createRoadmap(tokenRepository.getBearerToken(), request) }
 
     /* 리뷰 작성 */
-    suspend fun submitReview(submissionId: Long, request: ReviewDTO.SubmitReviewRequest) =
+    suspend fun submitReview(submissionId: Long, request: ReviewDTO.SubmitReviewCommentRequest) =
         ResponseHandler.handleResponse { jsonService.submitReview(tokenRepository.getBearerToken(), submissionId, request) }
 
     /* 답글 작성 */
+    suspend fun submitComment(reviewId: Long, request: ReviewDTO.SubmitReviewCommentRequest) =
+        ResponseHandler.handleResponse { jsonService.submitComment(tokenRepository.getBearerToken(), reviewId, request) }
 
-
-    /* 리뷰&답글 조회 */
+    /* 리뷰 답글 조회 */
+    suspend fun getReviewComment(submissionId: Long) =
+        ResponseHandler.handleResponse { jsonService.getReviewComment(tokenRepository.getBearerToken(), submissionId) }
 
 }

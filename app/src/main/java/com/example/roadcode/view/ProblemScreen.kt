@@ -18,7 +18,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -42,12 +41,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -79,7 +75,7 @@ import com.example.roadcode.util.rememberOnce
 import com.example.roadcode.view.component.LoadingOverlay
 import com.example.roadcode.view.component.LoadingOverlayName
 import com.example.roadcode.viewmodel.ProblemViewModel
-import com.example.roadcode.viewmodel.ReviewViewModel
+import com.example.roadcode.viewmodel.WriteReviewViewModel
 import com.example.roadcode.viewmodel.RoadmapViewModel
 import org.json.JSONObject
 
@@ -87,7 +83,7 @@ import org.json.JSONObject
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProblemScreen(navController: NavController, problemViewModel: ProblemViewModel, roadmapViewModel: RoadmapViewModel, reviewViewModel: ReviewViewModel) {
+fun ProblemScreen(navController: NavController, problemViewModel: ProblemViewModel, roadmapViewModel: RoadmapViewModel, writeReviewViewModel: WriteReviewViewModel) {
     val isLoading by problemViewModel.isLoading.collectAsState()
 
     val roadmapInfo by roadmapViewModel.roadmapInfo.collectAsState()
@@ -96,23 +92,22 @@ fun ProblemScreen(navController: NavController, problemViewModel: ProblemViewMod
     val code by problemViewModel.code.collectAsState()
     val isSuccess by problemViewModel.isSuccess.collectAsState()
 
-//    if (isSuccess != null) {
+    if (isSuccess != null) {
         ResultDialog(
-//            isSuccess!!,
-            true,
+            isSuccess!!,
             onConfirm = {
-//                if (isSuccess!!) {
-                    reviewViewModel.setProblemId(problemId)
-                    reviewViewModel.getOtherSolutions()
+                if (isSuccess!!) {
+                    writeReviewViewModel.setProblemId(problemId)
+                    writeReviewViewModel.getOtherSolutions()
                     navController.navigate("review_select") // 리뷰 작성할 풀이 선택 화면으로 이동
-//                }
+                }
                 problemViewModel.resetIsSuccess()
             },
             onDismiss = {
                 problemViewModel.resetIsSuccess()
             }
         )
-//    }
+    }
 
     Scaffold(
         topBar = {
@@ -394,58 +389,6 @@ private fun ResultDialog(
             ) {
                 Text(
                     text = if (isSuccess) "코드 리뷰 작성하기" else "다시 도전하기",
-                    fontSize = 16.sp,
-                    fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun SuccessPopup(
-    onDismiss: () -> Unit = {},
-    onConfirm: () -> Unit = {}
-) {
-    Dialog(onDismissRequest = onDismiss) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 32.dp)
-                .clip(RoundedCornerShape(16.dp))
-                .background(Color.White)
-                .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = "맞았습니다!",
-                fontSize = 20.sp,
-                fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium)),
-                color = Color.Black,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-
-            // 🐰 팝업 아래 마스코트 이미지
-            Image(
-                painter = painterResource(id = R.drawable.mascot_smile),
-                contentDescription = "Mascot",
-                modifier = Modifier
-                    .padding(bottom = 40.dp)
-                    .size(120.dp)
-            )
-
-            Button(
-                onClick = onConfirm,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = PointBlue
-                )
-            ) {
-                Text(
-                    text = "코드 리뷰 작성하기",
                     fontSize = 16.sp,
                     fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
                 )

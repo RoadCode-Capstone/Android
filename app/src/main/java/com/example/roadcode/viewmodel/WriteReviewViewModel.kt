@@ -25,9 +25,9 @@ data class ReviewUiState(
 )
 
 @HiltViewModel
-class ReviewViewModel @Inject constructor(private val repository: ReviewRepository, private val submissionRepository: SubmissionRepository) : ViewModel() {
+class WriteReviewViewModel @Inject constructor(private val repository: ReviewRepository, private val submissionRepository: SubmissionRepository) : ViewModel() {
     companion object {
-        private const val TAG = "ReviewViewModel"
+        private const val TAG = "WriteReviewViewModel"
     }
 
     private val _toast = MutableSharedFlow<String>(replay = 0, extraBufferCapacity = 1)
@@ -91,7 +91,7 @@ class ReviewViewModel @Inject constructor(private val repository: ReviewReposito
 
     /* 리뷰 등록 함수 */
     fun submitReview() {
-        val request = ReviewDTO.SubmitReviewRequest(content = reviewUiState.value.review)
+        val request = ReviewDTO.SubmitReviewCommentRequest(content = reviewUiState.value.review)
 
         viewModelScope.launch {
             repository.submitReview(reviewUiState.value.submissionInfo.submissionId, request).collect { result ->
@@ -120,6 +120,10 @@ class ReviewViewModel @Inject constructor(private val repository: ReviewReposito
                             "E024" -> { // 자기 자신의 풀이에 리뷰를 다는 경우
                                 _toast.emit(body.message ?: "")
                                 Log.d(TAG, "리뷰 작성 실패: 자기 자신의 풀이에 리뷰를 다는 경우")
+                            }
+                            "E030" -> { // AI 유효성 검사를 통과하지 못한 경우
+                                _toast.emit(body.message ?: "")
+                                Log.d(TAG, "리뷰 작성 실패: AI 유효성 검사를 통과하지 못한 경우")
                             }
                             else -> Log.d(TAG, "리뷰 작성 실패: 알 수 없는 오류")
                         }

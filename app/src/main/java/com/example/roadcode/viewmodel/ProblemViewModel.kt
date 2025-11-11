@@ -45,10 +45,8 @@ class ProblemViewModel @Inject constructor(private val repository: SubmissionRep
 
     /* 문제 정보 조회 함수 */
     fun getProblem(problemId: Long) {
-        val request = problemId
-
         viewModelScope.launch {
-            repository.getProblem(request).collect() { result ->
+            repository.getProblem(problemId).collect() { result ->
                 result
                     .onSuccess { body ->
                         when (body.code) {

@@ -92,6 +92,7 @@ fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewMod
     val problemIdx by roadmapViewModel.problemIdx.collectAsState()          // 출력할 문제 인덱스 (초기값: 현재 풀어야 하는 문제 인덱스)
     val progress by roadmapViewModel.progress.collectAsState()              // 달성률
     val roadmapStatus by roadmapViewModel.roadmapStatus.collectAsState()    // 로드맵 상태
+    val curProblemIdx by roadmapViewModel.curProblemIdx.collectAsState()    // 현재 풀어야할 문제 인덱스
 
     val navigateBack by roadmapViewModel.navigateBack.collectAsState()
 
@@ -233,7 +234,7 @@ fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewMod
                                             problemViewModel.getProblem(problems[problemIdx].problemId)
                                             navController.navigate("problem")
                                         },
-//                                        enabled = if (roadmapStatus == "GAVE_UP" || roadmapInfo.currentProblem.order != problemIdx) false else true,
+                                        enabled = if (roadmapStatus == "GAVE_UP" || curProblemIdx != problemIdx) false else true,
                                         modifier = Modifier
                                             .weight(1f)
                                             .height(50.dp),

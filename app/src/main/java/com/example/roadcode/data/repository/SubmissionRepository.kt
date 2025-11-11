@@ -29,4 +29,8 @@ class SubmissionRepository @Inject constructor(private val tokenRepository: Toke
     /* 본인 풀이 목록 조회 */
     suspend fun getMySubmissions(start: String, end: String, isSuccess: Boolean?) =
         handleResponse { jsonService.getMySubmissions(tokenRepository.getBearerToken(), start, end, isSuccess) }
+
+    /* 풀이 상세 조회 */
+    suspend fun getSubmission(submissionId: Long) =
+        handleResponse { jsonService.getSubmission(tokenRepository.getBearerToken(), submissionId) }
 }

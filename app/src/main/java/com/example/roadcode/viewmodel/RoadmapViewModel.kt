@@ -37,8 +37,10 @@ class RoadmapViewModel @Inject constructor(private val repository: RoadmapReposi
     val problems = _problems.asStateFlow()
     private val _problemInfo = MutableStateFlow<ProblemDTO.ProblemData?>(null)  // 문제 정보
     val problemInfo = _problemInfo.asStateFlow()
-    private val _problemIdx = MutableStateFlow<Int>(0) // 문제 인덱스
+    private val _problemIdx = MutableStateFlow<Int>(0) // 조회할 문제 인덱스 (문제 목록에서의)
     val problemIdx = _problemIdx.asStateFlow()
+    private val _curProblemIdx = MutableStateFlow(0)    // 현재 풀어야 할 문제 인덱스 (문제 목록에서의)
+    val curProblemIdx = _curProblemIdx.asStateFlow()
     private val _progress = MutableStateFlow<String>("")   // 달성률 (소수점 첫째 자리까지 출력)
     val progress = _progress.asStateFlow()
     private val _status = MutableStateFlow<List<String>>(emptyList())  // 선택한 로드맵 상태
@@ -108,6 +110,11 @@ class RoadmapViewModel @Inject constructor(private val repository: RoadmapReposi
                                 val roadmapInfo = body.data!!
                                 _roadmapInfo.value = roadmapInfo
 
+                                val curProblemId = roadmapInfo.currentProblem.problemId                       // 현재 풀어야 하는 문제 아이디
+                                _curProblemIdx.value = problems.value.indexOfFirst { it.problemId == curProblemId } // 현재 풀어야 하는 문제 인덱스 설정
+
+                                setProblemIdx(curProblemIdx.value)  // 현재 풀어야 하는 문제 인덱스로 변경
+
                                 Log.d(TAG, "로드맵 정보 조회 성공\n${roadmapInfo}")
                             }
                             "E001" -> { // 사용자 토큰이 잘못된 경우
@@ -129,13 +136,16 @@ class RoadmapViewModel @Inject constructor(private val repository: RoadmapReposi
         }
     }
 
-    /* 달성률 계산 함수 TODO: 변경 필요 (문제 목록에서 현재 문제 인덱스를 찾아 나누기 전체 문제 수 곱하기 100) */
+    /* 달성률 계산 함수 (문제 목록에서 현재 문제 인덱스를 찾아 나누기 전체 문제 수 곱하기 100) */
     fun setProgress() {
-        if (roadmapInfo.value.currentProblem.order + 1 == problems.value.size) {
+        val curProblemId = roadmapInfo.value.currentProblem.problemId                       // 현재 풀어야 하는 문제 아이디
+        _curProblemIdx.value = problems.value.indexOfFirst { it.problemId == curProblemId }
+
+        if (curProblemIdx.value + 1 == problems.value.size) {
             _progress.value = "100"
         }
         else {
-            val percentage = ((roadmapInfo.value.currentProblem.order).toFloat() / problems.value.size) * 100
+            val percentage = (curProblemIdx.value.toFloat() / problems.value.size) * 100
             _progress.value = if (percentage == 0f) {
                 "0"
             }
@@ -157,8 +167,6 @@ class RoadmapViewModel @Inject constructor(private val repository: RoadmapReposi
                             "SUCCESS" -> {
                                 val problems = body.data!!.roadmapProblems
                                 _problems.value = problems
-
-                                setProblemIdx(roadmapInfo.value!!.currentProblem.order) // 현재 풀어야 하는 문제 인덱스로 변경
 
                                 Log.d(TAG, "로드맵 문제 목록 조회 성공\n${problems}")
                             }

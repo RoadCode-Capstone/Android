@@ -65,6 +65,7 @@ import com.example.roadcode.viewmodel.AttendanceType
 import com.example.roadcode.viewmodel.AttendanceUiState
 import com.example.roadcode.viewmodel.AttendanceViewModel
 import com.example.roadcode.viewmodel.CalendarViewModel
+import com.example.roadcode.viewmodel.ViewReviewViewModel
 import java.time.LocalDate
 import java.time.YearMonth
 
@@ -72,7 +73,7 @@ import java.time.YearMonth
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun HomeScreen(navController: NavController, attendanceViewModel: AttendanceViewModel, calendarViewModel: CalendarViewModel) {
+fun HomeScreen(navController: NavController, attendanceViewModel: AttendanceViewModel, calendarViewModel: CalendarViewModel, viewReviewViewModel: ViewReviewViewModel) {
     val yearMonth by calendarViewModel.yearMonth.collectAsState()
     val year = yearMonth.year
     val month = yearMonth.monthValue
@@ -120,6 +121,7 @@ fun HomeScreen(navController: NavController, attendanceViewModel: AttendanceView
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .padding(bottom = 40.dp)
                     .padding(horizontal = 30.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -140,8 +142,7 @@ fun HomeScreen(navController: NavController, attendanceViewModel: AttendanceView
                         append("번 출석했어요!")
                     },
                     fontSize = 16.sp,
-                    fontFamily = FontFamily(Font(R.font.spoqahansansneo_light)),
-                    modifier = Modifier.padding(bottom = 15.dp)
+                    fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
                 )
 
                 // 캘린더
@@ -156,7 +157,7 @@ fun HomeScreen(navController: NavController, attendanceViewModel: AttendanceView
                 )
 
                 // 한 달 풀이 성공한 문제 출력
-                MonthSubmissions(attendanceUiState.submissions)
+                MonthSubmissions(navController, attendanceUiState.submissions, viewReviewViewModel)
             }
         }
     }
@@ -165,7 +166,7 @@ fun HomeScreen(navController: NavController, attendanceViewModel: AttendanceView
 /* 한 달 풀이 목록 출력 아이템 */
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun MonthSubmissions(submissions: List<SubmissionDTO.MySubmissionsData>) {
+fun MonthSubmissions(navController: NavController, submissions: List<SubmissionDTO.MySubmissionsData>, viewReviewViewModel: ViewReviewViewModel) {
 //    var expandedStates = remember { mutableStateMapOf<Long, Boolean>() }    // 문제별 풀이 목록 열림 여부 (키: problemId)
     var expandedStates = remember { mutableStateMapOf<String, Boolean>() }    // 문제별 풀이 목록 열림 여부 (키: date+problemId)
 
@@ -308,7 +309,11 @@ fun MonthSubmissions(submissions: List<SubmissionDTO.MySubmissionsData>) {
 
                                             Button(
                                                 onClick = {
-                                                    /*TODO: 문제, 풀이, 리뷰 조회 화면으로 이동*/
+                                                    viewReviewViewModel.setIds(submissionInfo.problemId, submissionInfo.submissionId)
+                                                    viewReviewViewModel.getProblem()
+                                                    viewReviewViewModel.getSubmission()
+                                                    viewReviewViewModel.getReviewComment()
+                                                    navController.navigate("review_view")   // 문제, 풀이, 리뷰 조회 화면으로 이동
                                                 },
                                                 modifier = Modifier.height(30.dp),
                                                 shape = RoundedCornerShape(20.dp),
@@ -466,7 +471,7 @@ fun DateGrid(year: Int, month: Int, attendanceUiState: AttendanceUiState) {
     }
 }
 
-/* 날짜 출력 아이템  */
+/* 날짜 출력 아이템 */
 @Composable
 fun DayItem(date: Int, type: AttendanceType) {
     Box(

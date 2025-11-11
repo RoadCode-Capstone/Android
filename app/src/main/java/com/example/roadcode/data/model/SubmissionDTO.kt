@@ -60,4 +60,14 @@ object SubmissionDTO {
         val submissionId: Long,
         val isSuccess: Boolean
     )
+
+    // 풀이 상세 조회 응답
+    data class GetSubmissionResponse(
+        val id: Long = 0,               // 풀이 아이디
+        val problemId: Long = 0,        // 문제 아이디
+        val memberId: Long = 0,         // 제출한 사용자 아이디
+        val sourceCode: String = "",    // 제출한 코드
+        val language: String = "",      // 사용한 언어
+        val success: Boolean = false    // 성공 여부
+    )
 }

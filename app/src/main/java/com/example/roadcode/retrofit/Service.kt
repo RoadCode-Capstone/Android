@@ -221,7 +221,7 @@ interface JsonService {
     suspend fun submitReview(
         @Header("Authorization") token: String,
         @Path("submissionId") submissionId: Long,
-        @Body request: ReviewDTO.SubmitReviewRequest
+        @Body request: ReviewDTO.SubmitReviewCommentRequest
     ): ApiResponse<Nothing>
 
     // 다른 사람 풀이 목록 조회
@@ -239,4 +239,26 @@ interface JsonService {
         @Query("end") end: String,
         @Query("isSuccess") isSuccess: Boolean?
     ): ApiResponse<SubmissionDTO.GetMySubmissionsResponse>
+
+    // 풀이 상세 조회
+    @GET("/api/v1/submissions/{submissionId}")
+    suspend fun getSubmission(
+        @Header("Authorization") token: String,
+        @Path("submissionId") submissionId: Long
+    ): ApiResponse<SubmissionDTO.GetSubmissionResponse>
+
+    // 리뷰 답글 조회
+    @GET("/api/v1/submissions/{submissionId}/reviews-with-comments")
+    suspend fun getReviewComment(
+        @Header("Authorization") token: String,
+        @Path("submissionId") submissionId: Long
+    ): ApiResponse<ReviewDTO.GetReviewCommentResponse>
+
+    // 답글 작성
+    @POST("/api/v1/reviews/{reviewId}/comments")
+    suspend fun submitComment(
+        @Header("Authorization") token: String,
+        @Path("reviewId") reviewId: Long,
+        @Body request: ReviewDTO.SubmitReviewCommentRequest
+    ): ApiResponse<Nothing>
 }

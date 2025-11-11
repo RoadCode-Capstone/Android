@@ -56,14 +56,14 @@ import com.example.roadcode.data.model.SubmissionDTO
 import com.example.roadcode.ui.theme.PointColor
 import com.example.roadcode.ui.theme.PrimaryColor
 import com.example.roadcode.util.rememberOnce
-import com.example.roadcode.viewmodel.ReviewViewModel
+import com.example.roadcode.viewmodel.WriteReviewViewModel
 import org.json.JSONObject
 
 /* 풀이 선택 화면 */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SelectSubmissionScreen(navController: NavController, reviewViewModel: ReviewViewModel) {
-    val reviewUiState by reviewViewModel.reviewUiState.collectAsState()
+fun SelectSubmissionScreen(navController: NavController, writeReviewViewModel: WriteReviewViewModel) {
+    val reviewUiState by writeReviewViewModel.reviewUiState.collectAsState()
 
     Scaffold(
         topBar = {
@@ -120,7 +120,7 @@ fun SelectSubmissionScreen(navController: NavController, reviewViewModel: Review
                             SubmissionInfoItem(
                                 submissionInfo,
                                 onClick = {
-                                    reviewViewModel.setSubmissionInfo(submissionInfo)
+                                    writeReviewViewModel.setSubmissionInfo(submissionInfo)
                                     navController.navigate("review_write") // 리뷰 작성 화면으로 이동
                                 }
                             )
@@ -198,20 +198,26 @@ fun SubmissionInfoItem(submissionInfo: SubmissionDTO.OtherSubmissionsData, onCli
 /* 리뷰 작성 화면 */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WriteReviewScreen(navController: NavController, reviewViewModel: ReviewViewModel) {
+fun WriteReviewScreen(navController: NavController, writeReviewViewModel: WriteReviewViewModel) {
     val context = LocalContext.current
 
-    val reviewUiState by reviewViewModel.reviewUiState.collectAsState()
+    val reviewUiState by writeReviewViewModel.reviewUiState.collectAsState()
 
     LaunchedEffect(Unit) {
-        reviewViewModel.navigateBack.collect {
+        writeReviewViewModel.navigateBack.collect {
             navController.popBackStack()
         }
     }
 
     LaunchedEffect(Unit) {
-        reviewViewModel.toast.collect { msg ->
+        writeReviewViewModel.toast.collect { msg ->
             Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            writeReviewViewModel.updateReview("")
         }
     }
 
@@ -290,7 +296,7 @@ fun WriteReviewScreen(navController: NavController, reviewViewModel: ReviewViewM
                         OutlinedTextField(
                             modifier = Modifier.fillMaxSize(),
                             value = reviewUiState.review,
-                            onValueChange = { reviewViewModel.updateReview(it) },
+                            onValueChange = { writeReviewViewModel.updateReview(it) },
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = PrimaryColor,
                                 cursorColor = PrimaryColor,
@@ -305,7 +311,7 @@ fun WriteReviewScreen(navController: NavController, reviewViewModel: ReviewViewM
                 Button(
                     onClick = {
                         // 등록 성공하면 리뷰 작성할 풀이 선택 화면으로 이동, 작성한 리뷰 수 +1
-                        reviewViewModel.submitReview()
+                        writeReviewViewModel.submitReview()
                     },
                     modifier = Modifier
                         .fillMaxWidth()

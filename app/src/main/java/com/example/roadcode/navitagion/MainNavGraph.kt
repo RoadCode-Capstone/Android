@@ -30,6 +30,7 @@ import com.example.roadcode.view.RoadmapPlanTypeScreen
 import com.example.roadcode.view.RoadmapScreen
 import com.example.roadcode.view.SelectSubmissionScreen
 import com.example.roadcode.view.UserInfoScreen
+import com.example.roadcode.view.ViewReviewScreen
 import com.example.roadcode.view.WriteReviewScreen
 import com.example.roadcode.viewmodel.AttendanceViewModel
 import com.example.roadcode.viewmodel.CalendarViewModel
@@ -43,10 +44,11 @@ import com.example.roadcode.viewmodel.ProblemViewModel
 import com.example.roadcode.viewmodel.RankingViewModel
 import com.example.roadcode.viewmodel.RegisterViewModel
 import com.example.roadcode.viewmodel.ResetPasswordViewModel
-import com.example.roadcode.viewmodel.ReviewViewModel
+import com.example.roadcode.viewmodel.WriteReviewViewModel
 import com.example.roadcode.viewmodel.RoadmapPlanViewModel
 import com.example.roadcode.viewmodel.RoadmapViewModel
 import com.example.roadcode.viewmodel.UserViewModel
+import com.example.roadcode.viewmodel.ViewReviewViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -65,7 +67,8 @@ fun MainNavGraph(navController: NavHostController = rememberNavController()) {
     val registerViewModel: RegisterViewModel = hiltViewModel()
     val logoutViewModel: LogoutViewModel = hiltViewModel()
     val resetPasswordViewModel: ResetPasswordViewModel = hiltViewModel()
-    val reviewViewModel: ReviewViewModel = hiltViewModel()
+    val writeReviewViewModel: WriteReviewViewModel = hiltViewModel()
+    val viewReviewViewModel: ViewReviewViewModel = hiltViewModel()
 
     NavHost(navController = navController, startDestination = "login") {
         composable("plan_language") { RoadmapPlanLanguageScreen(navController, roadmapPlanViewModel) }                                  // 학습 계획 설정 화면 (언어)
@@ -76,7 +79,7 @@ fun MainNavGraph(navController: NavHostController = rememberNavController()) {
         composable("level_test") { LevelTestScreen(navController, roadmapPlanViewModel, levelTestViewModel) }                           // 레벨 테스트 화면
         composable("level_result") { LevelTestResultScreen(navController, roadmapPlanViewModel, levelTestViewModel, roadmapViewModel) } // 레벨 테스트 결과 화면
         composable("roadmap") { RoadmapScreen(navController, roadmapViewModel, problemViewModel) }                                      // 로드맵 조회 화면
-        composable("problem") { ProblemScreen(navController, problemViewModel, roadmapViewModel, reviewViewModel) }                     // 문제 풀이 화면
+        composable("problem") { ProblemScreen(navController, problemViewModel, roadmapViewModel, writeReviewViewModel) }                // 문제 풀이 화면
         composable("mypage") { MypageScreen(navController, logoutViewModel) }                                                           // 마이페이지 화면
         composable("point") { PointScreen(navController, pointViewModel) }                                                              // 포인트 내역 조회 화면
         composable("userInfo") { UserInfoScreen(navController, userViewModel) }                                                         // 회원 정보 조회 화면
@@ -88,16 +91,17 @@ fun MainNavGraph(navController: NavHostController = rememberNavController()) {
         composable("login") { LoginScreen(navController, loginViewModel) }                                                              // 로그인 화면
         composable("register") { RegisterScreen(navController, registerViewModel) }                                                     // 회원가입 화면
         composable("resetPassword") { ResetPasswordScreen(navController, resetPasswordViewModel) }                                      // 비밀번호 재설정 화면
-        composable("review_select") { SelectSubmissionScreen(navController, reviewViewModel) }                                          // 리뷰 작성할 풀이 선택 화면
-        composable("review_write") { WriteReviewScreen(navController, reviewViewModel) }                                                // 리뷰 작성 화면
+        composable("review_select") { SelectSubmissionScreen(navController, writeReviewViewModel) }                                     // 리뷰 작성할 풀이 선택 화면
+        composable("review_write") { WriteReviewScreen(navController, writeReviewViewModel) }                                           // 리뷰 작성 화면
+        composable("review_view") { ViewReviewScreen(navController, viewReviewViewModel) }                                              // 리뷰 조회 화면
 
-        bottomNavGraph(navController, attendanceViewModel, roadmapViewModel, calendarViewModel, rankingViewModel) // 하단 내비게이션 바
+        bottomNavGraph(navController, attendanceViewModel, roadmapViewModel, calendarViewModel, rankingViewModel, viewReviewViewModel) // 하단 내비게이션 바
     }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
-fun NavGraphBuilder.bottomNavGraph(navController: NavHostController, attendanceViewModel: AttendanceViewModel, roadmapViewModel: RoadmapViewModel, calendarViewModel: CalendarViewModel, rankingViewModel: RankingViewModel) {
+fun NavGraphBuilder.bottomNavGraph(navController: NavHostController, attendanceViewModel: AttendanceViewModel, roadmapViewModel: RoadmapViewModel, calendarViewModel: CalendarViewModel, rankingViewModel: RankingViewModel, viewReviewViewModel: ViewReviewViewModel) {
     composable("roadmap_list") { RoadmapListScreen(navController, roadmapViewModel) }           // 로드맵 목록 화면
-    composable("home") { HomeScreen(navController, attendanceViewModel, calendarViewModel) }    // 홈 화면
+    composable("home") { HomeScreen(navController, attendanceViewModel, calendarViewModel, viewReviewViewModel) }    // 홈 화면
     composable("ranking") { RankingScreen(navController, rankingViewModel) }                    // 순위 화면
 }

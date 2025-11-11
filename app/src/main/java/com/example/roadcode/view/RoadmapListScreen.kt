@@ -145,7 +145,7 @@ fun RoadmapListScreen(navController: NavController, roadmapViewModel: RoadmapVie
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     items(roadmaps) { roadmapInfo ->
-                        RoadmapItem(roadmapInfo, progress, onClick = {  // TODO: progress 이상함, 순위 화면 들어갈 때 순위 조회해야함
+                        RoadmapItem(roadmapInfo, progress, onClick = {
                             roadmapViewModel.setRoadmapId(roadmapInfo.roadmapId)    // 클릭한 로드맵 아이디로 변경
                             roadmapViewModel.setRoadmapStatus(roadmapInfo.status)   // 클릭한 로드맵 상태로 변경
                             navController.navigate("roadmap")                 // 로드맵 조회 화면으로 이동
