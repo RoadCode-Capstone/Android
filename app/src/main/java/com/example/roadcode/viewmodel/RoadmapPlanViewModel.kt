@@ -31,6 +31,11 @@ class RoadmapPlanViewModel @Inject constructor(private val repository: RoadmapRe
     private val _plan = MutableStateFlow(Plan())
     val plan = _plan.asStateFlow()
 
+    /* 로드맵 유형 초기화 함수 */
+    fun initPlan() {
+        _plan.value = Plan()
+    }
+
     /* 사용 언어 설정 함수 */
     fun setSelectedLanguage(language: String?) {
         _plan.value = _plan.value.copy(selectedLanguage = language)

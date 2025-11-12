@@ -95,13 +95,13 @@ fun MainNavGraph(navController: NavHostController = rememberNavController()) {
         composable("review_write") { WriteReviewScreen(navController, writeReviewViewModel) }                                           // 리뷰 작성 화면
         composable("review_view") { ViewReviewScreen(navController, viewReviewViewModel) }                                              // 리뷰 조회 화면
 
-        bottomNavGraph(navController, attendanceViewModel, roadmapViewModel, calendarViewModel, rankingViewModel, viewReviewViewModel) // 하단 내비게이션 바
+        bottomNavGraph(navController, attendanceViewModel, roadmapViewModel, calendarViewModel, rankingViewModel, viewReviewViewModel, roadmapPlanViewModel) // 하단 내비게이션 바
     }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
-fun NavGraphBuilder.bottomNavGraph(navController: NavHostController, attendanceViewModel: AttendanceViewModel, roadmapViewModel: RoadmapViewModel, calendarViewModel: CalendarViewModel, rankingViewModel: RankingViewModel, viewReviewViewModel: ViewReviewViewModel) {
-    composable("roadmap_list") { RoadmapListScreen(navController, roadmapViewModel) }           // 로드맵 목록 화면
+fun NavGraphBuilder.bottomNavGraph(navController: NavHostController, attendanceViewModel: AttendanceViewModel, roadmapViewModel: RoadmapViewModel, calendarViewModel: CalendarViewModel, rankingViewModel: RankingViewModel, viewReviewViewModel: ViewReviewViewModel, roadmapPlanViewModel: RoadmapPlanViewModel) {
+    composable("roadmap_list") { RoadmapListScreen(navController, roadmapViewModel, roadmapPlanViewModel) }           // 로드맵 목록 화면
     composable("home") { HomeScreen(navController, attendanceViewModel, calendarViewModel, viewReviewViewModel) }    // 홈 화면
     composable("ranking") { RankingScreen(navController, rankingViewModel) }                    // 순위 화면
 }

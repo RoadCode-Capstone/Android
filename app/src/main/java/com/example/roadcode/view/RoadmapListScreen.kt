@@ -52,11 +52,12 @@ import com.example.roadcode.ui.theme.BackGrayColor
 import com.example.roadcode.ui.theme.PointColor
 import com.example.roadcode.ui.theme.PrimaryColor
 import com.example.roadcode.view.component.BottomNavigationBar
+import com.example.roadcode.viewmodel.RoadmapPlanViewModel
 import com.example.roadcode.viewmodel.RoadmapViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RoadmapListScreen(navController: NavController, roadmapViewModel: RoadmapViewModel) {
+fun RoadmapListScreen(navController: NavController, roadmapViewModel: RoadmapViewModel, roadmapPlanViewModel: RoadmapPlanViewModel) {
     val context = LocalContext.current
 
     val roadmaps by roadmapViewModel.roadmaps.collectAsState()  // 로드맵 목록
@@ -97,6 +98,7 @@ fun RoadmapListScreen(navController: NavController, roadmapViewModel: RoadmapVie
                     if (roadmaps.any { it.status == "IN_PROGRESS" }) {
                         Toast.makeText(context, "이미 진행 중인 로드맵이 있습니다.", Toast.LENGTH_SHORT).show()
                     } else {
+                        roadmapPlanViewModel.initPlan()
                         navController.navigate("plan_language") // 로드맵 생성 화면으로 이동
                     }
                 },

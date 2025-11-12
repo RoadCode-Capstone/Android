@@ -131,17 +131,17 @@ fun ProblemScreen(navController: NavController, problemViewModel: ProblemViewMod
                         )
                     }
                 },
-                actions = {
-                    IconButton(
-                        onClick = { /* TODO: 제출한 풀이 기록 조회 버튼 */ }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Article,
-                            contentDescription = "제출한 풀이 기록 조회 버튼",
-                            tint = PrimaryColor
-                        )
-                    }
-                }
+//                actions = {
+//                    IconButton(
+//                        onClick = { /* TODO: 제출한 풀이 기록 조회 버튼 */ }
+//                    ) {
+//                        Icon(
+//                            imageVector = Icons.Default.Article,
+//                            contentDescription = "제출한 풀이 기록 조회 버튼",
+//                            tint = PrimaryColor
+//                        )
+//                    }
+//                }
             )
         }
     ) { paddingValues ->

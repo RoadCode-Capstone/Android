@@ -30,6 +30,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -214,10 +215,12 @@ fun RoadmapPlanLanguageScreen(navController: NavController, roadmapPlanViewModel
             ) {
                 Button( // 다음 버튼
                     onClick = {
-                        roadmapPlanViewModel.setSelectedLanguage(selectedLanguage)
+                        if (selectedLanguage != null) {
+                            roadmapPlanViewModel.setSelectedLanguage(selectedLanguage)
+                        }
                         navController.navigate("plan_type")
                     },
-                    enabled = selectedLanguage != null, // 언어 선택했을 때만 활성화
+                    enabled = (selectedLanguage != null || plan.selectedLanguage != null), // 언어 선택했을 때만 활성화
                     modifier = Modifier
                         .width(90.dp)
                         .height(50.dp),
@@ -351,11 +354,13 @@ fun RoadmapPlanTypeScreen(navController: NavController, roadmapPlanViewModel: Ro
             ) {
                 Button( // 다음 버튼
                     onClick = {
-                        roadmapPlanViewModel.setSelectedType(selectedType)
+                        if (selectedType != null) {
+                            roadmapPlanViewModel.setSelectedType(selectedType)
+                        }
                         if (selectedType == "Language") navController.navigate("plan_goal")
                         else navController.navigate("plan_algorithm")
                     },
-                    enabled = selectedType != null,
+                    enabled = (selectedType != null || plan.selectedType != null),
                     modifier = Modifier
                         .width(90.dp)
                         .height(50.dp),
@@ -457,10 +462,12 @@ fun RoadmapPlanAlgorithmScreen(navController: NavController, roadmapPlanViewMode
             ) {
                 Button( // 다음 버튼
                     onClick = {
-                        roadmapPlanViewModel.setSelectedAlgorithm(selectedAlgorithm)
+                        if (selectedAlgorithm != null) {
+                            roadmapPlanViewModel.setSelectedAlgorithm(selectedAlgorithm)
+                        }
                         navController.navigate("plan_goal")
                     },
-                    enabled = selectedAlgorithm != null,
+                    enabled = (selectedAlgorithm != null || plan.selectedAlgorithm != null),
                     modifier = Modifier
                         .width(90.dp)
                         .height(50.dp),
@@ -621,10 +628,12 @@ fun RoadmapPlanGoalScreen(navController: NavController, roadmapPlanViewModel: Ro
             ) {
                 Button( // 다음 버튼
                     onClick = {
-                        roadmapPlanViewModel.setSelectedGoal(selectedGoal)
+                        if (selectedGoal != null) {
+                            roadmapPlanViewModel.setSelectedGoal(selectedGoal)
+                        }
                         navController.navigate("level_ready")
                     },
-                    enabled = selectedGoal != null,
+                    enabled = (selectedGoal != null || plan.selectedGoal != null),
                     modifier = Modifier
                         .width(90.dp)
                         .height(50.dp),
