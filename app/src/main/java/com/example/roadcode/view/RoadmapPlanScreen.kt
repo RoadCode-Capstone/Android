@@ -29,6 +29,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
@@ -85,13 +86,17 @@ fun RoadmapPlanLanguageScreen(navController: NavController, roadmapPlanViewModel
                             tint = PrimaryColor
                         )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = Color.White
+                )
             )
         }
     ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .background(Color.White)
                 .padding(paddingValues)
         ) {
             Column(
@@ -271,13 +276,17 @@ fun RoadmapPlanTypeScreen(navController: NavController, roadmapPlanViewModel: Ro
                             tint = PrimaryColor
                         )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = Color.White
+                )
             )
         }
     ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .background(Color.White)
                 .padding(paddingValues)
         ) {
             Column(
@@ -413,13 +422,17 @@ fun RoadmapPlanAlgorithmScreen(navController: NavController, roadmapPlanViewMode
                             tint = PrimaryColor
                         )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = Color.White
+                )
             )
         }
     ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .background(Color.White)
                 .padding(paddingValues)
         ) {
             Column(
@@ -518,13 +531,17 @@ fun RoadmapPlanGoalScreen(navController: NavController, roadmapPlanViewModel: Ro
                             tint = PrimaryColor
                         )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = Color.White
+                )
             )
         }
     ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .background(Color.White)
                 .padding(paddingValues)
         ) {
             Column(

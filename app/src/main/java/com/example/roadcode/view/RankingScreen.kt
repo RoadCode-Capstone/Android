@@ -1,5 +1,7 @@
 package com.example.roadcode.view
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -32,6 +34,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -56,6 +59,7 @@ import com.example.roadcode.ui.theme.PrimaryColor
 import com.example.roadcode.view.component.BottomNavigationBar
 import com.example.roadcode.viewmodel.RankingViewModel
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RankingScreen(navController: NavController, rankingViewModel: RankingViewModel) {
@@ -85,7 +89,10 @@ fun RankingScreen(navController: NavController, rankingViewModel: RankingViewMod
                             tint = PrimaryColor
                         )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = Color.White
+                )
             )
         },
         bottomBar = {
@@ -95,6 +102,7 @@ fun RankingScreen(navController: NavController, rankingViewModel: RankingViewMod
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .background(Color.White)
                 .padding(paddingValues)
         ) {
             Column(

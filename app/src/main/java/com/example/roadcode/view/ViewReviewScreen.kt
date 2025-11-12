@@ -145,6 +145,7 @@ fun ViewReviewScreen(navController: NavController, viewReviewViewModel: ViewRevi
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .background(Color.White)
                 .padding(paddingValues)
         ) {
             Column(

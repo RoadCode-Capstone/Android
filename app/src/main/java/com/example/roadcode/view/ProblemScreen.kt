@@ -7,6 +7,8 @@ import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.RelativeSizeSpan
 import android.text.style.SubscriptSpan
+import android.view.View
+import android.view.ViewGroup
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -18,6 +20,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -41,7 +44,12 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
@@ -59,6 +67,7 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -91,8 +100,13 @@ fun ProblemScreen(navController: NavController, problemViewModel: ProblemViewMod
     val problemId by problemViewModel.problemId.collectAsState()
     val code by problemViewModel.code.collectAsState()
     val isSuccess by problemViewModel.isSuccess.collectAsState()
+    val failCnt by problemViewModel.consecutiveFailCnt.collectAsState()
 
-    if (isSuccess != null) {
+    if (isSuccess == true) {
+        roadmapViewModel.getRoadmap()
+    }
+
+    if (failCnt != 3 && isSuccess != null) {
         ResultDialog(
             isSuccess!!,
             onConfirm = {
@@ -105,6 +119,18 @@ fun ProblemScreen(navController: NavController, problemViewModel: ProblemViewMod
             },
             onDismiss = {
                 problemViewModel.resetIsSuccess()
+            }
+        )
+    }
+
+    if (failCnt >= 3) { // 연속 3번 틀리면 개념 강화 문제 추가 여부 팝업 열림
+        ReinforceProblemDialog(
+            onConfirm = {
+                roadmapViewModel.addReinforceProblem()
+                problemViewModel.resetFailCnt()
+            },
+            onDismiss = {
+                problemViewModel.resetFailCnt()
             }
         )
     }
@@ -131,29 +157,21 @@ fun ProblemScreen(navController: NavController, problemViewModel: ProblemViewMod
                         )
                     }
                 },
-//                actions = {
-//                    IconButton(
-//                        onClick = { /* TODO: 제출한 풀이 기록 조회 버튼 */ }
-//                    ) {
-//                        Icon(
-//                            imageVector = Icons.Default.Article,
-//                            contentDescription = "제출한 풀이 기록 조회 버튼",
-//                            tint = PrimaryColor
-//                        )
-//                    }
-//                }
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = Color.White
+                )
             )
         }
     ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .background(Color.White)
                 .padding(paddingValues)
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(30.dp)
             ) {
                 Box(modifier = Modifier.weight(1f)) {
                     ProblemPager( // 문제 출력
@@ -163,23 +181,27 @@ fun ProblemScreen(navController: NavController, problemViewModel: ProblemViewMod
                         onCodeChanged = { problemViewModel.updateCode(it) })
                 }
 
-                Button( // 제출하기 버튼
-                    onClick = { problemViewModel.submitSolution(roadmapInfo) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp),
-                    shape = RoundedCornerShape(20.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = PointColor,
-                        contentColor = Color.White
-                    )
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 30.dp).padding(bottom = 30.dp)
                 ) {
-                    Text(
-                        text = "제출하기",
-                        fontSize = 16.sp,
-                        color = Color.White,
-                        fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
-                    )
+                    Button( // 제출하기 버튼
+                        onClick = { problemViewModel.submitSolution(roadmapInfo) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
+                        shape = RoundedCornerShape(20.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = PointColor,
+                            contentColor = Color.White
+                        )
+                    ) {
+                        Text(
+                            text = "제출하기",
+                            fontSize = 16.sp,
+                            color = Color.White,
+                            fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
+                        )
+                    }
                 }
             }
 
@@ -194,19 +216,52 @@ fun ProblemScreen(navController: NavController, problemViewModel: ProblemViewMod
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ProblemPager(problemInfos: List<String>, language: String, initCode: String, onCodeChanged: (String) -> Unit) { // 문제 정보, 사용 언어, 초기 코드, 코드 변경 시 동작
-    val pagerState = rememberPagerState(pageCount = { 2 })
+    var selectedTabIndex by remember { mutableStateOf(0) }
+    val tabs = listOf("문제내용", "작성코드")
+
     val keys = listOf("제목", "문제 설명", "입력 설명", "출력 설명", "시간 제한", "메모리 제한")
     var currentCode by remember(initCode) { mutableStateOf(initCode) }
 
-    Column {
-        HorizontalPager(
-            state = pagerState,
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 40.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        TabRow(
+            selectedTabIndex = selectedTabIndex,
+            containerColor = Color.White,
+            indicator = { tabPositions ->
+                TabRowDefaults.Indicator(
+                    modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex]),
+                    color = PointColor
+                )
+            }
+        ) {
+            tabs.forEachIndexed { idx, title ->
+                Tab(
+                    selected = selectedTabIndex == idx,
+                    onClick = { selectedTabIndex = idx },
+                    text = {
+                        Text(
+                            text = title,
+                            fontSize = 16.sp,
+                            fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
+                        )
+                    },
+                    selectedContentColor = PointColor,
+                    unselectedContentColor = PrimaryColor
+                )
+            }
+        }
+
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            flingBehavior = PagerDefaults.flingBehavior(state = pagerState)
-        ) { page ->
-            when (page) {
+                .background(color = Color.White)
+                .weight(1f)
+                .padding(horizontal = 30.dp, vertical = 20.dp)
+        ) {
+            when (selectedTabIndex) {
                 0 -> { // 문제 정보 조회 화면
                     LazyColumn(
                         modifier = Modifier
@@ -234,19 +289,30 @@ private fun ProblemPager(problemInfos: List<String>, language: String, initCode:
                                             TextView(context).apply {
                                                 textSize = 16f
                                                 setTextColor(PrimaryColor.toArgb())
-                                                typeface = resources.getFont(R.font.spoqahansansneo_light)
+                                                typeface =
+                                                    resources.getFont(R.font.spoqahansansneo_light)
                                                 setLineSpacing(10f, 1.3f)   // 줄 간격
                                             }
                                         },
                                         update = { textView ->
-                                            val spanned = Html.fromHtml(info, Html.FROM_HTML_MODE_COMPACT)
+                                            val spanned =
+                                                Html.fromHtml(info, Html.FROM_HTML_MODE_COMPACT)
                                             val spannable = SpannableStringBuilder(spanned)
 
                                             // subscript span 찾아서 relative size span으로 덮어쓰기 (sub 태그 사용 시 줄 간격 커지는 것 방지)
-                                            spannable.getSpans(0, spannable.length, SubscriptSpan::class.java).forEach { span ->
+                                            spannable.getSpans(
+                                                0,
+                                                spannable.length,
+                                                SubscriptSpan::class.java
+                                            ).forEach { span ->
                                                 val start = spannable.getSpanStart(span)
                                                 val end = spannable.getSpanEnd(span)
-                                                spannable.setSpan(RelativeSizeSpan(0.7f), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                                                spannable.setSpan(
+                                                    RelativeSizeSpan(0.7f),
+                                                    start,
+                                                    end,
+                                                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                                                )
                                             }
 
                                             textView.text = spannable
@@ -260,11 +326,14 @@ private fun ProblemPager(problemInfos: List<String>, language: String, initCode:
                                         fontFamily = FontFamily(Font(R.font.spoqahansansneo_light)),
                                         color = PrimaryColor
                                     )
-
                                 }
 
                                 if (idx != keys.size - 1) {
-                                    Divider(modifier = Modifier.padding(vertical = 20.dp), color = LineColor, thickness = 0.5.dp)
+                                    Divider(
+                                        modifier = Modifier.padding(vertical = 20.dp),
+                                        color = LineColor,
+                                        thickness = 0.5.dp
+                                    )
                                 }
                             }
                         }
@@ -286,7 +355,7 @@ private fun ProblemPager(problemInfos: List<String>, language: String, initCode:
                                 settings.domStorageEnabled = true
                                 settings.allowFileAccess = true
 
-                                setLayerType(android.view.View.LAYER_TYPE_SOFTWARE, null)
+                                setLayerType(View.LAYER_TYPE_SOFTWARE, null)
 
                                 isFocusableInTouchMode = true
                                 requestFocus()
@@ -321,7 +390,7 @@ private fun ProblemPager(problemInfos: List<String>, language: String, initCode:
                             val observer = LifecycleEventObserver { _, event ->
                                 when (event) {
                                     Lifecycle.Event.ON_RESUME -> webView.onResume()
-                                    Lifecycle.Event.ON_PAUSE  -> webView.onPause()
+                                    Lifecycle.Event.ON_PAUSE -> webView.onPause()
                                     else -> Unit
                                 }
                             }
@@ -330,14 +399,14 @@ private fun ProblemPager(problemInfos: List<String>, language: String, initCode:
                             onDispose {
                                 try {
                                     webView.onPause()
-                                    (webView.parent as? android.view.ViewGroup)?.removeView(webView)
-                                } catch (_: Exception) { }
+                                    (webView.parent as? ViewGroup)?.removeView(webView)
+                                } catch (_: Exception) {
+                                }
                                 lifecycleOwner.lifecycle.removeObserver(observer)
                             }
                         }
                     }
                 }
-
             }
         }
     }
@@ -389,6 +458,60 @@ private fun ResultDialog(
             ) {
                 Text(
                     text = if (isSuccess) "코드 리뷰 작성하기" else "다시 도전하기",
+                    fontSize = 16.sp,
+                    fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
+                )
+            }
+        }
+    }
+}
+
+/* 개념 강화 문제 추천 팝업창 */
+@Composable
+private fun ReinforceProblemDialog(
+    onDismiss: () -> Unit = {},
+    onConfirm: () -> Unit = {}
+) {
+    Dialog(onDismissRequest = onDismiss) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .background(Color.White)
+                .padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "개념 강화 문제를\n풀어보시겠습니까?",
+                fontSize = 20.sp,
+                fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium)),
+                color = Color.Black,
+                modifier = Modifier.padding(bottom = 16.dp),
+                textAlign = TextAlign.Center
+            )
+
+            // 마스코트 이미지
+            Image(
+                painter = painterResource(id = R.drawable.mascot_angry),
+                contentDescription = "Mascot",
+                modifier = Modifier
+                    .padding(bottom = 40.dp)
+                    .size(140.dp)
+            )
+
+            Button(
+                onClick = onConfirm,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = PointBlue
+                )
+            ) {
+                Text(
+                    text = "풀어보기",
                     fontSize = 16.sp,
                     fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
                 )

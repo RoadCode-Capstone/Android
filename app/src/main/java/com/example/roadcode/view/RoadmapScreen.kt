@@ -7,6 +7,7 @@ import android.text.SpannableStringBuilder
 import android.text.style.RelativeSizeSpan
 import android.text.style.SubscriptSpan
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInHorizontally
@@ -46,6 +47,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -59,6 +61,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
@@ -83,8 +86,11 @@ import com.example.roadcode.viewmodel.RoadmapViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewModel, problemViewModel: ProblemViewModel) {
+    val context = LocalContext.current
+
     var isDrawerOpen by remember { mutableStateOf(false) }      // 드로어 열림 여부 변수
-    var showGiveUpDialog by remember { mutableStateOf(false) }  // 팝업창 열림 여부 변수
+    var showGiveUpDialog by remember { mutableStateOf(false) }  // 로드맵 포기 팝업창 열림 여부 변수
+    var showAddProblemDialog by remember { mutableStateOf(false) }  // 문제 추가 팝업창 열림 여부 변수
 
     val roadmapInfo by roadmapViewModel.roadmapInfo.collectAsState()        // 로드맵 정보
     val problems by roadmapViewModel.problems.collectAsState()              // 로드맵 문제 목록
@@ -95,6 +101,12 @@ fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewMod
     val curProblemIdx by roadmapViewModel.curProblemIdx.collectAsState()    // 현재 풀어야할 문제 인덱스
 
     val navigateBack by roadmapViewModel.navigateBack.collectAsState()
+
+    LaunchedEffect(Unit) {
+        roadmapViewModel.toast.collect { msg ->
+            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+        }
+    }
 
     LaunchedEffect(navigateBack) {
         if (navigateBack) {
@@ -111,6 +123,17 @@ fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewMod
                 roadmapViewModel.giveUpRoadmap()
             },
             onDismiss = { showGiveUpDialog = false }
+        )
+    }
+
+    if (showAddProblemDialog) {
+        CustomAlertDialog(
+            text = "문제를 추가하시겠습니까?",
+            onConfirm = {
+                showAddProblemDialog = false
+                roadmapViewModel.addMoreProblems()
+            },
+            onDismiss = { showAddProblemDialog = false }
         )
     }
 
@@ -150,13 +173,17 @@ fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewMod
                                     )
                                 }
                             }
-                        }
+                        },
+                        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                            containerColor = Color.White
+                        )
                     )
                 }
             ) { paddingValues ->
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
+                        .background(Color.White)
                         .padding(paddingValues)
                 ) {
                     Column(
@@ -296,9 +323,7 @@ fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewMod
 
                             Spacer(modifier = Modifier.height(50.dp))
 
-                            DrawerItem("문제 추가하기", onClick = {
-                                /* TODO: 문제 추가 기능 */
-                            })
+                            DrawerItem("문제 추가하기", onClick = { showAddProblemDialog = true })
 
                             Spacer(modifier = Modifier.height(10.dp))
 

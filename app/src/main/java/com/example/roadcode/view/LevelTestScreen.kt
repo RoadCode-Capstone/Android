@@ -44,6 +44,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -112,13 +113,17 @@ fun LevelTestReadyScreen(navController: NavController, roadmapViewModel: Roadmap
                             tint = PrimaryColor
                         )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = Color.White
+                )
             )
         }
     ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .background(Color.White)
                 .padding(paddingValues)
         ) {
             Column(
@@ -280,13 +285,17 @@ fun LevelTestScreen(navController: NavController, roadmapViewModel: RoadmapPlanV
                         fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium)),
                         modifier = Modifier.padding(end = 20.dp)
                     )
-                }
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = Color.White
+                )
             )
         }
     ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .background(Color.White)
                 .padding(paddingValues)
         ) {
             Column(
@@ -515,13 +524,17 @@ fun LevelTestResultScreen(navController: NavController, roadmapPlanViewModel: Ro
                         color = PrimaryColor,
                         fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
                     )
-                }
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = Color.White
+                )
             )
         }
     ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .background(Color.White)
                 .padding(paddingValues)
         ) {
             Column(
