@@ -438,7 +438,7 @@ fun AiReviewScreen(reviewInfo: ReviewDTO.ReviewData) {
                         Text(
                             text = "AI 리뷰가 없어요",
                             fontSize = 16.sp,
-                            fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium)),
+                            fontFamily = FontFamily(Font(R.font.spoqahansansneo_light)),
                             textAlign = TextAlign.Center
                         )
                     }
@@ -530,7 +530,7 @@ fun UserReviewScreen(viewReviewViewModel: ViewReviewViewModel, reviewComments: L
                         Text(
                             text = "리뷰가 없어요",
                             fontSize = 16.sp,
-                            fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium)),
+                            fontFamily = FontFamily(Font(R.font.spoqahansansneo_light)),
                             textAlign = TextAlign.Center
                         )
                     }

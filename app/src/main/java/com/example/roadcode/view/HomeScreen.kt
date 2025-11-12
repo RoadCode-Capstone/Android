@@ -217,7 +217,7 @@ fun MonthSubmissions(navController: NavController, submissions: List<SubmissionD
                         Text(
                             text = "풀이 내역이 없어요",
                             fontSize = 16.sp,
-                            fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium)),
+                            fontFamily = FontFamily(Font(R.font.spoqahansansneo_light)),
                             textAlign = TextAlign.Center
                         )
                     }
