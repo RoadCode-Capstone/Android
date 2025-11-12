@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -96,27 +97,45 @@ fun PointScreen(navController: NavController, pointViewModel: PointViewModel) {
                     MonthBar(yearMonth = yearMonth, onClickPrevMonth = { pointViewModel.prevMonth() }, onClickNextMonth = { pointViewModel.nextMonth() })
                 }
 
-                uiItems.forEachIndexed { idx, item ->
-                    when (item) {
-                        is PointViewModel.PointUiItem.DayHeader -> {
-                            item {
-                                if (idx != 0) {
-                                    Divider(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(bottom = 15.dp),
-                                        color = Color.LightGray,
-                                        thickness = 0.5.dp
-                                    )
-                                }
-                                DayBar(date = item.date, dayTotal = item.dayTotal)
-                                Spacer(modifier = Modifier.height(15.dp))
-                            }
+                if (uiItems.isEmpty()) {
+                    item {
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(top = 30.dp),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = "포인트 내역이 없어요",
+                                fontSize = 16.sp,
+                                fontFamily = FontFamily(Font(R.font.spoqahansansneo_light)),
+                                textAlign = TextAlign.Center
+                            )
                         }
-                        is PointViewModel.PointUiItem.Entry -> {
-                            item {
-                                PointBar(name = item.name, amount = item.amount)
-                                Spacer(modifier = Modifier.height(15.dp))
+                    }
+                }
+                else {
+                    uiItems.forEachIndexed { idx, item ->
+                        when (item) {
+                            is PointViewModel.PointUiItem.DayHeader -> {
+                                item {
+                                    if (idx != 0) {
+                                        Divider(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(bottom = 15.dp),
+                                            color = Color.LightGray,
+                                            thickness = 0.5.dp
+                                        )
+                                    }
+                                    DayBar(date = item.date, dayTotal = item.dayTotal)
+                                    Spacer(modifier = Modifier.height(15.dp))
+                                }
+                            }
+
+                            is PointViewModel.PointUiItem.Entry -> {
+                                item {
+                                    PointBar(name = item.name, amount = item.amount)
+                                    Spacer(modifier = Modifier.height(15.dp))
+                                }
                             }
                         }
                     }
