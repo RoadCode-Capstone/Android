@@ -299,7 +299,7 @@ fun LevelTestScreen(navController: NavController, roadmapViewModel: RoadmapPlanV
                 if (problemInfos.isNotEmpty()) {
                     ProblemPager(problemInfos[problemIdx],
                         plan.selectedLanguage!!,
-                        codes[problemIdx]!!,
+                        codes[problemIdx] ?: "",
                         onCodeChanged = { code ->
                             levelTestViewModel.updateCode(problemIdx, code)
                         }

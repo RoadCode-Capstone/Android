@@ -218,13 +218,11 @@ fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewMod
                             Spacer(modifier = Modifier.width(30.dp))
 
                             Column(modifier = Modifier.fillMaxHeight()) {
-                                if (problemInfo != null) {
-                                    ProblemPreview( // 문제 미리보기 출력
-                                        modifier = Modifier.weight(1f),
-                                        title = problemInfo!!.name,
-                                        description = problemInfo!!.description
-                                    )
-                                }
+                                ProblemPreview( // 문제 미리보기 출력
+                                    modifier = Modifier.weight(1f),
+                                    title = problemInfo?.name ?: "",
+                                    description = problemInfo?.description ?: ""
+                                )
 
                                 Row(
                                     modifier = Modifier.padding(top = 20.dp, bottom = 40.dp)
