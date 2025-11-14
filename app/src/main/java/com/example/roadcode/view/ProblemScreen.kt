@@ -147,6 +147,12 @@ fun ProblemScreen(navController: NavController, problemViewModel: ProblemViewMod
         )
     }
 
+    DisposableEffect(Unit) {
+        onDispose {
+            problemViewModel.initCode()
+        }
+    }
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -235,7 +241,7 @@ private fun ProblemPager(problemInfos: List<String>, language: String, initCode:
     val tabs = listOf("문제내용", "작성코드")
 
     val keys = listOf("제목", "문제 설명", "입력 설명", "출력 설명", "시간 제한", "메모리 제한")
-    var currentCode by remember(initCode) { mutableStateOf(initCode) }
+    var currentCode by remember(initCode) { mutableStateOf("") }
 
     Column(
         modifier = Modifier

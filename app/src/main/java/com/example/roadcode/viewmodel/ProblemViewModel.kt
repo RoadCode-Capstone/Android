@@ -45,6 +45,12 @@ class ProblemViewModel @Inject constructor(private val repository: SubmissionRep
         _isSuccess.value = null
     }
 
+    /* 코드 초기화 */
+    fun initCode() {
+        _code.value = ""
+        Log.d(TAG, "코드 초기화")
+    }
+
     /* 코드 입력 이벤트 */
     fun updateCode(input: String) {
         _code.value = input
