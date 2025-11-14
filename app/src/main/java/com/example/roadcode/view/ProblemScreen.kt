@@ -52,6 +52,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -102,6 +103,12 @@ fun ProblemScreen(navController: NavController, problemViewModel: ProblemViewMod
     val isSuccess by problemViewModel.isSuccess.collectAsState()
     val failCnt by problemViewModel.consecutiveFailCnt.collectAsState()
 
+    val rowProblemInfo by roadmapViewModel.problemInfo.collectAsState()
+    
+    if (rowProblemInfo != null) {
+        problemViewModel.getProblem(rowProblemInfo!!.problemId)
+    }
+
     if (isSuccess == true) {
         roadmapViewModel.getRoadmap()
     }
@@ -126,10 +133,15 @@ fun ProblemScreen(navController: NavController, problemViewModel: ProblemViewMod
     if (failCnt >= 3) { // 연속 3번 틀리면 개념 강화 문제 추가 여부 팝업 열림
         ReinforceProblemDialog(
             onConfirm = {
+                problemViewModel.resetIsSuccess()
                 roadmapViewModel.addReinforceProblem()
                 problemViewModel.resetFailCnt()
+
+                navController.popBackStack()
+                navController.navigate("problem")
             },
             onDismiss = {
+                problemViewModel.resetIsSuccess()
                 problemViewModel.resetFailCnt()
             }
         )
@@ -182,7 +194,10 @@ fun ProblemScreen(navController: NavController, problemViewModel: ProblemViewMod
                 }
 
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 30.dp).padding(bottom = 30.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 30.dp)
+                        .padding(bottom = 30.dp)
                 ) {
                     Button( // 제출하기 버튼
                         onClick = { problemViewModel.submitSolution(roadmapInfo) },

@@ -261,4 +261,19 @@ interface JsonService {
         @Path("reviewId") reviewId: Long,
         @Body request: ReviewDTO.SubmitReviewCommentRequest
     ): ApiResponse<Nothing>
+
+    // 개념 강화 문제 추가
+    @POST("/api/v1/roadmaps/{roadmapId}/concept-problem")
+    suspend fun addReinforceProblem(
+        @Header("Authorization") token: String,
+        @Path("roadmapId") roadmapId: Long,
+        @Body request: RoadmapDTO.AddReinforceProblemRequest
+    ): ApiResponse<RoadmapDTO.RoadmapData>
+
+    // 추가 문제 추천
+    @POST("/api/v1/roadmaps/{roadmapId}/recommend-problems")
+    suspend fun addMoreProblems(
+        @Header("Authorization") token: String,
+        @Path("roadmapId") roadmapId: Long
+    ): ApiResponse<RoadmapDTO.RoadmapData>
 }

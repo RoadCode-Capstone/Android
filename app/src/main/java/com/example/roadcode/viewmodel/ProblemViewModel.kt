@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ProblemViewModel @Inject constructor(private val repository: SubmissionRepository) : ViewModel() {
+class ProblemViewModel @Inject constructor(private val repository: SubmissionRepository, private val roadmapRepository: RoadmapRepository) : ViewModel() {
     companion object {
         private const val TAG = "ProblemViewModel"
     }
@@ -32,6 +32,13 @@ class ProblemViewModel @Inject constructor(private val repository: SubmissionRep
     val code = _code.asStateFlow()
     private val _isSuccess = MutableStateFlow<Boolean?>(null)   // 성공 여부
     val isSuccess = _isSuccess.asStateFlow()
+    private val _consecutiveFailCnt = MutableStateFlow(0)   // 연속 실패 개수
+    val consecutiveFailCnt = _consecutiveFailCnt.asStateFlow()
+
+    /* 연속 실패 개수 초기화 */
+    fun resetFailCnt() {
+        _consecutiveFailCnt.value = 0
+    }
 
     /* 성공 여부 초기화 */
     fun resetIsSuccess() {
@@ -102,6 +109,10 @@ class ProblemViewModel @Inject constructor(private val repository: SubmissionRep
                             "SUCCESS" -> {
                                 val submissionResult = body.data!!
                                 _isSuccess.value = if (submissionResult.allPassed) true else false
+
+                                if (isSuccess.value == false) {
+                                    _consecutiveFailCnt.value++
+                                }
 
                                 Log.d(TAG, "풀이 제출 성공\n${submissionResult}")
                             }
