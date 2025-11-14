@@ -133,7 +133,7 @@ fun SelectSubmissionScreen(navController: NavController, writeReviewViewModel: W
                     }
 
                     Button(
-                        onClick = { navController.popBackStack("roadmap_list", inclusive = false) },
+                        onClick = { navController.popBackStack("roadmap", inclusive = false) },
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
                             .fillMaxWidth()
