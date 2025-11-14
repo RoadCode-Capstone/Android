@@ -35,21 +35,6 @@ class RankingViewModel @Inject constructor(private val repository: PointReposito
     private val _topPercent = MutableStateFlow<Int>(0)  // 상위 퍼센트
     val topPercent = _topPercent.asStateFlow()
 
-    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-    val yearMonth = YearMonth.from(LocalDate.now())
-    val startDate = yearMonth.atDay(1).format(formatter)
-    val endDate = yearMonth.atEndOfMonth().format(formatter)
-
-    init {
-        viewModelScope.launch {
-            tokenRepository.tokenFlow.collect { token ->
-                if (!token.isNullOrBlank()) {
-                    getRanking(startDate, endDate)
-                }
-            }
-        }
-    }
-
     /* 상위 퍼센트 계산 함수: 1등이면 0%, 꼴등이면 100%로 설정함 */
     private fun calculateTopPercent() {
         if (myRank.value == 1) {
