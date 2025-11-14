@@ -19,7 +19,10 @@ object SubmissionDTO {
     // 풀이 제출 응답
     data class SubmitSolutionResponse(
         val allPassed: Boolean,                         // 테스트케이스 전체 통과 여부
-        val testcaseResults: List<TestcaseResultData>   // 테스트케이스 결과 목록
+        val testcaseResults: List<TestcaseResultData>,  // 테스트케이스 결과 목록
+        val dailyGoal: Int,                             // 로드맵 일일 학습 목표
+        val dailyCompleted: Int,                        // 오늘 문제 푼 개수
+        val dailyAchievementRate: Float                 // 일일 학습 목표 달성률
     )
 
     // 테스트케이스 결과

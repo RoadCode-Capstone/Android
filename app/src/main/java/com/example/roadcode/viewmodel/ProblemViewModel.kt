@@ -34,6 +34,8 @@ class ProblemViewModel @Inject constructor(private val repository: SubmissionRep
     val isSuccess = _isSuccess.asStateFlow()
     private val _consecutiveFailCnt = MutableStateFlow(0)   // 연속 실패 개수
     val consecutiveFailCnt = _consecutiveFailCnt.asStateFlow()
+    private val _dailyCompleted = MutableStateFlow(0)   // 오늘 문제 푼개수
+    val dailyCompleted = _dailyCompleted.asStateFlow()
 
     /* 연속 실패 개수 초기화 */
     fun resetFailCnt() {
@@ -115,6 +117,7 @@ class ProblemViewModel @Inject constructor(private val repository: SubmissionRep
                             "SUCCESS" -> {
                                 val submissionResult = body.data!!
                                 _isSuccess.value = if (submissionResult.allPassed) true else false
+                                _dailyCompleted.value = submissionResult.dailyCompleted
 
                                 if (isSuccess.value == false) {
                                     _consecutiveFailCnt.value++

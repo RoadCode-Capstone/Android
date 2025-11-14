@@ -88,8 +88,8 @@ import com.example.roadcode.viewmodel.RoadmapViewModel
 fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewModel, problemViewModel: ProblemViewModel) {
     val context = LocalContext.current
 
-    var isDrawerOpen by remember { mutableStateOf(false) }      // 드로어 열림 여부 변수
-    var showGiveUpDialog by remember { mutableStateOf(false) }  // 로드맵 포기 팝업창 열림 여부 변수
+    var isDrawerOpen by remember { mutableStateOf(false) }          // 드로어 열림 여부 변수
+    var showGiveUpDialog by remember { mutableStateOf(false) }      // 로드맵 포기 팝업창 열림 여부 변수
     var showAddProblemDialog by remember { mutableStateOf(false) }  // 문제 추가 팝업창 열림 여부 변수
 
     val roadmapInfo by roadmapViewModel.roadmapInfo.collectAsState()        // 로드맵 정보
@@ -99,6 +99,7 @@ fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewMod
     val progress by roadmapViewModel.progress.collectAsState()              // 달성률
     val roadmapStatus by roadmapViewModel.roadmapStatus.collectAsState()    // 로드맵 상태
     val curProblemIdx by roadmapViewModel.curProblemIdx.collectAsState()    // 현재 풀어야할 문제 인덱스
+    val dailyCompleted by problemViewModel.dailyCompleted.collectAsState()  // 오늘 문제 푼 개수
 
     val navigateBack by roadmapViewModel.navigateBack.collectAsState()
 
@@ -195,19 +196,26 @@ fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewMod
                         Spacer(modifier = Modifier.height(30.dp))
 
                         Text(
-                            text = buildAnnotatedString {
-                                append("일일 목표 달성까지 앞으로 ")
+                            text = if (roadmapInfo.dailyGoal - dailyCompleted > 0) {
+                                buildAnnotatedString {
+                                    append("일일 목표 달성까지 앞으로 ")
 
-                                withStyle(
-                                    style = SpanStyle(
-                                        color = PointColor,
-                                        fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
-                                    )
-                                ) {
-                                    append("${3}") /* TODO: 일일 학습 목표까지 남은 문제 수 계산 필요 */
+                                    withStyle(
+                                        style = SpanStyle(
+                                            color = PointColor,
+                                            fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
+                                        )
+                                    ) {
+                                        append("${roadmapInfo.dailyGoal - dailyCompleted}")
+                                    }
+
+                                    append("문제")
                                 }
-
-                                append("문제")
+                            }
+                            else {
+                                buildAnnotatedString {
+                                    append("일일 학습 목표를 달성했어요!")
+                                }
                             },
                             fontSize = 16.sp,
                             fontFamily = FontFamily(Font(R.font.spoqahansansneo_light)),
