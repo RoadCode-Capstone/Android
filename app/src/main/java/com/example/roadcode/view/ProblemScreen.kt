@@ -29,13 +29,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PagerDefaults
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Article
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -52,7 +48,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -103,16 +98,13 @@ fun ProblemScreen(navController: NavController, problemViewModel: ProblemViewMod
     val isSuccess by problemViewModel.isSuccess.collectAsState()
     val failCnt by problemViewModel.consecutiveFailCnt.collectAsState()
 
-    val rowProblemInfo by roadmapViewModel.problemInfo.collectAsState()
+    val rawProblemInfo by roadmapViewModel.problemInfo.collectAsState()
     
-    if (rowProblemInfo != null) {
-        problemViewModel.getProblem(rowProblemInfo!!.problemId)
+    if (rawProblemInfo != null) {
+        problemViewModel.getProblem(rawProblemInfo!!.problemId)
     }
 
-    if (isSuccess == true) {
-        roadmapViewModel.getRoadmap()
-    }
-
+    // 채점 결과 팝업
     if (failCnt != 3 && isSuccess != null) {
         ResultDialog(
             isSuccess!!,
@@ -121,6 +113,7 @@ fun ProblemScreen(navController: NavController, problemViewModel: ProblemViewMod
                     writeReviewViewModel.setProblemId(problemId)
                     writeReviewViewModel.getOtherSolutions()
                     navController.navigate("review_select") // 리뷰 작성할 풀이 선택 화면으로 이동
+                    roadmapViewModel.getRoadmap()
                 }
                 problemViewModel.resetIsSuccess()
             },
@@ -196,7 +189,8 @@ fun ProblemScreen(navController: NavController, problemViewModel: ProblemViewMod
                         problemInfo,
                         roadmapInfo.language,
                         code,
-                        onCodeChanged = { problemViewModel.updateCode(it) })
+                        onCodeChanged = { problemViewModel.updateCode(it) }
+                    )
                 }
 
                 Row(
