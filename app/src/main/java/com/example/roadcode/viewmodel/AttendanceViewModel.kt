@@ -25,9 +25,9 @@ enum class AttendanceType {
 }
 
 data class AttendanceUiState(
-    val attendanceCnt: Int = 0,                                             // 한 달 출석 개수
-    val submissions: List<SubmissionDTO.MySubmissionsData> = emptyList(),   // 한 달 풀이 목록
-    val attendanceTypeMap: Map<String, AttendanceType> = emptyMap()         // 한 달 날짜별 출석 유형
+    val attendanceCnt: Int = 0,                                                                     // 한 달 출석 개수
+    val attendanceTypeMap: Map<String, AttendanceType> = emptyMap(),                                // 한 달 날짜별 출석 유형
+    val submissionList: Map<String, Map<String, List<SubmissionDTO.MySubmissionData>>> = emptyMap() // 한 달 풀이 목록 (<date, <problemName, List<SubmissionInfo>>)
 )
 
 @HiltViewModel
@@ -151,11 +151,18 @@ class AttendanceViewModel @Inject constructor(private val repository: Attendance
                     .onSuccess { body ->
                         when (body.code) {
                             "SUCCESS" -> {
+                                val submissionList = (body.data?.history ?: emptyList()).groupBy { it.date }
+                                    .mapValues { (_, dateGroup) ->
+                                        dateGroup
+                                            .flatMap { it.submissionDetails }
+                                            .groupBy { it.problemName }
+                                    }
+
                                 _attendanceUiState.update { it.copy(
-                                    submissions = body.data?.history ?: emptyList()
+                                    submissionList = submissionList
                                 ) }
 
-                                Log.d(TAG, "한 달 풀이 목록 조회 성공: ${attendanceUiState.value.submissions}")
+                                Log.d(TAG, "한 달 풀이 목록 조회 성공: ${attendanceUiState.value.submissionList}")
                             }
                             "E001" -> { // 토큰이 잘못된 경우
                                 Log.d(TAG, "한 달 풀이 목록 조회 실패: 토큰이 잘못된 경우")

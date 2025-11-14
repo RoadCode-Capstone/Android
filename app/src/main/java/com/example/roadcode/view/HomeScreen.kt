@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -162,7 +163,7 @@ fun HomeScreen(navController: NavController, attendanceViewModel: AttendanceView
                 )
 
                 // 한 달 풀이 성공한 문제 출력
-                MonthSubmissions(navController, attendanceUiState.submissions, viewReviewViewModel)
+                MonthSubmissions(navController, attendanceUiState.submissionList, viewReviewViewModel)
             }
         }
     }
@@ -171,13 +172,14 @@ fun HomeScreen(navController: NavController, attendanceViewModel: AttendanceView
 /* 한 달 풀이 목록 출력 아이템 */
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun MonthSubmissions(navController: NavController, submissions: List<SubmissionDTO.MySubmissionsData>, viewReviewViewModel: ViewReviewViewModel) {
-//    var expandedStates = remember { mutableStateMapOf<Long, Boolean>() }    // 문제별 풀이 목록 열림 여부 (키: problemId)
-    var expandedStates = remember { mutableStateMapOf<String, Boolean>() }    // 문제별 풀이 목록 열림 여부 (키: date+problemId)
+fun MonthSubmissions(navController: NavController, submissionList: Map<String, Map<String, List<SubmissionDTO.MySubmissionData>>>, viewReviewViewModel: ViewReviewViewModel) {
+    var expandedStates = remember { mutableStateMapOf<String, Boolean>() }    // 문제별 풀이 목록 열림 여부 (키: date+problemName)
 
     Column {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 5.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 5.dp)
         ) {
             Text(
                 text = "날짜",
@@ -204,14 +206,18 @@ fun MonthSubmissions(navController: NavController, submissions: List<SubmissionD
         )
 
         LazyColumn(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 5.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 5.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp),
             contentPadding = PaddingValues(bottom = 30.dp)
         ) {
-            if (submissions.isEmpty()) {
+            if (submissionList.isEmpty()) {
                 item {
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(top = 30.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 30.dp),
                         horizontalArrangement = Arrangement.Center
                     ) {
                         Text(
@@ -224,117 +230,111 @@ fun MonthSubmissions(navController: NavController, submissions: List<SubmissionD
                 }
             }
             else {
-                submissions.forEach { submission ->
-                    itemsIndexed(submission.submissionDetails) { idx, submissionInfo ->
+                item {
+                    for ((date, problemIds) in submissionList) {
                         Row(
-                            modifier = Modifier.fillMaxWidth().padding(end = 10.dp),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(end = 10.dp),
                             verticalAlignment = Alignment.Top
                         ) {
                             Row(
                                 modifier = Modifier.weight(0.2f),
                                 horizontalArrangement = Arrangement.Center
                             ) {
-                                // 날짜 출력 (같은 날짜는 한 번만 출력)
-                                val day = LocalDate.parse(submission.date).dayOfMonth.toString().padStart(2, '0')
+                                // 날짜 출력
+                                val day = LocalDate.parse(date).dayOfMonth.toString().padStart(2, '0')
 
                                 Text(
-                                    text = if (idx == 0) day else if (submission.date != submissions[idx - 1].date) day else "",
+                                    text = day,
                                     fontSize = 16.sp,
                                     fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium)),
                                 )
                             }
 
-                            Column(
-                                modifier = Modifier.weight(0.8f),
-                                verticalArrangement = Arrangement.spacedBy(15.dp)
-                            ) {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable(
-                                            interactionSource = remember { MutableInteractionSource() },
-                                            indication = null
-                                        ) {
-                                            expandedStates["${submission.date} + ${submissionInfo.problemId}"] =
-                                                !(expandedStates["${submission.date} + ${submissionInfo.problemId}"]
-                                                    ?: false)
-                                        },
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
+                            for ((problemName, submissionInfos) in problemIds) {
+                                Column(
+                                    modifier = Modifier.fillMaxWidth().weight(0.8f)
                                 ) {
-                                    val rotation by animateFloatAsState(
-                                        targetValue = if (expandedStates.getOrDefault(
-                                                "${submission.date} + ${submissionInfo.problemId}",
-                                                false
-                                            )
-                                        ) 90f else 0f
-                                    )
-
-                                    // 문제 제목 출력
-                                    Text(
-                                        text = submissionInfo.problemName,
-                                        fontSize = 16.sp,
-                                        fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
-                                    )
-
-                                    Icon(
-                                        imageVector = Icons.Default.ArrowForwardIos,
-                                        contentDescription = "풀이 목록 열림/닫힘 아이콘",
+                                    Row(
                                         modifier = Modifier
-                                            .size(12.dp)
-                                            .rotate(rotation),
-                                        tint = PrimaryColor
-                                    )
-                                }
-
-                                // 풀이 목록 출력
-                                AnimatedVisibility(
-                                    visible = expandedStates.getOrDefault(
-                                        "${submission.date} + ${submissionInfo.problemId}",
-                                        false
-                                    )
-                                ) {
-                                    Column(
-                                        verticalArrangement = Arrangement.spacedBy(5.dp)
-                                    ) {
-                                        Row(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.SpaceBetween,
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            // 풀이 정보 출력
-                                            val submissionName =
-                                                "${if (submissionInfo.isSuccess) "[정답]" else "[오답]"} 풀이 시도 ${idx}"
-
-                                            Text(
-                                                text = submissionName,
-                                                fontSize = 14.sp,
-                                                fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
-                                            )
-
-                                            Button(
-                                                onClick = {
-                                                    viewReviewViewModel.setIds(submissionInfo.problemId, submissionInfo.submissionId)
-                                                    viewReviewViewModel.getProblem()
-                                                    viewReviewViewModel.getSubmission()
-                                                    viewReviewViewModel.getReviewComment()
-                                                    navController.navigate("review_view")   // 문제, 풀이, 리뷰 조회 화면으로 이동
-                                                },
-                                                modifier = Modifier.height(30.dp),
-                                                shape = RoundedCornerShape(20.dp),
-                                                colors = ButtonDefaults.buttonColors(
-                                                    containerColor = PointColor,
-                                                    disabledContentColor = Color.White
-                                                ),
-                                                enabled = submissionInfo.isSuccess,
-                                                contentPadding = PaddingValues(vertical = 0.dp, horizontal = 5.dp)
+                                            .fillMaxWidth()
+                                            .padding(bottom = 15.dp)
+                                            .clickable(
+                                                interactionSource = remember { MutableInteractionSource() },
+                                                indication = null
                                             ) {
-                                                Text(
-                                                    text = "리뷰 보기",
-                                                    fontSize = 14.sp,
-                                                    color = PrimaryColor,
-                                                    fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
-                                                )
+                                                expandedStates["${date} + ${problemName}"] = !(expandedStates["${date} + ${problemName}"] ?: false)
+                                            },
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        val rotation by animateFloatAsState(
+                                            targetValue = if (expandedStates.getOrDefault("${date} + ${problemName}", false)) 90f else 0f
+                                        )
+
+                                        // 문제 제목 출력
+                                        Text(
+                                            text = problemName,
+                                            fontSize = 16.sp,
+                                            fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
+                                        )
+
+                                        Icon(
+                                            imageVector = Icons.Default.ArrowForwardIos,
+                                            contentDescription = "풀이 목록 열림/닫힘 아이콘",
+                                            modifier = Modifier
+                                                .size(12.dp)
+                                                .rotate(rotation),
+                                            tint = PrimaryColor
+                                        )
+                                    }
+
+                                    // 풀이 목록 출력
+                                    submissionInfos.forEachIndexed { idx, submissionInfo ->
+                                        AnimatedVisibility(
+                                            visible = expandedStates.getOrDefault("${date} + ${problemName}", false)
+                                        ) {
+                                            Column {
+                                                Row(
+                                                    modifier = Modifier.fillMaxWidth().padding(bottom = 10.dp),
+                                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                                    verticalAlignment = Alignment.CenterVertically
+                                                ) {
+                                                    // 풀이 정보 출력
+                                                    val submissionName = "${if (submissionInfo.isSuccess) "[정답]" else "[오답]"} 풀이 시도 ${idx + 1}"
+
+                                                    Text(
+                                                        text = submissionName,
+                                                        fontSize = 14.sp,
+                                                        fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
+                                                    )
+
+                                                    Button(
+                                                        onClick = {
+                                                            viewReviewViewModel.setIds(submissionInfo.problemId, submissionInfo.submissionId)
+                                                            viewReviewViewModel.getProblem()
+                                                            viewReviewViewModel.getSubmission()
+                                                            viewReviewViewModel.getReviewComment()
+                                                            navController.navigate("review_view")   // 문제, 풀이, 리뷰 조회 화면으로 이동
+                                                        },
+                                                        modifier = Modifier.height(30.dp),
+                                                        shape = RoundedCornerShape(20.dp),
+                                                        colors = ButtonDefaults.buttonColors(
+                                                            containerColor = PointColor,
+                                                            disabledContentColor = Color.White
+                                                        ),
+                                                        enabled = submissionInfo.isSuccess,
+                                                        contentPadding = PaddingValues(vertical = 0.dp, horizontal = 5.dp)
+                                                    ) {
+                                                        Text(
+                                                            text = "리뷰 보기",
+                                                            fontSize = 14.sp,
+                                                            color = PrimaryColor,
+                                                            fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
+                                                        )
+                                                    }
+                                                }
                                             }
                                         }
                                     }
@@ -346,7 +346,6 @@ fun MonthSubmissions(navController: NavController, submissions: List<SubmissionD
             }
         }
     }
-
 }
 
 /* 캘린더 아이템 */
@@ -483,12 +482,14 @@ fun DayItem(date: Int, type: AttendanceType) {
         modifier = Modifier
             .size(30.dp)
             .background(
-                color = PointColor.copy(alpha = when (type) {
-                    // 출석 유형별 색상 구분 (일일 학습 목표 O: 100%, 일일 학습 목표 X 로그인 O: 50%, 로그인 X: 0%)
-                    AttendanceType.PERFECT      -> 1f
-                    AttendanceType.NOT_GOAL     -> 0.5f
-                    AttendanceType.NOT_LOGIN    -> 0f
-                }),
+                color = PointColor.copy(
+                    alpha = when (type) {
+                        // 출석 유형별 색상 구분 (일일 학습 목표 O: 100%, 일일 학습 목표 X 로그인 O: 50%, 로그인 X: 0%)
+                        AttendanceType.PERFECT -> 1f
+                        AttendanceType.NOT_GOAL -> 0.5f
+                        AttendanceType.NOT_LOGIN -> 0f
+                    }
+                ),
                 shape = RoundedCornerShape(5.dp)
             )
             .border(width = 1.dp, color = PrimaryColor, shape = RoundedCornerShape(5.dp)),
