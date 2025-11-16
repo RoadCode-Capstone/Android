@@ -1,5 +1,7 @@
 package com.example.roadcode.view
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -32,7 +34,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -55,7 +59,11 @@ import com.example.roadcode.ui.theme.PointColor
 import com.example.roadcode.ui.theme.PrimaryColor
 import com.example.roadcode.view.component.BottomNavigationBar
 import com.example.roadcode.viewmodel.RankingViewModel
+import java.time.LocalDate
+import java.time.YearMonth
+import java.time.format.DateTimeFormatter
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RankingScreen(navController: NavController, rankingViewModel: RankingViewModel) {
@@ -63,6 +71,15 @@ fun RankingScreen(navController: NavController, rankingViewModel: RankingViewMod
     val ranks by rankingViewModel.ranks.collectAsState()    // 전체 순위 목록
     val myRankInfo by rankingViewModel.myRankInfo.collectAsState()  // 사용자 순위 정보
     val topPercent by rankingViewModel.topPercent.collectAsState()  // 상위 퍼센트
+
+    LaunchedEffect(Unit) {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val yearMonth = YearMonth.from(LocalDate.now())
+        val startDate = yearMonth.atDay(1).format(formatter)
+        val endDate = yearMonth.atEndOfMonth().format(formatter)
+
+        rankingViewModel.getRanking(startDate, endDate)
+    }
 
     Scaffold(
         topBar = {
@@ -85,7 +102,10 @@ fun RankingScreen(navController: NavController, rankingViewModel: RankingViewMod
                             tint = PrimaryColor
                         )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = Color.White
+                )
             )
         },
         bottomBar = {
@@ -95,6 +115,7 @@ fun RankingScreen(navController: NavController, rankingViewModel: RankingViewMod
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .background(Color.White)
                 .padding(paddingValues)
         ) {
             Column(

@@ -1,56 +1,22 @@
 package com.example.roadcode.data.repository
 
-import com.example.roadcode.data.model.PointDTO
-import com.example.roadcode.data.model.RoadmapDTO
+import com.example.roadcode.data.repository.ResponseHandler.handleResponse
 import com.example.roadcode.retrofit.JsonService
 import com.example.roadcode.retrofit.RetrofitInstance
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flow
-import retrofit2.HttpException
 import javax.inject.Inject
 
-class PointRepository @Inject constructor() {
+class PointRepository @Inject constructor(private val tokenRepository: TokenRepository) {
     private val jsonService: JsonService = RetrofitInstance.retrofit.create(JsonService::class.java)
-    private val token: String = "Bearer fixed-test-token"
 
     /* 순위 조회 */
-    suspend fun getRanking(start: String, end: String): Flow<Result<PointDTO.GetRankingResponse>> = flow {
-        val response = jsonService.getRanking(token, start, end)
+    suspend fun getRanking(start: String, end: String) =
+        handleResponse { jsonService.getRanking(tokenRepository.getBearerToken(), start, end) }
 
-        if (response.isSuccessful) {
-            val body = response.body()
+    /* 날짜별 포인트 내역 조회 */
+    suspend fun getPointsByDate(start: String, end: String) =
+        handleResponse { jsonService.getPointsByDate(tokenRepository.getBearerToken(), start, end) }
 
-            if (body?.code != "SUCCESS") {
-                throw Exception("${body?.code.toString()}: ${body?.message.toString()}")
-            }
-
-            val rankData = body!!.data!!
-            emit(Result.success(rankData))
-        } else {
-            throw HttpException(response)
-        }
-    }.catch { e ->
-        emit(Result.failure(e))
-    }
-
-    /* 포인트 내역 조회 */
-    suspend fun getPointsByDate(start: String, end: String): Flow<Result<PointDTO.GetPointsByDateResponse>> = flow {
-        val response = jsonService.getPointsByDate(token, start, end)
-
-        if (response.isSuccessful) {
-            val body = response.body()
-
-            if (body?.code != "SUCCESS") {
-                throw Exception("${body?.code.toString()}: ${body?.message.toString()}")
-            }
-
-            val pointsData = body!!.data!!
-            emit(Result.success(pointsData))
-        } else {
-            throw HttpException(response)
-        }
-    }.catch { e ->
-        emit(Result.failure(e))
-    }
+    /* 종류별 포인트 내역 조회 */
+    suspend fun getPointsByType(start: String, end: String) =
+        handleResponse { jsonService.getPointsByType(tokenRepository.getBearerToken(), start, end) }
 }

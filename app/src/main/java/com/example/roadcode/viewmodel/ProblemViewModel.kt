@@ -4,20 +4,25 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.roadcode.data.model.ProblemDTO
+import com.example.roadcode.data.model.RoadmapDTO
 import com.example.roadcode.data.model.SubmissionDTO
 import com.example.roadcode.data.repository.RoadmapRepository
 import com.example.roadcode.data.repository.SubmissionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ProblemViewModel @Inject constructor(private val repository: SubmissionRepository) : ViewModel() {
+class ProblemViewModel @Inject constructor(private val repository: SubmissionRepository, private val roadmapRepository: RoadmapRepository) : ViewModel() {
     companion object {
         private const val TAG = "ProblemViewModel"
     }
+
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading = _isLoading.asStateFlow()
 
     private val _problemId = MutableStateFlow<Long>(0)    // 문제 아이디
     val problemId = _problemId.asStateFlow()
@@ -25,8 +30,28 @@ class ProblemViewModel @Inject constructor(private val repository: SubmissionRep
     val problemInfo = _problemInfo.asStateFlow()
     private val _code = MutableStateFlow("") // 작성한 코드
     val code = _code.asStateFlow()
-    private val _result = MutableStateFlow("")  // 채점 결과
-    val result = _result.asStateFlow()
+    private val _isSuccess = MutableStateFlow<Boolean?>(null)   // 성공 여부
+    val isSuccess = _isSuccess.asStateFlow()
+    private val _consecutiveFailCnt = MutableStateFlow(0)   // 연속 실패 개수
+    val consecutiveFailCnt = _consecutiveFailCnt.asStateFlow()
+    private val _dailyCompleted = MutableStateFlow(0)   // 오늘 문제 푼개수
+    val dailyCompleted = _dailyCompleted.asStateFlow()
+
+    /* 연속 실패 개수 초기화 */
+    fun resetFailCnt() {
+        _consecutiveFailCnt.value = 0
+    }
+
+    /* 성공 여부 초기화 */
+    fun resetIsSuccess() {
+        _isSuccess.value = null
+    }
+
+    /* 코드 초기화 */
+    fun initCode() {
+        _code.value = ""
+        Log.d(TAG, "코드 초기화")
+    }
 
     /* 코드 입력 이벤트 */
     fun updateCode(input: String) {
@@ -36,51 +61,90 @@ class ProblemViewModel @Inject constructor(private val repository: SubmissionRep
     /* 문제 정보 조회 함수 */
     fun getProblem(problemId: Long) {
         viewModelScope.launch {
-            val request = problemId
-
-            repository.getProblem(request).collect() { result ->
+            repository.getProblem(problemId).collect() { result ->
                 result
-                    .onSuccess { problemInfo ->
-                        val info = listOf(
-                            problemInfo.name,
-                            problemInfo.description,
-                            problemInfo.inputDescription,
-                            problemInfo.outputDescription,
-                            problemInfo.timeLimit,
-                            problemInfo.memoryLimit
-                        )
+                    .onSuccess { body ->
+                        when (body.code) {
+                            "SUCCESS" -> {
+                                val problemInfo = body.data!!
+                                val info = listOf(
+                                    problemInfo.name,
+                                    problemInfo.description,
+                                    problemInfo.inputDescription,
+                                    problemInfo.outputDescription,
+                                    problemInfo.timeLimit,
+                                    problemInfo.memoryLimit
+                                )
+                                _problemInfo.value = info
+                                _problemId.value = problemInfo.problemId
 
-                        _problemInfo.value = info
-                        _problemId.value = problemInfo.problemId
-                        Log.d(TAG, "문제 정보: ${problemInfo}")
+                                Log.d(TAG, "문제 정보 조회 성공\n${problemInfo}")
+                            }
+                            "E001" -> { // 사용자를 찾을 수 없음
+                                Log.d(TAG, "문제 정보 조회 실패: 사용자를 찾을 수 없음")
+                            }
+                            "E002" -> { // 토큰 없음
+                                Log.d(TAG, "문제 정보 조회 실패: 토큰 없음")
+                            }
+                            "E014" -> { // 문제 id가 잘못된 경우(문제가 없는 경우)
+                                Log.d(TAG, "문제 정보 조회 실패: 문제 id가 잘못된 경우(문제가 없는 경우)")
+                            }
+                            else -> Log.d(TAG, "문제 정보 조회 실패: 알 수 없는 오류")
+                        }
                     }
                     .onFailure { e ->
-                        e.printStackTrace()
+                        Log.e(TAG, "네트워크 오류: ${e.message}")
                     }
             }
         }
     }
 
     /* 풀이 제출 함수 */
-    fun submitSolution(language: String) {
-        viewModelScope.launch {
-            val request = SubmissionDTO.SubmitSolutionRequest(language, code.value)
+    fun submitSolution(roadmapInfo: RoadmapDTO.RoadmapData) {
+        val request = SubmissionDTO.SubmitSolutionRequest(
+            roadmapInfo.roadmapId,
+            roadmapInfo.currentProblem.roadmapProblemId,
+            roadmapInfo.language,
+            code.value
+        )
 
+        viewModelScope.launch {
+            _isLoading.value = true
             repository.submitSolution(problemId.value, request).collect() { result ->
                 result
-                    .onSuccess { result ->
-                        _result.value = if (result.allPassed) "풀이 성공!" else "풀이 실패"
-                        Log.d(TAG, "풀이 제출 결과: ${result}")
+                    .onSuccess { body ->
+                        when (body.code) {
+                            "SUCCESS" -> {
+                                val submissionResult = body.data!!
+                                _isSuccess.value = if (submissionResult.allPassed) true else false
+                                _dailyCompleted.value = submissionResult.dailyCompleted
+
+                                if (isSuccess.value == false) {
+                                    _consecutiveFailCnt.value++
+                                }
+
+                                Log.d(TAG, "풀이 제출 성공\n${submissionResult}")
+                            }
+                            "E001" -> { // 사용자를 찾을 수 없음
+                                Log.d(TAG, "풀이 제출 실패: 사용자를 찾을 수 없음")
+                            }
+                            "E002" -> { // 토큰 없음
+                                Log.d(TAG, "풀이 제출 실패: 토큰 없음")
+                            }
+                            "E013" -> { // 테스트 케이스가 없는 경우(문제 id가 잘못된 경우)
+                                Log.d(TAG, "풀이 제출 실패: 테스트 케이스가 없는 경우(문제 id가 잘못된 경우)")
+                            }
+                            "E015" -> { // 없는 언어를 입력한 경우(java/c/python 외 언어)
+                                Log.d(TAG, "풀이 제출 실패: 없는 언어를 입력한 경우(java/c/python 외 언어)")
+                            }
+                            else -> Log.d(TAG, "풀이 제출 실패: 알 수 없는 오류")
+                        }
                     }
                     .onFailure { e ->
-                        e.printStackTrace()
+                        Log.e(TAG, "네트워크 오류: ${e.message}")
                     }
             }
+            _isLoading.value = false
         }
-    }
-
-    /* 결과 초기화 */
-    fun clearResult() {
-        _result.value = ""
     }
 }

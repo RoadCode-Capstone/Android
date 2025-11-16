@@ -8,7 +8,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.roadcode.data.model.PointDTO
 import com.example.roadcode.data.model.RoadmapDTO
 import com.example.roadcode.data.repository.PointRepository
+import com.example.roadcode.data.repository.TokenRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -21,7 +23,7 @@ import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.O)
 @HiltViewModel
-class PointViewModel @Inject constructor(private val repository: PointRepository) : ViewModel() {
+class PointViewModel @Inject constructor(private val repository: PointRepository, private val tokenRepository: TokenRepository) : ViewModel() {
     companion object {
         private const val TAG = "PointViewModel"
     }
@@ -47,7 +49,13 @@ class PointViewModel @Inject constructor(private val repository: PointRepository
     )
 
     init {
-        getPointsByDate()
+        viewModelScope.launch {
+            tokenRepository.tokenFlow.collect { token ->
+                if (!token.isNullOrBlank()) {
+                    getPointsByDate()
+                }
+            }
+        }
     }
 
     /* 이전 달로 이동 */
@@ -67,22 +75,36 @@ class PointViewModel @Inject constructor(private val repository: PointRepository
     /* 날짜별 포인트 내역 조회 함수 */
     @RequiresApi(Build.VERSION_CODES.O)
     fun getPointsByDate() {
-        viewModelScope.launch {
-//            val start = "2025-07-01"
-//            val end = "2025-08-31"
-            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-            val start = yearMonth.value.atDay(1).format(formatter)
-            val end = yearMonth.value.atEndOfMonth().format(formatter)
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val start = yearMonth.value.atDay(1).format(formatter)
+        val end = yearMonth.value.atEndOfMonth().format(formatter)
 
+        viewModelScope.launch {
             repository.getPointsByDate(start, end).collect() { result ->
                 result
-                    .onSuccess { pointsData ->
-                        _points.value = pointsData
-                        Log.d(TAG, "날짜별 포인트 내역: ${points.value}")
-                        formatUiItem()
+                    .onSuccess { body ->
+                        when (body.code) {
+                            "SUCCESS" -> {
+                                val pointsData = body.data!!
+                                _points.value = pointsData
+                                formatUiItem()
+
+                                Log.d(TAG, "날짜별 포인트 내역 조회 성공\n${pointsData}")
+                            }
+                            "E001" -> { // 토큰이 잘못된 경우
+                                Log.d(TAG, "날짜별 포인트 내역 조회 실패: 토큰이 잘못된 경우")
+                            }
+                            "E026" -> { // groupBy 잘못 지정한 경우
+                                Log.d(TAG, "날짜별 포인트 내역 조회 실패: groupBy 잘못 지정한 경우")
+                            }
+                            "E027" -> { // 날짜 형식이 잘못된 경우(start, end)
+                                Log.d(TAG, "날짜별 포인트 내역 조회 실패: 날짜 형식이 잘못된 경우(start, end)")
+                            }
+                            else -> Log.d(TAG, "날짜별 포인트 내역 조회 실패: 알 수 없는 오류")
+                        }
                     }
                     .onFailure { e ->
-                        e.printStackTrace()
+                        Log.e(TAG, "네트워크 오류: ${e.message}")
                     }
             }
         }

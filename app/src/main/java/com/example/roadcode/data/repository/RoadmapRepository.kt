@@ -2,6 +2,7 @@ package com.example.roadcode.data.repository
 
 import com.example.roadcode.data.model.ProblemDTO
 import com.example.roadcode.data.model.RoadmapDTO
+import com.example.roadcode.data.repository.ResponseHandler.handleResponse
 import com.example.roadcode.retrofit.JsonService
 import com.example.roadcode.retrofit.RetrofitInstance
 import kotlinx.coroutines.flow.Flow
@@ -10,127 +11,38 @@ import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
 import javax.inject.Inject
 
-class RoadmapRepository @Inject constructor() {
+class RoadmapRepository @Inject constructor(private val tokenRepository: TokenRepository) {
     private val jsonService: JsonService = RetrofitInstance.retrofit.create(JsonService::class.java)
-    private val token: String = "Bearer fixed-test-token"
 
     /* 로드맵 생성 */
-    suspend fun createRoadmap(request: RoadmapDTO.CreateRequest): Flow<Result<Long>> = flow {
-        val response = jsonService.createRoadmap(token, request)
-
-        if (response.isSuccessful) {
-            val body = response.body()
-
-            if (body?.code != "SUCCESS") {
-                throw Exception("${body?.code.toString()}: ${body?.message.toString()}")
-            }
-
-            val roadmapId = body!!.data!!.id
-            emit(Result.success(roadmapId))
-        } else {
-            throw HttpException(response)
-        }
-    }.catch { e ->
-        emit(Result.failure(e))
-    }
+    suspend fun createRoadmap(request: RoadmapDTO.CreateRequest) =
+        handleResponse { jsonService.createRoadmap(tokenRepository.getBearerToken(), request) }
 
     /* 로드맵 정보 조회 */
-    suspend fun getRoadmap(request: Long): Flow<Result<RoadmapDTO.RoadmapData>> = flow {
-        val response = jsonService.getRoadmap(token, request)
-
-        if (response.isSuccessful) {
-            val body = response.body()
-
-            if (body?.code != "SUCCESS") {
-                throw Exception("${body?.code.toString()}: ${body?.message.toString()}")
-            }
-
-            val roadmapInfo = body!!.data!!
-            emit(Result.success(roadmapInfo))
-        } else {
-            throw HttpException(response)
-        }
-    }.catch { e ->
-        emit(Result.failure(e))
-    }
+    suspend fun getRoadmap(request: Long) =
+        handleResponse { jsonService.getRoadmap(tokenRepository.getBearerToken(), request) }
 
     /* 로드맵 문제 목록 조회 */
-    suspend fun getRoadmapProblems(request: Long): Flow<Result<List<RoadmapDTO.RoadmapProblem>>> = flow {
-        val response = jsonService.getRoadmapProblems(token, request)
-
-        if (response.isSuccessful) {
-            val body = response.body()
-
-            if (body?.code != "SUCCESS") {
-                throw Exception("${body?.code.toString()}: ${body?.message.toString()}")
-            }
-
-            val roadmapProblems = body!!.data!!.roadmapProblems
-            emit(Result.success(roadmapProblems))
-        } else {
-            throw HttpException(response)
-        }
-    }.catch { e ->
-        emit(Result.failure(e))
-    }
+    suspend fun getRoadmapProblems(request: Long) =
+        handleResponse { jsonService.getRoadmapProblems(tokenRepository.getBearerToken(), request) }
 
     /* 문제 정보 조회 */
-    suspend fun getProblem(request: Long): Flow<Result<ProblemDTO.ProblemData>> = flow {
-        val response = jsonService.getProblem(token, request)
-
-        if (response.isSuccessful) {
-            val body = response.body()
-
-            if (body?.code != "SUCCESS") {
-                throw Exception("${body?.code.toString()}: ${body?.message.toString()}")
-            }
-
-            val problemInfo = body!!.data!!
-            emit(Result.success(problemInfo))
-        } else {
-            throw HttpException(response)
-        }
-    }.catch { e ->
-        emit(Result.failure(e))
-    }
+    suspend fun getProblem(request: Long) =
+        handleResponse { jsonService.getProblem(tokenRepository.getBearerToken(), request) }
 
     /* 회원 로드맵 목록 조회 */
-    suspend fun getRoadmaps(request: List<String>): Flow<Result<List<RoadmapDTO.RoadmapsData>>> = flow {
-        try {
-            val response = jsonService.getRoadmaps(token, request)
-            if (response.isSuccessful) {
-                val body = response.body()
-                if (body?.code != "SUCCESS") {
-                    emit(Result.failure(Exception("${body?.code.toString()}: ${body?.message.toString()}")))
-                }
-
-                val roadmaps = body!!.data!!.roadmaps
-                emit(Result.success(roadmaps))
-            } else {
-                emit(Result.failure(HttpException(response)))
-            }
-        } catch (e: Exception) {
-            emit(Result.failure(e))
-        }
-    }
+    suspend fun getRoadmaps(request: List<String>?) =
+        handleResponse { jsonService.getRoadmaps(tokenRepository.getBearerToken(), request) }
 
     /* 로드맵 포기 */
-    suspend fun giveUpRoadmap(request: Long): Flow<Result<String>> = flow {
-        try {
-            val response = jsonService.giveUpRoadmap(token, request)
-            if (response.isSuccessful) {
-                val body = response.body()
-                if (body?.code != "SUCCESS") {
-                    emit(Result.failure(Exception("${body?.code.toString()}: ${body?.message.toString()}")))
-                }
+    suspend fun giveUpRoadmap(request: Long) =
+        handleResponse { jsonService.giveUpRoadmap(tokenRepository.getBearerToken(), request) }
 
-                val message = body!!.message!!
-                emit(Result.success(message))
-            } else {
-                emit(Result.failure(HttpException(response)))
-            }
-        } catch (e: Exception) {
-            emit(Result.failure(e))
-        }
-    }
+    /* 개념 강화 문제 추가 */
+    suspend fun addReinforceProblem(roadmapId: Long, request: RoadmapDTO.AddReinforceProblemRequest) =
+        handleResponse { jsonService.addReinforceProblem(tokenRepository.getBearerToken(), roadmapId, request) }
+
+    /* 추가 문제 추천 */
+    suspend fun addMoreProblems(roadmapId: Long) =
+        handleResponse { jsonService.addMoreProblems(tokenRepository.getBearerToken(), roadmapId) }
 }

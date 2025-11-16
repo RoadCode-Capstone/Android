@@ -1,5 +1,6 @@
 package com.example.roadcode.view
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -30,7 +31,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -38,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
@@ -49,14 +53,21 @@ import com.example.roadcode.ui.theme.BackGrayColor
 import com.example.roadcode.ui.theme.PointColor
 import com.example.roadcode.ui.theme.PrimaryColor
 import com.example.roadcode.view.component.BottomNavigationBar
+import com.example.roadcode.viewmodel.RoadmapPlanViewModel
 import com.example.roadcode.viewmodel.RoadmapViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RoadmapListScreen(navController: NavController, roadmapViewModel: RoadmapViewModel) {
+fun RoadmapListScreen(navController: NavController, roadmapViewModel: RoadmapViewModel, roadmapPlanViewModel: RoadmapPlanViewModel) {
+    val context = LocalContext.current
+
     val roadmaps by roadmapViewModel.roadmaps.collectAsState()  // 로드맵 목록
     val progress by roadmapViewModel.progress.collectAsState()  // 달성률
     val status by roadmapViewModel.status.collectAsState()      // 선택한 로드맵 상태
+
+    LaunchedEffect(Unit) {
+        roadmapViewModel.getRoadmaps(status)  // 토큰 리프레쉬 해결되면 없어도 됨
+    }
 
     Scaffold(
         topBar = {
@@ -79,12 +90,22 @@ fun RoadmapListScreen(navController: NavController, roadmapViewModel: RoadmapVie
                             tint = PrimaryColor
                         )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = Color.White
+                )
             )
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { navController.navigate("plan_language") },  // 로드맵 생성 화면으로 이동
+                onClick = {
+                    if (roadmaps.any { it.status == "IN_PROGRESS" }) {
+                        Toast.makeText(context, "이미 진행 중인 로드맵이 있습니다.", Toast.LENGTH_SHORT).show()
+                    } else {
+                        roadmapPlanViewModel.initPlan()
+                        navController.navigate("plan_language") // 로드맵 생성 화면으로 이동
+                    }
+                },
                 containerColor = PointColor,
                 shape = CircleShape
             ) {
@@ -102,6 +123,7 @@ fun RoadmapListScreen(navController: NavController, roadmapViewModel: RoadmapVie
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .background(Color.White)
                 .padding(paddingValues)
         ) {
             Column(

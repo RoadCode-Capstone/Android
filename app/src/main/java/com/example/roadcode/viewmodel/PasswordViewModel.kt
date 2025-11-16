@@ -86,21 +86,33 @@ class PasswordViewModel @Inject constructor(private val repository: UserReposito
     /* 비밀번호 재확인 함수 */
     fun verifyPassword() {
         viewModelScope.launch {
-            val request = UserDTO.VerifyPasswordRequest(_passwordUiState.value.currentPasswordInput)
+            val request = UserDTO.VerifyPasswordRequest(passwordUiState.value.currentPasswordInput)
             repository.verifyPassword(request).collect() { result ->
                 result
-                    .onSuccess { codeMessage ->
-                        val code = codeMessage.substringBefore(":")
-                        val message = codeMessage.substringAfter(":")
-
-                        if (code == "400") {    // 비밀번호 재확인 실패 시 메세지 출력 (UI 부분 텍스트 필드에 오류 표시할거면 변수 필요)
-                            _toast.emit(message)
+                    .onSuccess { body ->
+                        when (body.code) {
+                            "SUCCESS" -> {
+                                Log.d(TAG, "비밀번호 재확인 성공")
+                                editPassword()  // 비밀번호 변경
+                            }
+                            "E001" -> { // 사용자를 찾을 수 없음
+                                _toast.emit(body.message ?: "")
+                                Log.d(TAG, "회원 탈퇴 실패: 사용자를 찾을 수 없음")
+                            }
+                            "E002" -> { // 토큰 없음
+                                _toast.emit(body.message ?: "")
+                                Log.d(TAG, "회원 탈퇴 실패: 토큰 없음")
+                            }
+                            "E008" -> { // 현재 비밀번호 일치x
+                                _toast.emit(body.message ?: "")
+                                Log.d(TAG, "회원 탈퇴 실패: 현재 비밀번호 일치 X")
+                            }
+                            "ERROR" -> { // 현재 비밀번호 입력X
+                                _toast.emit(body.message ?: "")
+                                Log.d(TAG, "회원 탈퇴 실패: 현재 비밀번호 입력X")
+                            }
+                            else -> Log.d(TAG, "회원 탈퇴 실패: 알 수 없는 오류")
                         }
-                        else {
-                            editPassword()
-                        }
-
-                        Log.d(TAG, "비밀번호 재확인: ${message}")
                     }
                     .onFailure { e ->
                         e.printStackTrace()
@@ -115,20 +127,38 @@ class PasswordViewModel @Inject constructor(private val repository: UserReposito
             val request = UserDTO.EditPasswordRequest(_passwordUiState.value.currentPasswordInput, _passwordUiState.value.newPasswordInput)
             repository.editPassword(request).collect() { result ->
                 result
-                    .onSuccess { codeMessage ->
-                        val code = codeMessage.substringBefore(":")
-                        val message = codeMessage.substringAfter(":")
-
-                        _toast.emit(message)
-
-                        if (code == "200") {
-                            _navigateBack.value = true  // 뒤로 가기
+                    .onSuccess { body ->
+                        when (body.code) {
+                            "SUCCESS" -> {
+                                _navigateBack.value = true  // 뒤로 가기
+                                _toast.emit(body.message ?: "")
+                                Log.d(TAG, "비밀번호 변경 성공: ${body.message}")
+                            }
+                            "E001" -> { // 사용자를 찾을 수 없음
+                                _toast.emit(body.message ?: "")
+                                Log.d(TAG, "비밀번호 변경 실패: 사용자를 찾을 수 없음")
+                            }
+                            "E002" -> { // 토큰 없음
+                                _toast.emit(body.message ?: "")
+                                Log.d(TAG, "비밀번호 변경 실패: 토큰 없음")
+                            }
+                            "E007" -> { // 새로운 비밀번호가 기존과 동일할 경우
+                                _toast.emit(body.message ?: "")
+                                Log.d(TAG, "비밀번호 변경 실패: 새로운 비밀번호가 기존과 동일할 경우")
+                            }
+                            "E008" -> { // 현재 비밀번호 일치x
+                                _toast.emit(body.message ?: "")
+                                Log.d(TAG, "비밀번호 변경 실패: 현재 비밀번호 일치x")
+                            }
+                            "ERROR" -> { // 현재 비밀번호 or 새로운 비밀번호 입력 X
+                                _toast.emit(body.message ?: "")
+                                Log.d(TAG, "비밀번호 변경 실패: ${body.message}")
+                            }
+                            else -> Log.d(TAG, "비밀번호 변경 실패: 알 수 없는 오류")
                         }
-
-                        Log.d(TAG, "비밀번호 변경: ${message}")
                     }
                     .onFailure { e ->
-                        e.printStackTrace()
+                        Log.e(TAG, "네트워크 오류: ${e.message}")
                     }
             }
         }

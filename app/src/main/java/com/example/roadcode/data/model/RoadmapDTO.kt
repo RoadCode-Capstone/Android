@@ -54,4 +54,9 @@ object RoadmapDTO {
         val algorithm: String,  // 알고리즘
         val status: String      // 로드맵 상태 (진행 중: IN_PROGRESS, 완료: COMPLETED, 포기: GAVE_UP)
     )
+
+    // 개념 강화 문제 추가 요청
+    data class AddReinforceProblemRequest(
+        val currentProblemId: Long  // 현재 풀고 있는 문제 아이디
+    )
 }

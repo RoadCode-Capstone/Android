@@ -13,32 +13,25 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.TextView
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerDefaults
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -51,8 +44,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -69,16 +63,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.roadcode.R
 import com.example.roadcode.data.model.LevelTestDTO
-import com.example.roadcode.data.model.ProblemDTO
 import com.example.roadcode.ui.theme.BackGrayColor
 import com.example.roadcode.ui.theme.LineColor
 import com.example.roadcode.ui.theme.PointColor
 import com.example.roadcode.ui.theme.PrimaryColor
 import com.example.roadcode.util.rememberOnce
+import com.example.roadcode.view.component.LoadingOverlay
+import com.example.roadcode.view.component.LoadingOverlayName
 import com.example.roadcode.viewmodel.LevelTestViewModel
 import com.example.roadcode.viewmodel.RoadmapPlanViewModel
 import com.example.roadcode.viewmodel.RoadmapViewModel
@@ -119,13 +113,17 @@ fun LevelTestReadyScreen(navController: NavController, roadmapViewModel: Roadmap
                             tint = PrimaryColor
                         )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = Color.White
+                )
             )
         }
     ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .background(Color.White)
                 .padding(paddingValues)
         ) {
             Column(
@@ -197,8 +195,7 @@ fun LevelTestReadyScreen(navController: NavController, roadmapViewModel: Roadmap
                     onClick = {
                         // 레벨 테스트 생성
                         val request = LevelTestDTO.createRequest(plan.selectedType!!, plan.selectedLanguage!!, plan.selectedAlgorithm)
-//                        levelTestViewModel.createLevelTest(request)
-                        levelTestViewModel.getLevelTestProblems(listOf(584, 2000, 237, 62, 70))
+                        levelTestViewModel.createLevelTest(request)
                         navController.navigate("level_test")
                     },
                     modifier = Modifier
@@ -288,13 +285,17 @@ fun LevelTestScreen(navController: NavController, roadmapViewModel: RoadmapPlanV
                         fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium)),
                         modifier = Modifier.padding(end = 20.dp)
                     )
-                }
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = Color.White
+                )
             )
         }
     ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .background(Color.White)
                 .padding(paddingValues)
         ) {
             Column(
@@ -307,7 +308,7 @@ fun LevelTestScreen(navController: NavController, roadmapViewModel: RoadmapPlanV
                 if (problemInfos.isNotEmpty()) {
                     ProblemPager(problemInfos[problemIdx],
                         plan.selectedLanguage!!,
-                        codes[problemIdx]!!,
+                        codes[problemIdx] ?: "",
                         onCodeChanged = { code ->
                             levelTestViewModel.updateCode(problemIdx, code)
                         }
@@ -496,11 +497,20 @@ private fun ProblemPager(problemInfos: List<String>, language: String, initCode:
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LevelTestResultScreen(navController: NavController, roadmapPlanViewModel: RoadmapPlanViewModel, levelTestViewModel: LevelTestViewModel, roadmapViewModel: RoadmapViewModel) {
+    val isLoading by levelTestViewModel.isLoading.collectAsState()
+    val isCreating by roadmapPlanViewModel.isLoading.collectAsState()
+
     val levelTestResults by levelTestViewModel.levelTestResults.collectAsState()
 
     LaunchedEffect(levelTestResults) {
         if (levelTestResults != null) { // 레벨 테스트 결과 조회되면 로드맵 생성
             roadmapPlanViewModel.createRoadmap(levelTestViewModel.getResult(), completed = { roadmapId -> roadmapViewModel.setRoadmapId(roadmapId) })
+        }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            levelTestViewModel.init()
         }
     }
 
@@ -514,13 +524,17 @@ fun LevelTestResultScreen(navController: NavController, roadmapPlanViewModel: Ro
                         color = PrimaryColor,
                         fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
                     )
-                }
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = Color.White
+                )
             )
         }
     ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .background(Color.White)
                 .padding(paddingValues)
         ) {
             Column(
@@ -532,7 +546,7 @@ fun LevelTestResultScreen(navController: NavController, roadmapPlanViewModel: Ro
                 Spacer(modifier = Modifier.height(30.dp))
 
                 Text(
-                    text = "레벨 테스트 결과로\n맞춤 로드맵을 생성했어요",
+                    text = "레벨 테스트 결과로\n맞춤 로드맵을 생성할게요",
                     fontSize = 16.sp,
                     fontFamily = FontFamily(Font(R.font.spoqahansansneo_light)),
                     textAlign = TextAlign.Center,
@@ -610,12 +624,13 @@ fun LevelTestResultScreen(navController: NavController, roadmapPlanViewModel: Ro
                             .height(50.dp),
                         shape = RoundedCornerShape(20.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = PointColor,
+                            containerColor = if (!isCreating) PointColor else Color.DarkGray,
                             contentColor = Color.White
-                        )
+                        ),
+                        enabled = !isCreating
                     ) {
                         Text(
-                            text = "바로 학습하러 가기",
+                            text = if (!isCreating) "바로 학습하러 가기" else "로드맵 생성 중이에요",
                             fontSize = 16.sp,
                             color = Color.White,
                             fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
@@ -646,6 +661,8 @@ fun LevelTestResultScreen(navController: NavController, roadmapPlanViewModel: Ro
                     }
                 }
             }
+
+            LoadingOverlay(isLoading, LoadingOverlayName.RESULT)
         }
     }
 }

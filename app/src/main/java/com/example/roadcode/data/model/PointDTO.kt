@@ -30,7 +30,21 @@ object PointDTO {
 
     // 날짜별 포인트 내역 조회 응답
     data class GetPointsByDateResponse(
-        val totalPoint: Int,            // 기간 내 총 포인트
-        val history: List<PointsByDateData>   // 날짜별 포인트 내역
+        val totalPoint: Int,                // 기간 내 총 포인트
+        val history: List<PointsByDateData> // 날짜별 포인트 내역
+    )
+
+    // 종류별 포인트 내역 조회 응답
+    data class GetPointsByTypeResponse(
+        val totalPoint: Int,                // 기간 내 총 포인트
+        val history: List<PointsByTypeData> // 종류별 포인트 내역
+    )
+
+    // 종류별 포인트 내역 데이터 구조
+    data class PointsByTypeData(
+        val type: String,       // 포인트 종류
+        val totalPoint: Int,    // 해당 종류에 대해 획득한 총 포인트
+        val point: Int,         // 해당 종류로 얻을 수 있는 포인트 (1개 달성 기준)
+        val dates: List<String> // 획득한 날짜 목록
     )
 }

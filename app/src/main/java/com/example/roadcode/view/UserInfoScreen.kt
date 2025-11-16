@@ -1,6 +1,7 @@
 package com.example.roadcode.view
 
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,6 +35,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -112,13 +114,17 @@ fun UserInfoScreen(navController: NavController, userViewModel: UserViewModel) {
                             )
                         }
                     }
-                }
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = Color.White
+                )
             )
         }
     ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .background(Color.White)
                 .padding(paddingValues)
         ) {
             Column(
@@ -227,7 +233,13 @@ fun InfoBar(name: String, data: String) {
 
 /* 정보 수정 바 */
 @Composable
-fun InfoEditBar(name: String, data: String, isAvailable: Boolean, supportingText: String, onValueChange: (String) -> Unit) {
+fun InfoEditBar(
+    name: String,
+    data: String,
+    isAvailable: Boolean = true,
+    supportingText: String = "",
+    onValueChange: (String) -> Unit
+) {
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -237,6 +249,7 @@ fun InfoEditBar(name: String, data: String, isAvailable: Boolean, supportingText
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
+                modifier = Modifier.weight(0.25f),
                 text = name,
                 fontSize = 16.sp,
                 color = PrimaryColor,
@@ -244,6 +257,7 @@ fun InfoEditBar(name: String, data: String, isAvailable: Boolean, supportingText
             )
 
             OutlinedTextField(
+                modifier = Modifier.weight(0.75f),
                 value = data,
                 onValueChange = onValueChange,
                 singleLine = true,

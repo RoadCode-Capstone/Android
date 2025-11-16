@@ -7,6 +7,7 @@ import android.text.SpannableStringBuilder
 import android.text.style.RelativeSizeSpan
 import android.text.style.SubscriptSpan
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInHorizontally
@@ -46,7 +47,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -58,6 +61,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
@@ -82,9 +86,11 @@ import com.example.roadcode.viewmodel.RoadmapViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewModel, problemViewModel: ProblemViewModel) {
-    val scope = rememberCoroutineScope()
-    var isDrawerOpen by remember { mutableStateOf(false) }      // 드로어 열림 여부 변수
-    var showGiveUpDialog by remember { mutableStateOf(false) }  // 팝업창 열림 여부 변수
+    val context = LocalContext.current
+
+    var isDrawerOpen by remember { mutableStateOf(false) }          // 드로어 열림 여부 변수
+    var showGiveUpDialog by remember { mutableStateOf(false) }      // 로드맵 포기 팝업창 열림 여부 변수
+    var showAddProblemDialog by remember { mutableStateOf(false) }  // 문제 추가 팝업창 열림 여부 변수
 
     val roadmapInfo by roadmapViewModel.roadmapInfo.collectAsState()        // 로드맵 정보
     val problems by roadmapViewModel.problems.collectAsState()              // 로드맵 문제 목록
@@ -92,13 +98,43 @@ fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewMod
     val problemIdx by roadmapViewModel.problemIdx.collectAsState()          // 출력할 문제 인덱스 (초기값: 현재 풀어야 하는 문제 인덱스)
     val progress by roadmapViewModel.progress.collectAsState()              // 달성률
     val roadmapStatus by roadmapViewModel.roadmapStatus.collectAsState()    // 로드맵 상태
+    val curProblemIdx by roadmapViewModel.curProblemIdx.collectAsState()    // 현재 풀어야할 문제 인덱스
+    val dailyCompleted by problemViewModel.dailyCompleted.collectAsState()  // 오늘 문제 푼 개수
+
+    val navigateBack by roadmapViewModel.navigateBack.collectAsState()
+
+    LaunchedEffect(Unit) {
+        roadmapViewModel.toast.collect { msg ->
+            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    LaunchedEffect(navigateBack) {
+        if (navigateBack) {
+            roadmapViewModel.setFalseNavigateBack()
+            navController.popBackStack()
+        }
+    }
 
     if (showGiveUpDialog) {
         CustomAlertDialog(
-            showDialog = showGiveUpDialog,
             text = "학습 로드맵을 포기하겠습니까?",
-            onConfirm = { roadmapViewModel.giveUpRoadmap() },
+            onConfirm = {
+                showGiveUpDialog = false
+                roadmapViewModel.giveUpRoadmap()
+            },
             onDismiss = { showGiveUpDialog = false }
+        )
+    }
+
+    if (showAddProblemDialog) {
+        CustomAlertDialog(
+            text = "문제를 추가하시겠습니까?",
+            onConfirm = {
+                showAddProblemDialog = false
+                roadmapViewModel.addMoreProblems()
+            },
+            onDismiss = { showAddProblemDialog = false }
         )
     }
 
@@ -138,13 +174,17 @@ fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewMod
                                     )
                                 }
                             }
-                        }
+                        },
+                        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                            containerColor = Color.White
+                        )
                     )
                 }
             ) { paddingValues ->
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
+                        .background(Color.White)
                         .padding(paddingValues)
                 ) {
                     Column(
@@ -156,19 +196,26 @@ fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewMod
                         Spacer(modifier = Modifier.height(30.dp))
 
                         Text(
-                            text = buildAnnotatedString {
-                                append("일일 목표 달성까지 앞으로 ")
+                            text = if (roadmapInfo.dailyGoal - dailyCompleted > 0) {
+                                buildAnnotatedString {
+                                    append("일일 목표 달성까지 앞으로 ")
 
-                                withStyle(
-                                    style = SpanStyle(
-                                        color = PointColor,
-                                        fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
-                                    )
-                                ) {
-                                    append("${3}") /* TODO: 일일 학습 목표까지 남은 문제 수 계산 필요 */
+                                    withStyle(
+                                        style = SpanStyle(
+                                            color = PointColor,
+                                            fontFamily = FontFamily(Font(R.font.spoqahansansneo_medium))
+                                        )
+                                    ) {
+                                        append("${roadmapInfo.dailyGoal - dailyCompleted}")
+                                    }
+
+                                    append("문제")
                                 }
-
-                                append("문제")
+                            }
+                            else {
+                                buildAnnotatedString {
+                                    append("일일 학습 목표를 달성했어요!")
+                                }
                             },
                             fontSize = 16.sp,
                             fontFamily = FontFamily(Font(R.font.spoqahansansneo_light)),
@@ -206,13 +253,11 @@ fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewMod
                             Spacer(modifier = Modifier.width(30.dp))
 
                             Column(modifier = Modifier.fillMaxHeight()) {
-                                if (problemInfo != null) {
-                                    ProblemPreview( // 문제 미리보기 출력
-                                        modifier = Modifier.weight(1f),
-                                        title = problemInfo!!.name,
-                                        description = problemInfo!!.description
-                                    )
-                                }
+                                ProblemPreview( // 문제 미리보기 출력
+                                    modifier = Modifier.weight(1f),
+                                    title = problemInfo?.name ?: "",
+                                    description = problemInfo?.description ?: ""
+                                )
 
                                 Row(
                                     modifier = Modifier.padding(top = 20.dp, bottom = 40.dp)
@@ -222,7 +267,7 @@ fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewMod
                                             problemViewModel.getProblem(problems[problemIdx].problemId)
                                             navController.navigate("problem")
                                         },
-                                        enabled = if (roadmapStatus != "GAVE_UP") true else false,
+                                        enabled = if (roadmapStatus == "GAVE_UP" || curProblemIdx != problemIdx) false else true,
                                         modifier = Modifier
                                             .weight(1f)
                                             .height(50.dp),
@@ -286,9 +331,7 @@ fun RoadmapScreen(navController: NavController, roadmapViewModel: RoadmapViewMod
 
                             Spacer(modifier = Modifier.height(50.dp))
 
-                            DrawerItem("문제 추가하기", onClick = {
-                                /* TODO: 문제 추가 기능 */
-                            })
+                            DrawerItem("문제 추가하기", onClick = { showAddProblemDialog = true })
 
                             Spacer(modifier = Modifier.height(10.dp))
 
