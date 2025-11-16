@@ -137,7 +137,11 @@ class ViewReviewViewModel @Inject constructor(private val repository: Submission
                     .onSuccess { body ->
                         when (body.code) {
                             "SUCCESS" -> {
-                                _viewReviewUiState.update { it.copy(reviewComments = body.data!!.reviews) }
+                                val reviews = body.data!!.reviews
+                                val aiReview = reviews.find { it.nickname == "AI" } ?: ReviewDTO.ReviewData()
+                                val otherReviews = reviews.filter { it.nickname != "AI" }
+
+                                _viewReviewUiState.update { it.copy(reviewComments = otherReviews, aiReview = aiReview) }
 
                                 Log.d(TAG, "리뷰 답글 조회 성공\n${viewReviewUiState.value.reviewComments}")
                             }

@@ -335,53 +335,7 @@ fun ReviewCommentScreen(viewReviewViewModel: ViewReviewViewModel) {
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
         AiReviewScreen(viewReviewUiState.aiReview)
-//        AiReviewScreen(ReviewDTO.ReviewData(
-//            0,
-//            0,
-//            "야채",
-//            "완벽한 코드입니다. 완벽한 코드입니다. 완벽한 코드입니다. 완벽한 코드입니다. 완벽한 코드입니다. 완벽한 코드입니다. 완벽한 코드입니다.",
-//            listOf(
-//                ReviewDTO.CommentData(0, 0, "불고기", "너무너무 잘 짠 코드라고 생각합니다.", "2025-11-11"),
-//                ReviewDTO.CommentData(0, 0, "불고기", "너무너무 잘 짠 코드라고 생각합니다.", "2025-11-11"),
-//                ReviewDTO.CommentData(0, 0, "불고기", "너무너무 잘 짠 코드라고 생각합니다.", "2025-11-11")),
-//            "2025-10-31"
-//        ))
-
         UserReviewScreen(viewReviewViewModel, viewReviewUiState.reviewComments)
-//        UserReviewScreen(viewReviewViewModel,
-//            listOf(
-//                ReviewDTO.ReviewData(
-//                    0,
-//                    0,
-//                    "야채",
-//                    "완벽한 코드입니다. 완벽한 코드입니다. 완벽한 코드입니다. 완벽한 코드입니다. 완벽한 코드입니다. 완벽한 코드입니다. 완벽한 코드입니다.",
-//                    listOf(
-//                        ReviewDTO.CommentData(0, 0, "불고기", "너무너무 잘 짠 코드라고 생각합니다.", "2025-11-11"),
-//                        ReviewDTO.CommentData(0, 0, "불고기", "너무너무 잘 짠 코드라고 생각합니다.", "2025-11-11"),
-//                        ReviewDTO.CommentData(0, 0, "불고기", "너무너무 잘 짠 코드라고 생각합니다.", "2025-11-11")),
-//                    "2025-10-31"
-//                ),
-//                ReviewDTO.ReviewData(
-//                    0,
-//                    0,
-//                    "야채",
-//                    "완벽한 코드입니다. 완벽한 코드입니다. 완벽한 코드입니다. 완벽한 코드입니다. 완벽한 코드입니다.",
-//                    listOf(
-//                        ReviewDTO.CommentData(0, 0, "불고기", "너무너무 잘 짠 코드라고 생각합니다.", "2025-11-11"),
-//                        ReviewDTO.CommentData(0, 0, "불고기", "너무너무 잘 짠 코드라고 생각합니다.", "2025-11-11"),
-//                    ),
-//                    "2025-10-31"
-//                ),
-//                ReviewDTO.ReviewData(
-//                    0,
-//                    0,
-//                    "야채",
-//                    "완벽한 코드입니다. 완벽한 코드입니다. 완벽한 코드입니다. 완벽한 코드입니다. 완벽한 코드입니다. 완벽한 코드입니다. 완벽한 코드입니다.",
-//                    emptyList(),
-//                    "2025-10-31"
-//                )
-//            )
-//        )
     }
 }
 
