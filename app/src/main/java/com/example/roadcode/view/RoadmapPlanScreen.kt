@@ -29,7 +29,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,16 +49,20 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.roadcode.R
 import com.example.roadcode.ui.theme.BackGrayColor
+import com.example.roadcode.ui.theme.DarkBackGrayColor
 import com.example.roadcode.ui.theme.PointColor
 import com.example.roadcode.ui.theme.PrimaryColor
-import com.example.roadcode.view.component.algorithmItem
+import com.example.roadcode.util.rememberOnce
+import com.example.roadcode.view.component.AlgorithmItem
 import com.example.roadcode.viewmodel.RoadmapPlanViewModel
 import com.example.roadcode.viewmodel.TagViewModel
 
 /* 학습 계획 설정 화면 (언어) */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RoadmapPlanLanguageScreen(navController: NavController, roadmapViewModel: RoadmapPlanViewModel) {
+fun RoadmapPlanLanguageScreen(navController: NavController, roadmapPlanViewModel: RoadmapPlanViewModel) {
+    val plan by roadmapPlanViewModel.plan.collectAsState()
+
     var selectedLanguage by remember { mutableStateOf<String?>(null) }
 
     Scaffold(
@@ -72,7 +78,7 @@ fun RoadmapPlanLanguageScreen(navController: NavController, roadmapViewModel: Ro
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { navController.popBackStack() }
+                        onClick = rememberOnce { navController.popBackStack() }
                     ) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
@@ -80,20 +86,26 @@ fun RoadmapPlanLanguageScreen(navController: NavController, roadmapViewModel: Ro
                             tint = PrimaryColor
                         )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = Color.White
+                )
             )
         }
     ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .background(Color.White)
                 .padding(paddingValues)
         ) {
             Column(
-                modifier = Modifier.fillMaxSize().padding(bottom = 160.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 160.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(modifier = Modifier.height(36.dp))
+                Spacer(modifier = Modifier.height(30.dp))
 
                 Text(
                     text = "학습할 언어를 선택하세요",
@@ -109,9 +121,9 @@ fun RoadmapPlanLanguageScreen(navController: NavController, roadmapViewModel: Ro
                         .width(300.dp)
                         .height(50.dp),
                     shape = RoundedCornerShape(5.dp),
-                    border = BorderStroke(0.5.dp, PrimaryColor),
+                    border = BorderStroke(if ((selectedLanguage.isNullOrBlank() && plan.selectedLanguage == "JAVA") || selectedLanguage == "JAVA") 1.dp else 0.5.dp, PrimaryColor),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = BackGrayColor
+                        containerColor = if ((selectedLanguage.isNullOrBlank() && plan.selectedLanguage == "JAVA") || selectedLanguage == "JAVA") DarkBackGrayColor else BackGrayColor
                     )
                 ) {
                     Row(
@@ -142,9 +154,9 @@ fun RoadmapPlanLanguageScreen(navController: NavController, roadmapViewModel: Ro
                         .width(300.dp)
                         .height(50.dp),
                     shape = RoundedCornerShape(5.dp),
-                    border = BorderStroke(0.5.dp, PrimaryColor),
+                    border = BorderStroke(if ((selectedLanguage.isNullOrBlank() && plan.selectedLanguage == "Python") || selectedLanguage == "Python") 1.dp else 0.5.dp, PrimaryColor),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = BackGrayColor
+                        containerColor = if ((selectedLanguage.isNullOrBlank() && plan.selectedLanguage == "Python") || selectedLanguage == "Python") DarkBackGrayColor else BackGrayColor
                     )
                 ) {
                     Row(
@@ -175,9 +187,9 @@ fun RoadmapPlanLanguageScreen(navController: NavController, roadmapViewModel: Ro
                         .width(300.dp)
                         .height(50.dp),
                     shape = RoundedCornerShape(5.dp),
-                    border = BorderStroke(0.5.dp, PrimaryColor),
+                    border = BorderStroke(if ((selectedLanguage.isNullOrBlank() && plan.selectedLanguage == "C") || selectedLanguage == "C") 1.dp else 0.5.dp, PrimaryColor),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = BackGrayColor
+                        containerColor = if ((selectedLanguage.isNullOrBlank() && plan.selectedLanguage == "C") || selectedLanguage == "C") DarkBackGrayColor else BackGrayColor
                     )
                 ) {
                     Row(
@@ -202,14 +214,18 @@ fun RoadmapPlanLanguageScreen(navController: NavController, roadmapViewModel: Ro
             }
 
             Row(
-                modifier = Modifier.align(Alignment.BottomEnd).padding(end = 30.dp, bottom = 40.dp)
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(end = 30.dp, bottom = 40.dp)
             ) {
                 Button( // 다음 버튼
                     onClick = {
-                        roadmapViewModel.setSelectedLanguage(selectedLanguage)
+                        if (selectedLanguage != null) {
+                            roadmapPlanViewModel.setSelectedLanguage(selectedLanguage)
+                        }
                         navController.navigate("plan_type")
                     },
-                    enabled = selectedLanguage != null, // 언어 선택했을 때만 활성화
+                    enabled = (selectedLanguage != null || plan.selectedLanguage != null), // 언어 선택했을 때만 활성화
                     modifier = Modifier
                         .width(90.dp)
                         .height(50.dp),
@@ -234,7 +250,9 @@ fun RoadmapPlanLanguageScreen(navController: NavController, roadmapViewModel: Ro
 /* 학습 계획 설정 화면 (학습 유형) */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RoadmapPlanTypeScreen(navController: NavController, roadmapViewModel: RoadmapPlanViewModel) {
+fun RoadmapPlanTypeScreen(navController: NavController, roadmapPlanViewModel: RoadmapPlanViewModel) {
+    val plan by roadmapPlanViewModel.plan.collectAsState()
+
     var selectedType by remember { mutableStateOf<String?>(null) }
 
     Scaffold(
@@ -250,7 +268,7 @@ fun RoadmapPlanTypeScreen(navController: NavController, roadmapViewModel: Roadma
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { navController.popBackStack() }
+                        onClick = rememberOnce { navController.popBackStack() }
                     ) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
@@ -258,20 +276,26 @@ fun RoadmapPlanTypeScreen(navController: NavController, roadmapViewModel: Roadma
                             tint = PrimaryColor
                         )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = Color.White
+                )
             )
         }
     ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .background(Color.White)
                 .padding(paddingValues)
         ) {
             Column(
-                modifier = Modifier.fillMaxSize().padding(bottom = 160.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 160.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(modifier = Modifier.height(36.dp))
+                Spacer(modifier = Modifier.height(30.dp))
 
                 Text(
                     text = "학습 유형을 선택하세요",
@@ -287,9 +311,9 @@ fun RoadmapPlanTypeScreen(navController: NavController, roadmapViewModel: Roadma
                         .width(300.dp)
                         .height(50.dp),
                     shape = RoundedCornerShape(5.dp),
-                    border = BorderStroke(0.5.dp, PrimaryColor),
+                    border = BorderStroke(if ((selectedType.isNullOrBlank() && plan.selectedType == "Language") || selectedType == "Language") 1.dp else 0.5.dp, PrimaryColor),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = BackGrayColor
+                        containerColor = if ((selectedType.isNullOrBlank() && plan.selectedType == "Language") || selectedType == "Language") DarkBackGrayColor else BackGrayColor
                     )
                 ) {
                     Row(
@@ -313,9 +337,9 @@ fun RoadmapPlanTypeScreen(navController: NavController, roadmapViewModel: Roadma
                         .width(300.dp)
                         .height(50.dp),
                     shape = RoundedCornerShape(5.dp),
-                    border = BorderStroke(0.5.dp, PrimaryColor),
+                    border = BorderStroke(if ((selectedType.isNullOrBlank() && plan.selectedType == "Algorithm") || selectedType == "Algorithm") 1.dp else 0.5.dp, PrimaryColor),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = BackGrayColor
+                        containerColor = if ((selectedType.isNullOrBlank() && plan.selectedType == "Algorithm") || selectedType == "Algorithm") DarkBackGrayColor else BackGrayColor
                     )
                 ) {
                     Row(
@@ -333,15 +357,19 @@ fun RoadmapPlanTypeScreen(navController: NavController, roadmapViewModel: Roadma
             }
 
             Row(
-                modifier = Modifier.align(Alignment.BottomEnd).padding(end = 30.dp, bottom = 40.dp)
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(end = 30.dp, bottom = 40.dp)
             ) {
                 Button( // 다음 버튼
                     onClick = {
-                        roadmapViewModel.setSelectedType(selectedType)
+                        if (selectedType != null) {
+                            roadmapPlanViewModel.setSelectedType(selectedType)
+                        }
                         if (selectedType == "Language") navController.navigate("plan_goal")
                         else navController.navigate("plan_algorithm")
                     },
-                    enabled = selectedType != null,
+                    enabled = (selectedType != null || plan.selectedType != null),
                     modifier = Modifier
                         .width(90.dp)
                         .height(50.dp),
@@ -366,9 +394,10 @@ fun RoadmapPlanTypeScreen(navController: NavController, roadmapViewModel: Roadma
 /* 학습 계획 설정 화면 (알고리즘) */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RoadmapPlanAlgorithmScreen(navController: NavController, roadmapViewModel: RoadmapPlanViewModel) {
+fun RoadmapPlanAlgorithmScreen(navController: NavController, roadmapPlanViewModel: RoadmapPlanViewModel) {
     val tagViewModel: TagViewModel = hiltViewModel()
     val tags by tagViewModel.tags.collectAsState()
+    val plan by roadmapPlanViewModel.plan.collectAsState()
 
     var selectedAlgorithm by remember { mutableStateOf<String?>(null) }
 
@@ -385,7 +414,7 @@ fun RoadmapPlanAlgorithmScreen(navController: NavController, roadmapViewModel: R
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { navController.popBackStack() }
+                        onClick = rememberOnce { navController.popBackStack() }
                     ) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
@@ -393,20 +422,26 @@ fun RoadmapPlanAlgorithmScreen(navController: NavController, roadmapViewModel: R
                             tint = PrimaryColor
                         )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = Color.White
+                )
             )
         }
     ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .background(Color.White)
                 .padding(paddingValues)
         ) {
             Column(
-                modifier = Modifier.fillMaxSize().padding(bottom = 160.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 160.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(modifier = Modifier.height(36.dp))
+                Spacer(modifier = Modifier.height(30.dp))
 
                 Text(
                     text = "학습할 알고리즘을 선택하세요",
@@ -424,7 +459,7 @@ fun RoadmapPlanAlgorithmScreen(navController: NavController, roadmapViewModel: R
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     items(tags) { tag ->
-                        algorithmItem(name = tag) {
+                        AlgorithmItem(name = tag, selectedAlgorithm = selectedAlgorithm, planSelectedAlgorithm = plan.selectedAlgorithm) {
                             selectedAlgorithm = tag
                         }
 
@@ -434,14 +469,18 @@ fun RoadmapPlanAlgorithmScreen(navController: NavController, roadmapViewModel: R
             }
 
             Row(
-                modifier = Modifier.align(Alignment.BottomEnd).padding(end = 30.dp, bottom = 40.dp)
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(end = 30.dp, bottom = 40.dp)
             ) {
                 Button( // 다음 버튼
                     onClick = {
-                        roadmapViewModel.setSelectedAlgorithm(selectedAlgorithm)
+                        if (selectedAlgorithm != null) {
+                            roadmapPlanViewModel.setSelectedAlgorithm(selectedAlgorithm)
+                        }
                         navController.navigate("plan_goal")
                     },
-                    enabled = selectedAlgorithm != null,
+                    enabled = (selectedAlgorithm != null || plan.selectedAlgorithm != null),
                     modifier = Modifier
                         .width(90.dp)
                         .height(50.dp),
@@ -466,7 +505,9 @@ fun RoadmapPlanAlgorithmScreen(navController: NavController, roadmapViewModel: R
 /* 학습 계획 설정 화면 (일일 학습 목표) */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RoadmapPlanGoalScreen(navController: NavController, roadmapViewModel: RoadmapPlanViewModel) {
+fun RoadmapPlanGoalScreen(navController: NavController, roadmapPlanViewModel: RoadmapPlanViewModel) {
+    val plan by roadmapPlanViewModel.plan.collectAsState()
+
     var selectedGoal by remember { mutableStateOf<Int?>(null) }
 
     Scaffold(
@@ -482,7 +523,7 @@ fun RoadmapPlanGoalScreen(navController: NavController, roadmapViewModel: Roadma
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = { navController.popBackStack() }
+                        onClick = rememberOnce { navController.popBackStack() }
                     ) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
@@ -490,20 +531,26 @@ fun RoadmapPlanGoalScreen(navController: NavController, roadmapViewModel: Roadma
                             tint = PrimaryColor
                         )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = Color.White
+                )
             )
         }
     ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .background(Color.White)
                 .padding(paddingValues)
         ) {
             Column(
-                modifier = Modifier.fillMaxSize().padding(bottom = 160.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 160.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(modifier = Modifier.height(36.dp))
+                Spacer(modifier = Modifier.height(30.dp))
 
                 Text(
                     text = "일일 학습 목표를 선택하세요",
@@ -514,18 +561,20 @@ fun RoadmapPlanGoalScreen(navController: NavController, roadmapViewModel: Roadma
                 Spacer(modifier = Modifier.height(50.dp))
 
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 70.dp),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Button( // 1 버튼
                         onClick = { selectedGoal = 1 },
                         modifier = Modifier.size(50.dp),
                         shape = CircleShape,
-                        border = BorderStroke(0.5.dp, PrimaryColor),
                         contentPadding = PaddingValues(0.dp),
+                        border = BorderStroke(if ((selectedGoal == null && plan.selectedGoal == 1) || selectedGoal == 1) 1.dp else 0.5.dp, PrimaryColor),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = BackGrayColor
+                            containerColor = if ((selectedGoal == null && plan.selectedGoal == 1) || selectedGoal == 1) DarkBackGrayColor else BackGrayColor
                         )
                     ) {
                         Box(
@@ -541,16 +590,14 @@ fun RoadmapPlanGoalScreen(navController: NavController, roadmapViewModel: Roadma
                         }
                     }
 
-                    Spacer(modifier = Modifier.width(16.dp))
-
                     Button( // 2 버튼
                         onClick = { selectedGoal = 2 },
                         modifier = Modifier.size(50.dp),
                         shape = CircleShape,
-                        border = BorderStroke(0.5.dp, PrimaryColor),
                         contentPadding = PaddingValues(0.dp),
+                        border = BorderStroke(if ((selectedGoal == null && plan.selectedGoal == 2) || selectedGoal == 2) 1.dp else 0.5.dp, PrimaryColor),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = BackGrayColor
+                            containerColor = if ((selectedGoal == null && plan.selectedGoal == 2) || selectedGoal == 2) DarkBackGrayColor else BackGrayColor
                         )
                     ) {
                         Box(
@@ -566,16 +613,14 @@ fun RoadmapPlanGoalScreen(navController: NavController, roadmapViewModel: Roadma
                         }
                     }
 
-                    Spacer(modifier = Modifier.width(16.dp))
-
                     Button( // 3 버튼
                         onClick = { selectedGoal = 3 },
                         modifier = Modifier.size(50.dp),
                         shape = CircleShape,
-                        border = BorderStroke(0.5.dp, PrimaryColor),
                         contentPadding = PaddingValues(0.dp),
+                        border = BorderStroke(if ((selectedGoal == null && plan.selectedGoal == 3) || selectedGoal == 3) 1.dp else 0.5.dp, PrimaryColor),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = BackGrayColor
+                            containerColor = if ((selectedGoal == null && plan.selectedGoal == 3) || selectedGoal == 3) DarkBackGrayColor else BackGrayColor
                         )
                     ) {
                         Box(
@@ -590,68 +635,22 @@ fun RoadmapPlanGoalScreen(navController: NavController, roadmapViewModel: Roadma
                             )
                         }
                     }
-
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    Button( // 4 버튼
-                        onClick = { selectedGoal = 4 },
-                        modifier = Modifier.size(50.dp),
-                        shape = CircleShape,
-                        border = BorderStroke(0.5.dp, PrimaryColor),
-                        contentPadding = PaddingValues(0.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = BackGrayColor
-                        )
-                    ) {
-                        Box(
-                            modifier = Modifier.size(50.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "4",
-                                fontSize = 20.sp,
-                                color = Color.Black,
-                                fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    Button( // 5 버튼
-                        onClick = { selectedGoal = 5 },
-                        modifier = Modifier.size(50.dp),
-                        shape = CircleShape,
-                        border = BorderStroke(0.5.dp, PrimaryColor),
-                        contentPadding = PaddingValues(0.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = BackGrayColor
-                        )
-                    ) {
-                        Box(
-                            modifier = Modifier.size(50.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "5",
-                                fontSize = 20.sp,
-                                color = Color.Black,
-                                fontFamily = FontFamily(Font(R.font.spoqahansansneo_light))
-                            )
-                        }
-                    }
                 }
             }
 
             Row(
-                modifier = Modifier.align(Alignment.BottomEnd).padding(end = 30.dp, bottom = 40.dp)
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(end = 30.dp, bottom = 40.dp)
             ) {
                 Button( // 다음 버튼
                     onClick = {
-                        roadmapViewModel.setSelectedGoal(selectedGoal)
+                        if (selectedGoal != null) {
+                            roadmapPlanViewModel.setSelectedGoal(selectedGoal)
+                        }
                         navController.navigate("level_ready")
                     },
-                    enabled = selectedGoal != null,
+                    enabled = (selectedGoal != null || plan.selectedGoal != null),
                     modifier = Modifier
                         .width(90.dp)
                         .height(50.dp),

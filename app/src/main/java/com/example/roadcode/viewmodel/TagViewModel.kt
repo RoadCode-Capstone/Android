@@ -7,6 +7,7 @@ import com.example.roadcode.data.repository.TagRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,11 +29,19 @@ class TagViewModel @Inject constructor(private val repository: TagRepository) : 
         viewModelScope.launch {
             repository.fetchTags().collect() { result ->
                 result
-                    .onSuccess { tagsMap ->
-                        _tags.value = tagsMap
-                        Log.d(TAG, "태그 목록: ${_tags.value}")
-                    }.onFailure { e ->
-                        e.printStackTrace()
+                    .onSuccess { body ->
+                        when (body.code) {
+                            "SUCCESS" -> {
+                                val tagsMap = body.data!!.tags
+                                _tags.value = tagsMap
+
+                                Log.d(TAG, "태그 목록 조회 성공\n${tagsMap}")
+                            }
+                            else -> Log.d(TAG, "태그 목록 조회 실패: 알 수 없는 오류")
+                        }
+                    }
+                    .onFailure { e ->
+                        Log.e(TAG, "네트워크 오류: ${e.message}")
                     }
             }
         }

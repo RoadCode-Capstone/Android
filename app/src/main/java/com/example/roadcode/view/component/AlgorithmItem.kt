@@ -19,20 +19,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.roadcode.R
 import com.example.roadcode.ui.theme.BackGrayColor
+import com.example.roadcode.ui.theme.DarkBackGrayColor
 import com.example.roadcode.ui.theme.PrimaryColor
 
 /* 알고리즘 아이템 버튼 */
 @Composable
-fun algorithmItem(name: String, onClick: () -> Unit) {
+fun AlgorithmItem(name: String, selectedAlgorithm: String?, planSelectedAlgorithm: String?, onClick: () -> Unit) {
     Button(
         onClick = { onClick() },
         modifier = Modifier
             .width(300.dp)
             .height(50.dp),
         shape = RoundedCornerShape(5.dp),
-        border = BorderStroke(0.5.dp, PrimaryColor),
+        border = BorderStroke(if ((selectedAlgorithm.isNullOrBlank() && planSelectedAlgorithm == "Algorithm") || selectedAlgorithm == name) 1.dp else 0.5.dp, PrimaryColor),
         colors = ButtonDefaults.buttonColors(
-            containerColor = BackGrayColor
+            containerColor = if ((selectedAlgorithm.isNullOrBlank() && planSelectedAlgorithm == "Algorithm") || selectedAlgorithm == name) DarkBackGrayColor else BackGrayColor
         )
     ) {
         Row(

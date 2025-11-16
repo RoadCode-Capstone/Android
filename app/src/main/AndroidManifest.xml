@@ -5,6 +5,9 @@
     <!-- 인터넷 권한 설정 -->
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!-- 푸쉬 알림 설정 -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
     <application
         android:name=".RoadCodeApplication"
         android:usesCleartextTraffic="true"
@@ -28,6 +31,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- 알림 처리 Receiver 등록 -->
+        <receiver
+            android:name=".util.NotificationReceiver"
+            android:exported="false" />
     </application>
 
 </manifest>
